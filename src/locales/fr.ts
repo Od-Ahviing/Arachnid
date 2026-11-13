@@ -4,6 +4,17 @@ import type { BaseMessageKey, MessageDictionary } from './en'
 
 const baseFr: Record<BaseMessageKey, string> = {
   home: 'Accueil',
+  appUpdateAvailable: 'Mise à jour disponible',
+  appUpdateInstall: 'Mettre à jour',
+  appUpdateLater: 'Plus tard',
+  appUpdateDownloading: 'Téléchargement de la mise à jour…',
+  appUpdateVerifying: 'Vérification et préparation de l’installation…',
+  appUpdateCheckFailed:
+    'Impossible de vérifier les mises à jour. Redémarrez Arachnid pour réessayer.',
+  appUpdateDownloadFailed:
+    'Le téléchargement ou la vérification de la signature a échoué. Réessayez.',
+  appUpdateInstallFailed: 'Impossible de lancer l’installateur. Réessayez.',
+  appUpdateBusy: 'Une mise à jour est déjà en cours.',
   graphicsCrashTitle: 'Le jeu s’est fermé de façon inattendue',
   graphicsCrashReshade:
     'Dans Mods, désactive d’abord ReShade, applique la modification, puis relance le jeu. Si le crash se reproduit, essaie de désactiver les autres mods graphiques.',

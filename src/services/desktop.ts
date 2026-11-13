@@ -1,4 +1,4 @@
-import { invoke, isTauri } from '@tauri-apps/api/core'
+import { Channel, invoke, isTauri } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import type { Language, Preferences, ScanProgress, ScanReport } from '../types/installation'
 import { supportedLanguages } from '../types/installation'
@@ -12,6 +12,8 @@ import type { SaveStatus, RestorePreview } from '../types/saves'
 import type { ModStatus, PackPreview, SkinPreview, SkinStatus } from '../types/mods'
 
 export const desktopAvailable = isTauri()
+
+type AppUpdateProgress = { received: number; total: number | null }
 
 export function errorCode(error: unknown): string {
   if (
@@ -53,6 +55,12 @@ export function parseReport(value: unknown): ScanReport {
 }
 
 export const desktop = {
+  checkAppUpdate: () => invoke<string | null>('check_app_update'),
+  installAppUpdate: (version: string, onProgress: (progress: AppUpdateProgress) => void) => {
+    const progress = new Channel<AppUpdateProgress>()
+    progress.onmessage = onProgress
+    return invoke<void>('install_app_update', { version, progress })
+  },
   skinStatus: () => invoke<SkinStatus>('skin_status'),
   prepareSkin: (selected: string | null) => invoke<SkinPreview>('prepare_skin', { selected }),
   applySkin: (digest: string, recover = false) => invoke<void>('apply_skin', { digest, recover }),

@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "app-update"
+description = "Check the configured release feed and install the confirmed signed launcher update"
+commands.allow = ["check_app_update", "install_app_update"]

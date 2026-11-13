@@ -209,6 +209,11 @@ pub async fn start_game(
     tauri::async_runtime::spawn_blocking(move || {
         use tauri::Manager;
         let state = app.state::<AppState>();
+        let _update = state
+            .updates
+            .installing
+            .try_lock()
+            .map_err(|_| AppError::new("appUpdateBusy"))?;
         let _operation = state
             .operations
             .try_lock()

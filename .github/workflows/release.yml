@@ -1,0 +1,70 @@
+name: Windows release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.repository == 'Od-Ahviing/Arachnid'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+      - uses: pnpm/action-setup@v6
+        with:
+          version: '11.25.0'
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Fetch verified offline resources
+        env:
+          RESOURCES_URL: ${{ vars.ARACHNID_RESOURCES_URL }}
+          RESOURCES_SHA256: ${{ vars.ARACHNID_RESOURCES_SHA256 }}
+        run: ./scripts/release/import-resources.ps1 -Url $env:RESOURCES_URL -Sha256 $env:RESOURCES_SHA256
+      - name: Build the signed Windows installer and update manifest
+        env:
+          ARACHNID_UPDATER_PUBLIC_KEY: ${{ vars.ARACHNID_UPDATER_PUBLIC_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: ./scripts/release/build-update.ps1 -Tag $env:GITHUB_REF_NAME
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows-update
+          path: |
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/*-setup.exe.sig
+            target/x86_64-pc-windows-msvc/release/bundle/nsis/latest.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+
+  draft:
+    needs: build
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: windows-update
+          path: windows-update
+      - name: Create the release draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $version = $env:GITHUB_REF_NAME.Substring(1)
+          $installer = "windows-update/Arachnid_${version}_x64-setup.exe"
+          gh release create $env:GITHUB_REF_NAME $installer "$installer.sig" windows-update/latest.json --verify-tag --draft --title "Arachnid $version" --generate-notes
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

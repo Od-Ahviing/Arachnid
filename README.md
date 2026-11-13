@@ -12,6 +12,8 @@ Arachnid targets Windows 10 and 11 (x64). Bring your own PC installation of the 
 
 The Windows installer checks for required legacy DirectX, Visual C++, and .NET components. Installing missing Windows components may require an internet connection or administrator approval. Mods included in the installer are available offline.
 
+Starting with **Arachnid 0.1.1**, signed releases check GitHub for newer stable versions at startup and offer to install them in the launcher. Close the game before updating. If you use 0.1.0, download and install the first updater-enabled release manually.
+
 ## What you can do
 
 | Section         | What it does                                                                                                                                                                                                  |

@@ -3,6 +3,15 @@ import { en as additions } from '../composables/m2Messages'
 
 const baseEn = {
   home: 'Home',
+  appUpdateAvailable: 'Update available',
+  appUpdateInstall: 'Update now',
+  appUpdateLater: 'Later',
+  appUpdateDownloading: 'Downloading update…',
+  appUpdateVerifying: 'Verifying and preparing the installation…',
+  appUpdateCheckFailed: 'Could not check for updates. Restart Arachnid to try again.',
+  appUpdateDownloadFailed: 'The download or signature verification failed. Try again.',
+  appUpdateInstallFailed: 'Could not start the installer. Try again.',
+  appUpdateBusy: 'An update operation is already in progress.',
   graphicsCrashTitle: 'The game closed unexpectedly',
   graphicsCrashReshade:
     'Disable ReShade in Mods, apply the change, then launch the game again. If it still crashes, try disabling the other graphics mods.',

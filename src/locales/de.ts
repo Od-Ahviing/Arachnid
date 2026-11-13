@@ -25,6 +25,17 @@ export const de = {
   settingBloom: 'Leuchteffekt',
   settingHeat: 'Hitzeflimmern',
   home: 'Startseite',
+  appUpdateAvailable: 'Update verfügbar',
+  appUpdateInstall: 'Jetzt aktualisieren',
+  appUpdateLater: 'Später',
+  appUpdateDownloading: 'Update wird heruntergeladen…',
+  appUpdateVerifying: 'Installation wird geprüft und vorbereitet…',
+  appUpdateCheckFailed:
+    'Updates konnten nicht geprüft werden. Starte Arachnid neu und versuche es erneut.',
+  appUpdateDownloadFailed: 'Download oder Signaturprüfung fehlgeschlagen. Versuche es erneut.',
+  appUpdateInstallFailed:
+    'Das Installationsprogramm konnte nicht gestartet werden. Versuche es erneut.',
+  appUpdateBusy: 'Ein Update-Vorgang läuft bereits.',
   graphicsCrashTitle: 'Das Spiel wurde unerwartet beendet',
   graphicsCrashReshade:
     'Deaktiviere zuerst ReShade unter Mods, übernimm die Änderung und starte das Spiel erneut. Falls es erneut abstürzt, deaktiviere die anderen Grafikmods.',

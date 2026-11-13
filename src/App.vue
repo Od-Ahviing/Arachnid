@@ -9,6 +9,7 @@ import AppSidebar from './components/layout/AppSidebar.vue'
 import StartupScreen from './components/layout/StartupScreen.vue'
 import BusyState from './components/ui/BusyState.vue'
 import AppButton from './components/ui/AppButton.vue'
+import AppUpdateBanner from './components/layout/AppUpdateBanner.vue'
 const store = useInstallation()
 const route = useRoute()
 const router = useRouter()
@@ -85,6 +86,11 @@ watch(
         </p>
         <AppButton @click="store.cancel">{{ t('cancel') }}</AppButton>
       </div>
+      <AppUpdateBanner
+        v-if="desktopAvailable"
+        :visible="route.path === '/home' || route.path === '/setup'"
+        :can-install="!store.busy && !store.languageBusy"
+      />
       <RouterView />
     </main>
   </div>

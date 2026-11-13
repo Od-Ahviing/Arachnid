@@ -43,6 +43,10 @@ Recognition, launch eligibility, and mod compatibility are separate checks. A mi
 
 The [SaveGuard crate](../crates/arachnid-saveguard/src/lib.rs) checks stable file contents before copying. Automatic backups group changes into fixed five-minute windows. Later changes update that window's backup without extending the deadline. Manual and pinned snapshots have their own lifecycle. Restore checks the snapshot, preserves the current state for rollback, and requires the game to be stopped before applying an approved plan. Test that a restored save actually loads when changing this workflow. A matching hash verifies the copied bytes.
 
+## Launcher updates
+
+[updates.rs](../src-tauri/src/updates.rs) checks the configured GitHub release manifest in Rust and offers stable versions newer than the running launcher. The UI asks before downloading and displays progress. Tauri verifies the installer signature and its signed version. The backend checks for a running game before and after downloading and takes the shared operation lock before starting the installer. Starting the game through Arachnid is blocked during the update. [The release workflow](DEVELOPMENT.md#publish-a-windows-update) configures signed builds with the public key and update feed.
+
 ## Local data
 
 Tauri resolves the app's directory under Windows Local AppData. [storage.rs](../src-tauri/src/storage.rs) manages `preferences.json` and `launcher.log`. SaveGuard keeps its profile in `saveguard-profile.json` and stores snapshots in `saveguard/` under the app data directory, outside the save source. The diagnostics report is exported to a destination chosen by the player.

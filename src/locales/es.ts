@@ -25,6 +25,16 @@ export const es = {
   settingBloom: 'Resplandor',
   settingHeat: 'Distorsión por calor',
   home: 'Inicio',
+  appUpdateAvailable: 'Actualización disponible',
+  appUpdateInstall: 'Actualizar ahora',
+  appUpdateLater: 'Más tarde',
+  appUpdateDownloading: 'Descargando la actualización…',
+  appUpdateVerifying: 'Verificando y preparando la instalación…',
+  appUpdateCheckFailed:
+    'No se pudieron buscar actualizaciones. Reinicia Arachnid y vuelve a intentarlo.',
+  appUpdateDownloadFailed: 'Falló la descarga o la verificación de la firma. Inténtalo de nuevo.',
+  appUpdateInstallFailed: 'No se pudo iniciar el instalador. Inténtalo de nuevo.',
+  appUpdateBusy: 'Ya hay una actualización en curso.',
   graphicsCrashTitle: 'El juego se ha cerrado inesperadamente',
   graphicsCrashReshade:
     'Desactiva primero ReShade en Mods, aplica el cambio y vuelve a iniciar el juego. Si vuelve a fallar, prueba a desactivar los otros mods gráficos.',

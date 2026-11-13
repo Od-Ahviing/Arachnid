@@ -10,6 +10,7 @@
     "installation-readonly",
     "m2-local-operations",
     "saveguard-operations",
-    "mod-operations"
+    "mod-operations",
+    "app-update"
   ]
 }

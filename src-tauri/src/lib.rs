@@ -4,6 +4,7 @@ mod mods;
 mod saves;
 mod skins;
 mod storage;
+mod updates;
 
 use arachnid_core::{AppError, AppResult, Language, Preferences, ScanReport};
 use std::{
@@ -25,6 +26,7 @@ struct AppState {
     session: Mutex<Option<arachnid_launch::Session>>,
     last_session: Mutex<Option<arachnid_launch::SessionStatus>>,
     storage: storage::Storage,
+    updates: updates::Updates,
     preferences: Mutex<Preferences>,
     report: Mutex<Option<ScanReport>>,
     scan: Mutex<Option<Arc<AtomicBool>>>,
@@ -230,6 +232,15 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
+            if app.config().plugins.0.contains_key("updater") {
+                app.handle().plugin(
+                    tauri_plugin_updater::Builder::new()
+                        .default_version_comparator(|current, remote| {
+                            remote.version.pre.is_empty() && remote.version > current
+                        })
+                        .build(),
+                )?;
+            }
             let directory = app.path().app_local_data_dir()?;
             std::fs::create_dir_all(&directory)?;
             let instance_lock = OpenOptions::new()
@@ -253,6 +264,7 @@ pub fn run() {
                 session: Mutex::new(None),
                 last_session: Mutex::new(None),
                 storage,
+                updates: updates::Updates::default(),
                 preferences: Mutex::new(preferences),
                 report: Mutex::new(None),
                 scan: Mutex::new(None),
@@ -262,6 +274,8 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            updates::check_app_update,
+            updates::install_app_update,
             load_preferences,
             mods::mod_status,
             mods::select_mod,
