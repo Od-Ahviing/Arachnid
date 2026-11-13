@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-prepare-settings"
+description = "Enables the prepare_settings command without any pre-configured scope."
+commands.allow = ["prepare_settings"]
+
+[[permission]]
+identifier = "deny-prepare-settings"
+description = "Denies the prepare_settings command without any pre-configured scope."
+commands.deny = ["prepare_settings"]

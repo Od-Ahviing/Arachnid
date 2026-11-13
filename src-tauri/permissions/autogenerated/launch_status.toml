@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-launch-status"
+description = "Enables the launch_status command without any pre-configured scope."
+commands.allow = ["launch_status"]
+
+[[permission]]
+identifier = "deny-launch-status"
+description = "Denies the launch_status command without any pre-configured scope."
+commands.deny = ["launch_status"]

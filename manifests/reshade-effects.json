@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "files": [
+    {
+      "name": "SMAA.fx",
+      "folder": "shaders",
+      "bytes": 9523,
+      "sha256": "fd6591eeb70ff584ac4d774ed3c79af5efac34f5de1a36f8f873e959259c0007",
+      "source": "https://raw.githubusercontent.com/CeeJayDK/SweetFX/93ddf39b357f5da534ed6d34ba4ec8cc7dcfa361/Shaders/SweetFX/SMAA.fx"
+    },
+    {
+      "name": "SMAA.fxh",
+      "folder": "shaders",
+      "bytes": 57679,
+      "sha256": "ee18b0f376585338cdb477a0900757cebac86d3c476ef99955348b55818c8310",
+      "source": "https://raw.githubusercontent.com/CeeJayDK/SweetFX/93ddf39b357f5da534ed6d34ba4ec8cc7dcfa361/Shaders/SweetFX/SMAA.fxh"
+    },
+    {
+      "name": "LumaSharpen.fx",
+      "folder": "shaders",
+      "bytes": 8688,
+      "sha256": "7b358ebbdaa7bc4c44ebf6e9d41afcb3f21ee3dde5c5f85bf40201d5c6044680",
+      "source": "https://raw.githubusercontent.com/CeeJayDK/SweetFX/93ddf39b357f5da534ed6d34ba4ec8cc7dcfa361/Shaders/SweetFX/LumaSharpen.fx"
+    },
+    {
+      "name": "AreaTex.png",
+      "folder": "textures",
+      "bytes": 30346,
+      "sha256": "0044e6b420a8d98a9dc6a60bedbd43f75cd15ac6052fdedfb2f2f55d3077beed",
+      "source": "https://raw.githubusercontent.com/CeeJayDK/SweetFX/93ddf39b357f5da534ed6d34ba4ec8cc7dcfa361/Textures/SweetFX/AreaTex.png"
+    },
+    {
+      "name": "SearchTex.png",
+      "folder": "textures",
+      "bytes": 126,
+      "sha256": "55a97853ab64174245701accf315ab63d41776c9cb2aa14c675e653684fd96f3",
+      "source": "https://raw.githubusercontent.com/CeeJayDK/SweetFX/93ddf39b357f5da534ed6d34ba4ec8cc7dcfa361/Textures/SweetFX/SearchTex.png"
+    },
+    {
+      "name": "SweetFX-LICENSE.txt",
+      "folder": "notices",
+      "bytes": 1076,
+      "sha256": "9b2e0b3ff53493f211e39390947716cd16ee559303dac0713ad4b12228dbce51",
+      "source": "https://raw.githubusercontent.com/CeeJayDK/SweetFX/93ddf39b357f5da534ed6d34ba4ec8cc7dcfa361/LICENSE"
+    },
+    {
+      "name": "ReShade.fxh",
+      "folder": "shaders",
+      "bytes": 4250,
+      "sha256": "6dabfbbaf968c3871905d2ea17f96572ff7b1cec01310b5d0e5252b66b30174f",
+      "source": "https://raw.githubusercontent.com/crosire/reshade-shaders/fd0022170615ce0d8162d219bff07232fa6dd84f/Shaders/ReShade.fxh"
+    },
+    {
+      "name": "ReShadeUI.fxh",
+      "folder": "shaders",
+      "bytes": 9930,
+      "sha256": "78adf672df47460297eb9fe6dd238d2aafa24510b52b84feb1a745dff70eb901",
+      "source": "https://raw.githubusercontent.com/crosire/reshade-shaders/fd0022170615ce0d8162d219bff07232fa6dd84f/Shaders/ReShadeUI.fxh"
+    },
+    {
+      "name": "qUINT_mxao.fx",
+      "folder": "shaders",
+      "bytes": 26449,
+      "sha256": "fdd84443706a92753ac255d9912ceb5f8e03a4bba88ddfb06a85b5654a9590e1",
+      "source": "https://raw.githubusercontent.com/martymcmodding/qUINT/98fed77b26669202027f575a6d8f590426c21ebd/Shaders/qUINT_mxao.fx"
+    },
+    {
+      "name": "qUINT_common.fxh",
+      "folder": "shaders",
+      "bytes": 7053,
+      "sha256": "30cf03a1869e33e9b92f09f79ac9217c001472d014ab91ef3e87e0d41e3f55ec",
+      "source": "https://raw.githubusercontent.com/martymcmodding/qUINT/98fed77b26669202027f575a6d8f590426c21ebd/Shaders/qUINT_common.fxh"
+    },
+    {
+      "name": "qUINT-README.md",
+      "folder": "notices",
+      "bytes": 3733,
+      "sha256": "1c7ca8f060d58199e0b524cc6e686c4939c833294ab744e3a337a05971747085",
+      "source": "https://raw.githubusercontent.com/martymcmodding/qUINT/98fed77b26669202027f575a6d8f590426c21ebd/README.md"
+    }
+  ]
+}

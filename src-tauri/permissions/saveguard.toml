@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "saveguard-operations"
+description = "Automatic save detection, bounded verified snapshots and consent-bound restoration in the local main window"
+commands.allow = ["save_status", "open_save_folder", "delete_save", "detect_save_source", "choose_save_source", "configure_saveguard", "snapshot_saves", "pin_save", "prepare_save_restore", "apply_save_restore"]

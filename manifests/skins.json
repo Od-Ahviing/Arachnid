@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "archiveSha256": "94c6a82e44537960d22ae855d2f11aaccca50f8abbde815e84bb55294f3453f3",
+  "source": "https://www.moddb.com/games/the-amazing-spider-man/addons/tasm-1-skin-pack",
+  "loaders": [
+    {
+      "fileName": "dinput8.dll",
+      "bytes": 1138176,
+      "sha256": "d0631278cd0a85b3246a2478cbcae8b07718eba34830bb8273387f98c8d3caa0"
+    },
+    {
+      "fileName": "arachnid_skin.asi",
+      "bytes": 327680,
+      "sha256": "0b51d4f01707362b61f87cabbbc1f32d1fdd9d9647d8ffdba27a1c0919ff036b"
+    }
+  ],
+  "skins": [
+    {
+      "id": "kirillka-ps4-black",
+      "name": "PS4 Suit V3.0 black",
+      "author": "kirillka / Hellfire Studios (archive)",
+      "fileName": "skin-01.tpf",
+      "bytes": 9500362,
+      "sha256": "2945618e8c5f305a3b4127a50a07746784498cfcaa467575e1b1687e9adf5522",
+      "archivePath": "kirillka/TASM 1 PS4 Skin by kirillka/TASM_PS4_Suit_V3.0 black.tpf"
+    },
+    {
+      "id": "kirillka-ps4",
+      "name": "PS4 Suit V3.0",
+      "author": "kirillka / Hellfire Studios (archive)",
+      "fileName": "skin-02.tpf",
+      "bytes": 10111521,
+      "sha256": "a8c554aa526ae63fe858cfba8a79ad8f44bf6577e3dfadf07d7211f32560d521",
+      "archivePath": "kirillka/TASM 1 PS4 Skin by kirillka/TASM_PS4_Suit_V3.0.tpf"
+    },
+    {
+      "id": "mike-ps4-black",
+      "name": "PS4 Suit V3.0 black",
+      "author": "Mike_gens (archive)",
+      "fileName": "skin-03.tpf",
+      "bytes": 14857081,
+      "sha256": "752ed2c07f7f3ef74f43052cbc55788d541c3fef704f4b7ef1bc6c35cbe705eb",
+      "archivePath": "mike/TASM_PS4_Suit_V3.0 black.tpf"
+    },
+    {
+      "id": "mike-ps4",
+      "name": "PS4 Suit V3.0",
+      "author": "Mike_gens (archive)",
+      "fileName": "skin-04.tpf",
+      "bytes": 17714347,
+      "sha256": "a751ed5e59b7db1cd84a242179d80677222cc8670c0fe65314acca22c4653382",
+      "archivePath": "mike/TASM_PS4_Suit_V3.0.tpf"
+    },
+    {
+      "id": "kiber-spider",
+      "name": "kiber spider",
+      "author": "Hellfire Studios",
+      "fileName": "skin-05.tpf",
+      "bytes": 64326230,
+      "sha256": "10480784ef28eac6f0c0a5c4b737014ec9e2537d2f7c6701103ead027260cf69",
+      "archivePath": "TASM 1 SKIN PACK/Hellfire Studios skins/kiber_spider.tpf"
+    },
+    {
+      "id": "ps4-classic",
+      "name": "PS4 Classic",
+      "author": "Mike Gens (TPF)",
+      "fileName": "skin-06.tpf",
+      "bytes": 29472561,
+      "sha256": "c8f52ef1338157895e7d918e729a47184477d624e33092289c8043505fa79654",
+      "archivePath": "TASM 1 SKIN PACK/Hellfire Studios skins/TASM_PS4_Classic.tpf"
+    },
+    {
+      "id": "arachnoman",
+      "name": "ArachnoMan",
+      "author": "Sosiska",
+      "fileName": "skin-07.tpf",
+      "bytes": 44436486,
+      "sha256": "41755361caea652bf3b22103531a09d94d4b7e207c5ce8522e884646b5b0eda6",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_ArachnoMan.tpf"
+    },
+    {
+      "id": "asma",
+      "name": "ASMA",
+      "author": "Sosiska",
+      "fileName": "skin-08.tpf",
+      "bytes": 23053950,
+      "sha256": "2a25bce31291b9f6be82c2e5e6dd6cca30b8dde11d17e559eead02f4948b5a7f",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_ASMA.tpf"
+    },
+    {
+      "id": "blue-beetle",
+      "name": "BlueBeetle",
+      "author": "Sosiska",
+      "fileName": "skin-09.tpf",
+      "bytes": 3243810,
+      "sha256": "7e200fe808ff6bb456fce41e70314d72aa88f64580073359ff453a884688d9e7",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_BlueBeetle.tpf"
+    },
+    {
+      "id": "electro-proof",
+      "name": "ElectroProof",
+      "author": "Sosiska",
+      "fileName": "skin-10.tpf",
+      "bytes": 8453261,
+      "sha256": "5fb3a8a6f00a776b2509b724fd5d9fe663f7a7fe895e83763da785b7fc715bc5",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_ElectroProof.tpf"
+    },
+    {
+      "id": "last-stand",
+      "name": "LastStand",
+      "author": "Sosiska",
+      "fileName": "skin-11.tpf",
+      "bytes": 42057651,
+      "sha256": "903b6b7331748db96ddeac9e8f589be76f161b57ed50d08e97062185bc4e6e5a",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_LastStand.tpf"
+    },
+    {
+      "id": "noir",
+      "name": "Noir",
+      "author": "Sosiska",
+      "fileName": "skin-12.tpf",
+      "bytes": 23774538,
+      "sha256": "e8d4cc584a06e4215a8999cefe289736823a63273c5712750f737bb05fa508b6",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_Noir.tpf"
+    },
+    {
+      "id": "quick-change",
+      "name": "QuickChange",
+      "author": "Sosiska",
+      "fileName": "skin-13.tpf",
+      "bytes": 42227297,
+      "sha256": "de6317a90dbf105b52656b069179e78203911d2e203d35db79ec1f8613606c1b",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_QuickChange.tpf"
+    },
+    {
+      "id": "scarlet-spider",
+      "name": "ScarletSpider",
+      "author": "Sosiska",
+      "fileName": "skin-14.tpf",
+      "bytes": 44543533,
+      "sha256": "99b3dfe59da57f84dc498911a3b0397e6075584fc61beccbdc3055ed13d916dc",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_ScarletSpider.tpf"
+    },
+    {
+      "id": "uav",
+      "name": "UAV",
+      "author": "Sosiska",
+      "fileName": "skin-15.tpf",
+      "bytes": 15465690,
+      "sha256": "461b2cb1906426681c2de2a51d8b73e35e33764305eb5ea0e26d97ccdc6272aa",
+      "archivePath": "TASM 1 SKIN PACK/Sosiska skins/TASM_UAV.tpf"
+    },
+    {
+      "id": "aggressive-toxin",
+      "name": "Aggressive TOXIN",
+      "author": "Zeke1911",
+      "fileName": "skin-16.tpf",
+      "bytes": 30306581,
+      "sha256": "5f77e570f9e0e5fb38bea8842292a720fb2deac6d0f1949cae100741eb072048",
+      "archivePath": "TASM 1 SKIN PACK/Zeke1911 skins/Aggressive TOXIN.tpf"
+    },
+    {
+      "id": "classic-scarlet-spider",
+      "name": "Classic Scarlet Spider",
+      "author": "Zeke1911",
+      "fileName": "skin-17.tpf",
+      "bytes": 28457019,
+      "sha256": "a95dbafd3d143bfbab43412520cb985dd7ea03e783c4a117b5de4309a9140a9c",
+      "archivePath": "TASM 1 SKIN PACK/Zeke1911 skins/Classic Scarlet Spider.tpf"
+    },
+    {
+      "id": "peaceful-toxin",
+      "name": "Peaceful TOXIN",
+      "author": "Zeke1911",
+      "fileName": "skin-18.tpf",
+      "bytes": 26675129,
+      "sha256": "ffcc11f1cf232fb4bd65950ac3c736ff50fa6423b7c734b874f20502015889df",
+      "archivePath": "TASM 1 SKIN PACK/Zeke1911 skins/Peaceful TOXIN.tpf"
+    },
+    {
+      "id": "ricochet",
+      "name": "Spider-Man Ricochet",
+      "author": "Zeke1911",
+      "fileName": "skin-19.tpf",
+      "bytes": 33068258,
+      "sha256": "40336ff028a4670c8e7e983ec27ed74d82499ef108b94fad3d6c17b4b378292e",
+      "archivePath": "TASM 1 SKIN PACK/Zeke1911 skins/Spider-Man Ricochet.tpf"
+    },
+    {
+      "id": "web-hero",
+      "name": "Spider-Man Web Hero",
+      "author": "Zeke1911",
+      "fileName": "skin-20.tpf",
+      "bytes": 30857565,
+      "sha256": "f889eac8ef7b7d703bf1f2bfbf2263f00ac040e3fe637db63a7ecbd81eeab65c",
+      "archivePath": "TASM 1 SKIN PACK/Zeke1911 skins/Spider-Man Web Hero.tpf"
+    },
+    {
+      "id": "ultimate-cosmic",
+      "name": "Ultimate Cosmic Spider-Man",
+      "author": "Zeke1911",
+      "fileName": "skin-21.tpf",
+      "bytes": 28447697,
+      "sha256": "a960c735ca37084fb3ea16af9cbbdac1bea02ad103a0a89bd6d3bdcd4861653e",
+      "archivePath": "TASM 1 SKIN PACK/Zeke1911 skins/Ultimate Cosmic Spider-Man.tpf"
+    },
+    {
+      "id": "ultimate-symbiote",
+      "name": "UltimateSymbiote",
+      "author": "Zeke1911",
+      "fileName": "skin-22.tpf",
+      "bytes": 9981001,
+      "sha256": "be10577f41f739851f933907f930777dc2b081efcc53b53537c66e5de5ba42c3",
+      "archivePath": "TASM 1 SKIN PACK/Zeke1911 skins/UltimateSymbiote.tpf"
+    }
+  ]
+}

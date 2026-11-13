@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-pin-save"
+description = "Enables the pin_save command without any pre-configured scope."
+commands.allow = ["pin_save"]
+
+[[permission]]
+identifier = "deny-pin-save"
+description = "Denies the pin_save command without any pre-configured scope."
+commands.deny = ["pin_save"]

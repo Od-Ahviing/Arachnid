@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "m2-local-operations"
+description = "Fixed direct game launch, native settings read, exact settings plan approval and restoration for the local main window"
+commands.allow = ["launch_status", "start_game", "synchronize_game_language", "native_settings", "prepare_settings", "apply_settings", "restore_settings", "settings_operation"]

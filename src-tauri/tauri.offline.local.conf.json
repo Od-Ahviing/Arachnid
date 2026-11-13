@@ -1,0 +1,8 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Arachnid Local Test",
+  "identifier": "org.arachnid.launcher.localtest",
+  "build": {
+    "beforeBuildCommand": "pnpm mods:verify-prepared && pnpm build"
+  }
+}

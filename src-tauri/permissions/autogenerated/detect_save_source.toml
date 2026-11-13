@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-detect-save-source"
+description = "Enables the detect_save_source command without any pre-configured scope."
+commands.allow = ["detect_save_source"]
+
+[[permission]]
+identifier = "deny-detect-save-source"
+description = "Denies the detect_save_source command without any pre-configured scope."
+commands.deny = ["detect_save_source"]

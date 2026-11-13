@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-configure-saveguard"
+description = "Enables the configure_saveguard command without any pre-configured scope."
+commands.allow = ["configure_saveguard"]
+
+[[permission]]
+identifier = "deny-configure-saveguard"
+description = "Denies the configure_saveguard command without any pre-configured scope."
+commands.deny = ["configure_saveguard"]

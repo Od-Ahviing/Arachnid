@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-scan-installation"
+description = "Enables the scan_installation command without any pre-configured scope."
+commands.allow = ["scan_installation"]
+
+[[permission]]
+identifier = "deny-scan-installation"
+description = "Denies the scan_installation command without any pre-configured scope."
+commands.deny = ["scan_installation"]

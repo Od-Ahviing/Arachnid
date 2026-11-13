@@ -1,0 +1,3 @@
+LIBRARY ar_dxvk
+EXPORTS
+    ArachnidOriginalProbe

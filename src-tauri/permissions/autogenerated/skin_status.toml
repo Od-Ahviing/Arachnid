@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-skin-status"
+description = "Enables the skin_status command without any pre-configured scope."
+commands.allow = ["skin_status"]
+
+[[permission]]
+identifier = "deny-skin-status"
+description = "Denies the skin_status command without any pre-configured scope."
+commands.deny = ["skin_status"]

@@ -1,0 +1,20 @@
+[package]
+name = "arachnid-mods"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+arachnid-core.workspace = true
+arachnid-detector.workspace = true
+arachnid-repair.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+url = "=2.5.8"
+sha2 = "=0.11.1"
+tempfile.workspace = true
+zip = { version = "=9.5.0", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.61.2", features = ["Win32_Storage_FileSystem"] }

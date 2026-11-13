@@ -1,0 +1,20 @@
+[package]
+name = "arachnid-detector"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+arachnid-core.workspace = true
+goblin = "=0.10.7"
+sha2 = "=0.11.1"
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[[example]]
+name = "inspect"
+path = "examples/inspect.rs"

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "packages": [
+    {
+      "id": "fix-enhancers",
+      "payload": {
+        "fileName": "fix-enhancers.zip",
+        "bytes": 3081564,
+        "sha256": "d672dc66bf25e6bee17736f5764e80517d73c665326f18b31d44c3817b2f382f"
+      },
+      "notice": null
+    },
+    {
+      "id": "reshade",
+      "payload": {
+        "fileName": "reshade-6.6.2-setup.exe",
+        "bytes": 3940880,
+        "sha256": "807e145eab98903b20f1fc743598a74e3a3be7394ab015b7f64231228168f04e"
+      },
+      "notice": null
+    },
+    {
+      "id": "dxvk",
+      "payload": {
+        "fileName": "dxvk-2.6.2.tar.gz",
+        "bytes": 10107492,
+        "sha256": "17761876556afd55736cb895d184f5a1c55d43350f1b1e3b129f8d28706d7992"
+      },
+      "notice": null
+    },
+    {
+      "id": "tasm1-skin-pack",
+      "payload": null,
+      "notice": null
+    },
+    {
+      "id": "arachnoman",
+      "payload": null,
+      "notice": null
+    }
+  ]
+}

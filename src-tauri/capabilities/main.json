@@ -1,0 +1,15 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Installation diagnostics, fixed game launch and approved settings transactions for the local main window",
+  "windows": ["main"],
+  "local": true,
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "installation-readonly",
+    "m2-local-operations",
+    "saveguard-operations",
+    "mod-operations"
+  ]
+}

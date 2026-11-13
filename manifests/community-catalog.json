@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "game": "tasm1-pc-2012",
+  "entries": [
+    {
+      "id": "fix-enhancers",
+      "name": "The Amazing Spider-Man Fix",
+      "author": "Fix Enhancers",
+      "source": "https://fixenhancers.wixsite.com/fix-enhancers/pc-fixes",
+      "kind": "wrapper",
+      "defaultEnabled": false,
+      "version": null,
+      "license": null,
+      "artifact": null,
+      "compatibility": [],
+      "files": [],
+      "dependencies": [],
+      "conflicts": ["dxvk"],
+      "removal": null
+    },
+    {
+      "id": "dxvk",
+      "name": "DXVK",
+      "author": "Philip Rebohle and contributors",
+      "source": "https://github.com/doitsujin/dxvk",
+      "kind": "wrapper",
+      "defaultEnabled": false,
+      "version": null,
+      "license": {
+        "name": "zlib/libpng",
+        "source": "https://github.com/doitsujin/dxvk/blob/master/LICENSE"
+      },
+      "artifact": null,
+      "compatibility": [],
+      "files": [],
+      "dependencies": [],
+      "conflicts": ["fix-enhancers"],
+      "removal": null
+    },
+    {
+      "id": "reshade",
+      "name": "ReShade",
+      "author": "crosire and contributors",
+      "source": "https://reshade.me/",
+      "kind": "wrapper",
+      "defaultEnabled": false,
+      "version": null,
+      "license": {
+        "name": "BSD 3-Clause",
+        "source": "https://reshade.me/"
+      },
+      "artifact": null,
+      "compatibility": [],
+      "files": [],
+      "dependencies": [],
+      "conflicts": ["fix-enhancers", "dxvk"],
+      "removal": null
+    },
+    {
+      "id": "tasm1-skin-pack",
+      "name": "TASM 1 Skin Pack",
+      "author": "Multiple authors; compiled by AKUJO",
+      "source": "https://www.moddb.com/games/the-amazing-spider-man/addons/tasm-1-skin-pack",
+      "kind": "texturePack",
+      "defaultEnabled": false,
+      "version": null,
+      "license": {
+        "name": "Proprietary (listing)",
+        "source": "https://www.moddb.com/games/the-amazing-spider-man/addons/tasm-1-skin-pack"
+      },
+      "artifact": null,
+      "compatibility": [],
+      "files": [],
+      "dependencies": [],
+      "conflicts": [],
+      "removal": null
+    },
+    {
+      "id": "arachnoman",
+      "name": "Arachnoman Mod",
+      "author": "VinstaC",
+      "source": "https://www.moddb.com/mods/arachnoman-mod",
+      "kind": "texturePack",
+      "defaultEnabled": false,
+      "version": null,
+      "license": null,
+      "artifact": null,
+      "compatibility": [],
+      "files": [],
+      "dependencies": [],
+      "conflicts": [],
+      "removal": null
+    }
+  ],
+  "groups": [
+    {
+      "id": "performance-pack",
+      "name": "Arachnid Performance Pack",
+      "defaultEnabled": true,
+      "members": ["fix-enhancers", "reshade", "dxvk"]
+    }
+  ]
+}

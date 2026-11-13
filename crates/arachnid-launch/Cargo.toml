@@ -1,0 +1,19 @@
+[package]
+name = "arachnid-launch"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+arachnid-core.workspace = true
+arachnid-detector.workspace = true
+arachnid-repair.workspace = true
+serde.workspace = true
+dunce = "=1.0.5"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "=0.61.2", features = ["Win32_Foundation", "Win32_System_Diagnostics_ToolHelp", "Win32_System_Threading", "Win32_UI_WindowsAndMessaging"] }
+
+[dev-dependencies]
+tempfile.workspace = true

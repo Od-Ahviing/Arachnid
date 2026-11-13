@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "installation-readonly"
+description = "Read installation metadata, save launcher preferences and export a redacted report through native dialogs"
+commands.allow = ["load_preferences", "save_language", "pick_game_directory", "scan_installation", "cancel_scan", "forget_installation", "export_report"]

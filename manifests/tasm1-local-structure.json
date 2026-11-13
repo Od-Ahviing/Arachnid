@@ -1,0 +1,2043 @@
+{
+  "schemaVersion": 1,
+  "source": "Installation locale choisie par le propriétaire pour M1 le 2026-11-09 ; métadonnées de structure uniquement",
+  "gameSha256": "facb480a78b1d5dfd2cdbba31be89be9cf3cd01e1eadd524de35f23ea436d60d",
+  "files": [
+    {
+      "name": "Data/01_Tower_010_Lobby.pkz",
+      "bytes": 14909440
+    },
+    {
+      "name": "Data/01_Tower_020_Office.pkz",
+      "bytes": 5406720
+    },
+    {
+      "name": "Data/01_Tower_030_BiodomeRoom.pkz",
+      "bytes": 165969920
+    },
+    {
+      "name": "Data/01_Tower_040_Lab.pkz",
+      "bytes": 7176192
+    },
+    {
+      "name": "Data/01_Tower_050_PathSeparation.pkz",
+      "bytes": 22282240
+    },
+    {
+      "name": "Data/01_Tower_060_PodsRooms.pkz",
+      "bytes": 16252928
+    },
+    {
+      "name": "Data/01_Tower_070_CombatLab.pkz",
+      "bytes": 18546688
+    },
+    {
+      "name": "Data/01_Tower_080_QuarantineRoom.pkz",
+      "bytes": 34996224
+    },
+    {
+      "name": "Data/01_Tower_Main.pkz",
+      "bytes": 51085312
+    },
+    {
+      "name": "Data/03_Manhattan_000.pkz",
+      "bytes": 5734400
+    },
+    {
+      "name": "Data/03_Manhattan_010_Destroyer01.pkz",
+      "bytes": 1412
+    },
+    {
+      "name": "Data/03_Manhattan_Main.pkz",
+      "bytes": 27557888
+    },
+    {
+      "name": "Data/04_MentalInst_010_CellsCorridor.pkz",
+      "bytes": 14876672
+    },
+    {
+      "name": "Data/04_MentalInst_020_CellsMainRoom.pkz",
+      "bytes": 31064064
+    },
+    {
+      "name": "Data/04_MentalInst_030_Cafeteria.pkz",
+      "bytes": 18743296
+    },
+    {
+      "name": "Data/04_MentalInst_040_Caf2Living.pkz",
+      "bytes": 7274496
+    },
+    {
+      "name": "Data/04_MentalInst_050_LivingRoom.pkz",
+      "bytes": 25296896
+    },
+    {
+      "name": "Data/04_MentalInst_060_TherapyRoom.pkz",
+      "bytes": 10715136
+    },
+    {
+      "name": "Data/04_MentalInst_070_EvalCorridor.pkz",
+      "bytes": 11599872
+    },
+    {
+      "name": "Data/04_MentalInst_080_StorageRoom.pkz",
+      "bytes": 17825792
+    },
+    {
+      "name": "Data/04_MentalInst_090_Courtyard.pkz",
+      "bytes": 39354368
+    },
+    {
+      "name": "Data/04_MentalInst_Main.pkz",
+      "bytes": 45744128
+    },
+    {
+      "name": "Data/05_Manhattan_010_BringConnors.pkz",
+      "bytes": 4587520
+    },
+    {
+      "name": "Data/05_Manhattan_Main.pkz",
+      "bytes": 29753344
+    },
+    {
+      "name": "Data/05a_Apartment.pkz",
+      "bytes": 54591488
+    },
+    {
+      "name": "Data/05b_Manhattan_010_ReachArchives.pkz",
+      "bytes": 655360
+    },
+    {
+      "name": "Data/05b_Manhattan_Main.pkz",
+      "bytes": 27721728
+    },
+    {
+      "name": "Data/06_Archives_010_Warehouse.pkz",
+      "bytes": 34963456
+    },
+    {
+      "name": "Data/06_Archives_020_Elevator.pkz",
+      "bytes": 18546688
+    },
+    {
+      "name": "Data/06_Archives_030_Basement.pkz",
+      "bytes": 38895616
+    },
+    {
+      "name": "Data/06_Archives_040_CamTutorial.pkz",
+      "bytes": 9961472
+    },
+    {
+      "name": "Data/06_Archives_050_RepairRoom.pkz",
+      "bytes": 17498112
+    },
+    {
+      "name": "Data/06_Archives_060_Repair2Computer.pkz",
+      "bytes": 3899392
+    },
+    {
+      "name": "Data/06_Archives_070_ComputerRoom.pkz",
+      "bytes": 15532032
+    },
+    {
+      "name": "Data/06_Archives_080_BurnerRoom.pkz",
+      "bytes": 29884416
+    },
+    {
+      "name": "Data/06_Archives_110_RepairRoom.pkz",
+      "bytes": 27656192
+    },
+    {
+      "name": "Data/06_Archives_CMN_ComputerRoom.pkz",
+      "bytes": 163840
+    },
+    {
+      "name": "Data/06_Archives_CMN_Repair2Computer.pkz",
+      "bytes": 14104
+    },
+    {
+      "name": "Data/06_Archives_CMN_RepairRoom.pkz",
+      "bytes": 262144
+    },
+    {
+      "name": "Data/06_Archives_Main.pkz",
+      "bytes": 45875200
+    },
+    {
+      "name": "Data/07a_Manhattan_010_DeliverResearch.pkz",
+      "bytes": 557056
+    },
+    {
+      "name": "Data/07a_Manhattan_Main.pkz",
+      "bytes": 27295744
+    },
+    {
+      "name": "Data/07b_Apartment.pkz",
+      "bytes": 40271872
+    },
+    {
+      "name": "Data/07c_Manhattan_010_ReachSewers.pkz",
+      "bytes": 917504
+    },
+    {
+      "name": "Data/07c_Manhattan_Main.pkz",
+      "bytes": 27295744
+    },
+    {
+      "name": "Data/08_SewersA_NEW_010_WebSensor1.pkz",
+      "bytes": 29556736
+    },
+    {
+      "name": "Data/08_SewersA_NEW_020_WaterTreatment.pkz",
+      "bytes": 27131904
+    },
+    {
+      "name": "Data/08_SewersA_NEW_030_Pool.pkz",
+      "bytes": 29163520
+    },
+    {
+      "name": "Data/08_SewersA_NEW_040_Boss1.pkz",
+      "bytes": 14417920
+    },
+    {
+      "name": "Data/08_SewersA_NEW_050_WebSensor2.pkz",
+      "bytes": 32014336
+    },
+    {
+      "name": "Data/08_SewersA_NEW_060_Metro.pkz",
+      "bytes": 28147712
+    },
+    {
+      "name": "Data/08_SewersA_NEW_070_Crawl.pkz",
+      "bytes": 1245184
+    },
+    {
+      "name": "Data/08_SewersA_NEW_080_Boss2.pkz",
+      "bytes": 14974976
+    },
+    {
+      "name": "Data/08_SewersA_NEW_090_BossEnding.pkz",
+      "bytes": 262144
+    },
+    {
+      "name": "Data/08_SewersA_NEW_Main.pkz",
+      "bytes": 63930368
+    },
+    {
+      "name": "Data/09_10a_Manhattan_010_Hunter01.pkz",
+      "bytes": 2883584
+    },
+    {
+      "name": "Data/09_10a_Manhattan_020_GiveDNA.pkz",
+      "bytes": 557056
+    },
+    {
+      "name": "Data/09_10a_Manhattan_Main.pkz",
+      "bytes": 28344320
+    },
+    {
+      "name": "Data/10b_Apartment.pkz",
+      "bytes": 52920320
+    },
+    {
+      "name": "Data/10c_Manhattan_010_ReachQuarantine.pkz",
+      "bytes": 983040
+    },
+    {
+      "name": "Data/10c_Manhattan_Main.pkz",
+      "bytes": 28213248
+    },
+    {
+      "name": "Data/11_Quarantine_010_Entrance.pkz",
+      "bytes": 26050560
+    },
+    {
+      "name": "Data/11_Quarantine_020_Atrium.pkz",
+      "bytes": 26378240
+    },
+    {
+      "name": "Data/11_Quarantine_060_Experiments2.pkz",
+      "bytes": 14483456
+    },
+    {
+      "name": "Data/11_Quarantine_100_SpecimenFight.pkz",
+      "bytes": 25755648
+    },
+    {
+      "name": "Data/11_Quarantine_110_PreQuarantine.pkz",
+      "bytes": 8847360
+    },
+    {
+      "name": "Data/11_Quarantine_115_LaserRoom.pkz",
+      "bytes": 13565952
+    },
+    {
+      "name": "Data/11_Quarantine_120_QuarantineRoom.pkz",
+      "bytes": 45842432
+    },
+    {
+      "name": "Data/11_Quarantine_130_PreQuarantine.pkz",
+      "bytes": 14024704
+    },
+    {
+      "name": "Data/11_Quarantine_140_SpecimenFight.pkz",
+      "bytes": 21233664
+    },
+    {
+      "name": "Data/11_Quarantine_200_GoodsLift.pkz",
+      "bytes": 5079040
+    },
+    {
+      "name": "Data/11_Quarantine_210_SecuredCorridor1.pkz",
+      "bytes": 16678912
+    },
+    {
+      "name": "Data/11_Quarantine_220_SecuredCorridor2.pkz",
+      "bytes": 24608768
+    },
+    {
+      "name": "Data/11_Quarantine_230_FinalFight.pkz",
+      "bytes": 14942208
+    },
+    {
+      "name": "Data/11_Quarantine_240_AtriumDownfall.pkz",
+      "bytes": 12943360
+    },
+    {
+      "name": "Data/11_Quarantine_250_EntranceEndLevel.pkz",
+      "bytes": 12779520
+    },
+    {
+      "name": "Data/11_Quarantine_CMN_PreQuarantine.pkz",
+      "bytes": 3047424
+    },
+    {
+      "name": "Data/11_Quarantine_CMN_SpecimenFight.pkz",
+      "bytes": 4718592
+    },
+    {
+      "name": "Data/11_Quarantine_Main.pkz",
+      "bytes": 27656192
+    },
+    {
+      "name": "Data/12_Manhattan_010_Destroyer02.pkz",
+      "bytes": 54660
+    },
+    {
+      "name": "Data/12_Manhattan_020_ReportProblem.pkz",
+      "bytes": 557056
+    },
+    {
+      "name": "Data/12_Manhattan_Main.pkz",
+      "bytes": 30801920
+    },
+    {
+      "name": "Data/13a_Apartment.pkz",
+      "bytes": 59441152
+    },
+    {
+      "name": "Data/13b_Manhattan_010_ReachBioLabs.pkz",
+      "bytes": 655360
+    },
+    {
+      "name": "Data/13b_Manhattan_Main.pkz",
+      "bytes": 28180480
+    },
+    {
+      "name": "Data/14_BioLabs_010_Hall.pkz",
+      "bytes": 27000832
+    },
+    {
+      "name": "Data/14_BioLabs_020_Labs.pkz",
+      "bytes": 33947648
+    },
+    {
+      "name": "Data/14_BioLabs_030_SAS1.pkz",
+      "bytes": 1638400
+    },
+    {
+      "name": "Data/14_BioLabs_040_FreeFall.pkz",
+      "bytes": 425984
+    },
+    {
+      "name": "Data/14_BioLabs_050_Dispatch.pkz",
+      "bytes": 7569408
+    },
+    {
+      "name": "Data/14_BioLabs_080_CraneRoom.pkz",
+      "bytes": 33849344
+    },
+    {
+      "name": "Data/14_BioLabs_090_Transit.pkz",
+      "bytes": 5242880
+    },
+    {
+      "name": "Data/14_BioLabs_100_SAS2.pkz",
+      "bytes": 1671168
+    },
+    {
+      "name": "Data/14_BioLabs_110_ExperimentsRoom.pkz",
+      "bytes": 38567936
+    },
+    {
+      "name": "Data/14_BioLabs_250_HumanBackpack1.pkz",
+      "bytes": 41975808
+    },
+    {
+      "name": "Data/14_BioLabs_260_HumanBackpack2.pkz",
+      "bytes": 5767168
+    },
+    {
+      "name": "Data/14_BioLabs_Main.pkz",
+      "bytes": 45416448
+    },
+    {
+      "name": "Data/15a_Manhattan_010_BackToApartment.pkz",
+      "bytes": 8224768
+    },
+    {
+      "name": "Data/15a_Manhattan_Main.pkz",
+      "bytes": 28180480
+    },
+    {
+      "name": "Data/15b_Apartment.pkz",
+      "bytes": 33062912
+    },
+    {
+      "name": "Data/15c_Manhattan_010_ReachBank.pkz",
+      "bytes": 589824
+    },
+    {
+      "name": "Data/15c_Manhattan_Main.pkz",
+      "bytes": 28180480
+    },
+    {
+      "name": "Data/16_Bank_010_FirstFloor.pkz",
+      "bytes": 34603008
+    },
+    {
+      "name": "Data/16_Bank_020_Basement.pkz",
+      "bytes": 21757952
+    },
+    {
+      "name": "Data/16_Bank_030_Subway.pkz",
+      "bytes": 53248000
+    },
+    {
+      "name": "Data/16_Bank_040_FirstFloor.pkz",
+      "bytes": 6193152
+    },
+    {
+      "name": "Data/16_Bank_CMN_FirstFloor.pkz",
+      "bytes": 3309568
+    },
+    {
+      "name": "Data/16_Bank_Main.pkz",
+      "bytes": 51675136
+    },
+    {
+      "name": "Data/17a_Manhattan_010_BackToApartment.pkz",
+      "bytes": 589824
+    },
+    {
+      "name": "Data/17a_Manhattan_Main.pkz",
+      "bytes": 28180480
+    },
+    {
+      "name": "Data/17b_Apartment.pkz",
+      "bytes": 34078720
+    },
+    {
+      "name": "Data/17c_Manhattan_010_Hunter02.pkz",
+      "bytes": 2981888
+    },
+    {
+      "name": "Data/17c_Manhattan_020_ReachRobotLabs.pkz",
+      "bytes": 163840
+    },
+    {
+      "name": "Data/17c_Manhattan_Main.pkz",
+      "bytes": 28180480
+    },
+    {
+      "name": "Data/18_RobotLabs_010_SmallFactory.pkz",
+      "bytes": 37289984
+    },
+    {
+      "name": "Data/18_RobotLabs_015_ExoRoom.pkz",
+      "bytes": 18481152
+    },
+    {
+      "name": "Data/18_RobotLabs_040_ElevatorToConnors.pkz",
+      "bytes": 1966080
+    },
+    {
+      "name": "Data/18_RobotLabs_070_LargeFactory.pkz",
+      "bytes": 22904832
+    },
+    {
+      "name": "Data/18_RobotLabs_075_VentToLegsFactory.pkz",
+      "bytes": 7143424
+    },
+    {
+      "name": "Data/18_RobotLabs_080_HunterFactory.pkz",
+      "bytes": 25460736
+    },
+    {
+      "name": "Data/18_RobotLabs_085_ConnorsCell.pkz",
+      "bytes": 10911744
+    },
+    {
+      "name": "Data/18_RobotLabs_087_TrappedRoom.pkz",
+      "bytes": 25755648
+    },
+    {
+      "name": "Data/18_RobotLabs_090_RobotMakerLab.pkz",
+      "bytes": 33783808
+    },
+    {
+      "name": "Data/18_RobotLabs_100_SentinelDepot.pkz",
+      "bytes": 10584064
+    },
+    {
+      "name": "Data/18_RobotLabs_120_TrappedRoom.pkz",
+      "bytes": 9306112
+    },
+    {
+      "name": "Data/18_RobotLabs_130_DestroyerFactory.pkz",
+      "bytes": 22708224
+    },
+    {
+      "name": "Data/18_RobotLabs_140_CorridorToReactor.pkz",
+      "bytes": 10715136
+    },
+    {
+      "name": "Data/18_RobotLabs_150_ReactorRoom.pkz",
+      "bytes": 21233664
+    },
+    {
+      "name": "Data/18_RobotLabs_160_LegsFactory.pkz",
+      "bytes": 30801920
+    },
+    {
+      "name": "Data/18_RobotLabs_180_DepotToDestroyer.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/18_RobotLabs_190_DestroyerFactory.pkz",
+      "bytes": 31096832
+    },
+    {
+      "name": "Data/18_RobotLabs_200_CorridorToExit.pkz",
+      "bytes": 2588672
+    },
+    {
+      "name": "Data/18_RobotLabs_CMN_DestroyerFactory.pkz",
+      "bytes": 17989632
+    },
+    {
+      "name": "Data/18_RobotLabs_CMN_TrappedRoom.pkz",
+      "bytes": 1212416
+    },
+    {
+      "name": "Data/18_RobotLabs_Main.pkz",
+      "bytes": 35487744
+    },
+    {
+      "name": "Data/19_Manhattan_Main.pkz",
+      "bytes": 7831552
+    },
+    {
+      "name": "Data/19_Manhattan_ReachSewersLab.pkz",
+      "bytes": 16318464
+    },
+    {
+      "name": "Data/20_ApartmentSewers_005_Transition.pkz",
+      "bytes": 3178496
+    },
+    {
+      "name": "Data/20_ApartmentSewers_010_SteamTunnel.pkz",
+      "bytes": 196608
+    },
+    {
+      "name": "Data/20_ApartmentSewers_020_HoleRoom.pkz",
+      "bytes": 3538944
+    },
+    {
+      "name": "Data/20_ApartmentSewers_030_CoverTunnel.pkz",
+      "bytes": 23625728
+    },
+    {
+      "name": "Data/20_ApartmentSewers_040_ConnorsLab.pkz",
+      "bytes": 16646144
+    },
+    {
+      "name": "Data/20_ApartmentSewers_050_LabEntrance1.pkz",
+      "bytes": 1412
+    },
+    {
+      "name": "Data/20_ApartmentSewers_060_LabEntrance2.pkz",
+      "bytes": 1412
+    },
+    {
+      "name": "Data/20_ApartmentSewers_070_Apartment.pkz",
+      "bytes": 74153984
+    },
+    {
+      "name": "Data/20_ApartmentSewers_080_LabEntrance2.pkz",
+      "bytes": 1412
+    },
+    {
+      "name": "Data/20_ApartmentSewers_090_LabEntrance1.pkz",
+      "bytes": 1412
+    },
+    {
+      "name": "Data/20_ApartmentSewers_100_ConnorsLab.pkz",
+      "bytes": 5528
+    },
+    {
+      "name": "Data/20_ApartmentSewers_110_CoverTunnel.pkz",
+      "bytes": 27656192
+    },
+    {
+      "name": "Data/20_ApartmentSewers_120_HoleRoom.pkz",
+      "bytes": 393216
+    },
+    {
+      "name": "Data/20_ApartmentSewers_130_SteamTunnel.pkz",
+      "bytes": 2424832
+    },
+    {
+      "name": "Data/20_ApartmentSewers_CMN_ConnorsLab.pkz",
+      "bytes": 23060
+    },
+    {
+      "name": "Data/20_ApartmentSewers_CMN_CoverTunnel.pkz",
+      "bytes": 18874368
+    },
+    {
+      "name": "Data/20_ApartmentSewers_CMN_HoleRoom.pkz",
+      "bytes": 33619968
+    },
+    {
+      "name": "Data/20_ApartmentSewers_CMN_LabEntrance1.pkz",
+      "bytes": 1440
+    },
+    {
+      "name": "Data/20_ApartmentSewers_CMN_LabEntrance2.pkz",
+      "bytes": 1440
+    },
+    {
+      "name": "Data/20_ApartmentSewers_CMN_SteamTunnel.pkz",
+      "bytes": 13107200
+    },
+    {
+      "name": "Data/20_ApartmentSewers_Main.pkz",
+      "bytes": 7110656
+    },
+    {
+      "name": "Data/21_Manhattan_010_Hunter03.pkz",
+      "bytes": 1976
+    },
+    {
+      "name": "Data/21_Manhattan_020_HunterToDestroyer.pkz",
+      "bytes": 14123008
+    },
+    {
+      "name": "Data/21_Manhattan_030_Destroyer03.pkz",
+      "bytes": 58932
+    },
+    {
+      "name": "Data/21_Manhattan_040_LizardEscape.pkz",
+      "bytes": 12189696
+    },
+    {
+      "name": "Data/21_Manhattan_050_ReachSewersEnd.pkz",
+      "bytes": 1928
+    },
+    {
+      "name": "Data/21_Manhattan_Main.pkz",
+      "bytes": 22577152
+    },
+    {
+      "name": "Data/22_SewersEnd_010_SteamTunnel.pkz",
+      "bytes": 6356992
+    },
+    {
+      "name": "Data/22_SewersEnd_020_HoleRoom.pkz",
+      "bytes": 37912576
+    },
+    {
+      "name": "Data/22_SewersEnd_030_SideTunnel.pkz",
+      "bytes": 21528576
+    },
+    {
+      "name": "Data/22_SewersEnd_050_HoleToMachinery.pkz",
+      "bytes": 294912
+    },
+    {
+      "name": "Data/22_SewersEnd_060_MachineryRoom.pkz",
+      "bytes": 21200896
+    },
+    {
+      "name": "Data/22_SewersEnd_070_PiranhaRoom.pkz",
+      "bytes": 11337728
+    },
+    {
+      "name": "Data/22_SewersEnd_080_SplitTunnel.pkz",
+      "bytes": 34996224
+    },
+    {
+      "name": "Data/22_SewersEnd_090_SplitTunnelEnd.pkz",
+      "bytes": 23068672
+    },
+    {
+      "name": "Data/22_SewersEnd_130_FightExit.pkz",
+      "bytes": 12812288
+    },
+    {
+      "name": "Data/22_SewersEnd_140_LabEntrance.pkz",
+      "bytes": 14614528
+    },
+    {
+      "name": "Data/22_SewersEnd_150_ConnorsLab.pkz",
+      "bytes": 40271872
+    },
+    {
+      "name": "Data/22_SewersEnd_160_Apartment.pkz",
+      "bytes": 32309248
+    },
+    {
+      "name": "Data/22_SewersEnd_170_Ride.pkz",
+      "bytes": 16973824
+    },
+    {
+      "name": "Data/22_SewersEnd_250_LizardFight.pkz",
+      "bytes": 38010880
+    },
+    {
+      "name": "Data/22_SewersEnd_255_LizardFightPart2.pkz",
+      "bytes": 11730944
+    },
+    {
+      "name": "Data/22_SewersEnd_260_Epilogue.pkz",
+      "bytes": 36405248
+    },
+    {
+      "name": "Data/22_SewersEnd_270_Credits.pkz",
+      "bytes": 2908
+    },
+    {
+      "name": "Data/22_SewersEnd_280_AlistairDeath.pkz",
+      "bytes": 38928384
+    },
+    {
+      "name": "Data/22_SewersEnd_Main.pkz",
+      "bytes": 45547520
+    },
+    {
+      "name": "Data/24_Manhattan_GameFinished.pkz",
+      "bytes": 557056
+    },
+    {
+      "name": "Data/24_Manhattan_Main.pkz",
+      "bytes": 28278784
+    },
+    {
+      "name": "Data/25_Apartment.pkz",
+      "bytes": 30965760
+    },
+    {
+      "name": "Data/AntennaAlistair.pkz",
+      "bytes": 1507328
+    },
+    {
+      "name": "Data/AntennaPolice.pkz",
+      "bytes": 196608
+    },
+    {
+      "name": "Data/Apartment_DawnDusk.pkz",
+      "bytes": 589824
+    },
+    {
+      "name": "Data/Apartment_Day.pkz",
+      "bytes": 131072
+    },
+    {
+      "name": "Data/Apartment_Night.pkz",
+      "bytes": 131072
+    },
+    {
+      "name": "Data/Apartment_Overcast.pkz",
+      "bytes": 131072
+    },
+    {
+      "name": "Data/Apartment_SunsetContaminated.pkz",
+      "bytes": 98304
+    },
+    {
+      "name": "Data/BankIntro.pkz",
+      "bytes": 3342336
+    },
+    {
+      "name": "Data/BaseApartment.pkz",
+      "bytes": 8847360
+    },
+    {
+      "name": "Data/BaseEnemies.pkz",
+      "bytes": 80347136
+    },
+    {
+      "name": "Data/BaseGameplay.pkz",
+      "bytes": 55443456
+    },
+    {
+      "name": "Data/BaseHunter.pkz",
+      "bytes": 3244032
+    },
+    {
+      "name": "Data/BaseNPC.pkz",
+      "bytes": 44924928
+    },
+    {
+      "name": "Data/BasePettyCrime.pkz",
+      "bytes": 3637248
+    },
+    {
+      "name": "Data/BaseSpiderMan.pkz",
+      "bytes": 71204864
+    },
+    {
+      "name": "Data/Boss_Destroyer_01.pkz",
+      "bytes": 31883264
+    },
+    {
+      "name": "Data/BossAlistair.pkz",
+      "bytes": 18055168
+    },
+    {
+      "name": "Data/BossBlackCat.pkz",
+      "bytes": 12288000
+    },
+    {
+      "name": "Data/BossIguana.pkz",
+      "bytes": 8552448
+    },
+    {
+      "name": "Data/BossLizard.pkz",
+      "bytes": 17924096
+    },
+    {
+      "name": "Data/BossPiranha.pkz",
+      "bytes": 6717440
+    },
+    {
+      "name": "Data/BossRhino.pkz",
+      "bytes": 11862016
+    },
+    {
+      "name": "Data/BossScorpion.pkz",
+      "bytes": 11108352
+    },
+    {
+      "name": "Data/BossVermin.pkz",
+      "bytes": 7569408
+    },
+    {
+      "name": "Data/CarChaseEvent01.pkz",
+      "bytes": 5275648
+    },
+    {
+      "name": "Data/CarChaseEvent02.pkz",
+      "bytes": 5570560
+    },
+    {
+      "name": "Data/CarChaseEvent03.pkz",
+      "bytes": 5570560
+    },
+    {
+      "name": "Data/CarChaseEvent04.pkz",
+      "bytes": 3768320
+    },
+    {
+      "name": "Data/CarChaseEvent05.pkz",
+      "bytes": 3670016
+    },
+    {
+      "name": "Data/CarChaseEvent06.pkz",
+      "bytes": 4685824
+    },
+    {
+      "name": "Data/CarChaseEvent07.pkz",
+      "bytes": 4685824
+    },
+    {
+      "name": "Data/CarChaseEvent08.pkz",
+      "bytes": 4685824
+    },
+    {
+      "name": "Data/CarChaseEvent09.pkz",
+      "bytes": 6651904
+    },
+    {
+      "name": "Data/CarChaseEvent10.pkz",
+      "bytes": 4685824
+    },
+    {
+      "name": "Data/CarChaseIntro01.pkz",
+      "bytes": 44328
+    },
+    {
+      "name": "Data/CarChaseIntro02.pkz",
+      "bytes": 45536
+    },
+    {
+      "name": "Data/CarChaseIntro03.pkz",
+      "bytes": 44408
+    },
+    {
+      "name": "Data/CarChaseIntro04.pkz",
+      "bytes": 44456
+    },
+    {
+      "name": "Data/CarChaseIntro05.pkz",
+      "bytes": 44408
+    },
+    {
+      "name": "Data/CarChaseIntro06.pkz",
+      "bytes": 44408
+    },
+    {
+      "name": "Data/CarChaseIntro07.pkz",
+      "bytes": 44552
+    },
+    {
+      "name": "Data/CarChaseIntro08.pkz",
+      "bytes": 44408
+    },
+    {
+      "name": "Data/CarChaseIntro09.pkz",
+      "bytes": 44408
+    },
+    {
+      "name": "Data/CarChaseIntro10.pkz",
+      "bytes": 45408
+    },
+    {
+      "name": "Data/CarChaseMain.pkz",
+      "bytes": 2621440
+    },
+    {
+      "name": "Data/CivilianBackPack01.pkz",
+      "bytes": 1048576
+    },
+    {
+      "name": "Data/CivilianBackPack02.pkz",
+      "bytes": 393216
+    },
+    {
+      "name": "Data/CivilianBackPack03.pkz",
+      "bytes": 393216
+    },
+    {
+      "name": "Data/Collectibles.pkz",
+      "bytes": 524288
+    },
+    {
+      "name": "Data/Common.pkz",
+      "bytes": 104431616
+    },
+    {
+      "name": "Data/CrazyBackPack01.pkz",
+      "bytes": 1245184
+    },
+    {
+      "name": "Data/Destroyer02.pkz",
+      "bytes": 20643840
+    },
+    {
+      "name": "Data/Destroyer03.pkz",
+      "bytes": 62881792
+    },
+    {
+      "name": "Data/ExtraScreen.pkz",
+      "bytes": 190480384
+    },
+    {
+      "name": "Data/FacialAnims.pkz",
+      "bytes": 3538944
+    },
+    {
+      "name": "Data/FrontScreen.pkz",
+      "bytes": 1409024
+    },
+    {
+      "name": "Data/GameLogic.dll",
+      "bytes": 5173248
+    },
+    {
+      "name": "Data/Hunter01.pkz",
+      "bytes": 6782976
+    },
+    {
+      "name": "Data/Hunter02.pkz",
+      "bytes": 6619136
+    },
+    {
+      "name": "Data/igct_de.bnx",
+      "bytes": 4930
+    },
+    {
+      "name": "Data/igct_du.bnx",
+      "bytes": 4604
+    },
+    {
+      "name": "Data/igct_fr.bnx",
+      "bytes": 4736
+    },
+    {
+      "name": "Data/igct_it.bnx",
+      "bytes": 4670
+    },
+    {
+      "name": "Data/igct_pl.bnx",
+      "bytes": 4374
+    },
+    {
+      "name": "Data/igct_ru.bnx",
+      "bytes": 4292
+    },
+    {
+      "name": "Data/igct_sp.bnx",
+      "bytes": 4914
+    },
+    {
+      "name": "Data/igct_sw.bnx",
+      "bytes": 4466
+    },
+    {
+      "name": "Data/igct.bnx",
+      "bytes": 4314
+    },
+    {
+      "name": "Data/Legal.pkz",
+      "bytes": 163840
+    },
+    {
+      "name": "Data/Main.pkz",
+      "bytes": 1736704
+    },
+    {
+      "name": "Data/Manhattan_Dawn.pkz",
+      "bytes": 950272
+    },
+    {
+      "name": "Data/Manhattan_Dawn02.pkz",
+      "bytes": 1114112
+    },
+    {
+      "name": "Data/Manhattan_DawnContaminated.pkz",
+      "bytes": 1081344
+    },
+    {
+      "name": "Data/Manhattan_DawnSession19.pkz",
+      "bytes": 819200
+    },
+    {
+      "name": "Data/Manhattan_Day.pkz",
+      "bytes": 1409024
+    },
+    {
+      "name": "Data/Manhattan_Dusk.pkz",
+      "bytes": 884736
+    },
+    {
+      "name": "Data/Manhattan_DuskDestroyer01.pkz",
+      "bytes": 786432
+    },
+    {
+      "name": "Data/Manhattan_Foliage.pkz",
+      "bytes": 229376
+    },
+    {
+      "name": "Data/Manhattan_FreeRoam_Night.pkz",
+      "bytes": 3516
+    },
+    {
+      "name": "Data/Manhattan_FreeRoam_NoTraffic.pkz",
+      "bytes": 131072
+    },
+    {
+      "name": "Data/Manhattan_FreeRoam.pkz",
+      "bytes": 3416
+    },
+    {
+      "name": "Data/Manhattan_LOD3.pkz",
+      "bytes": 458752
+    },
+    {
+      "name": "Data/Manhattan_Night.pkz",
+      "bytes": 1179648
+    },
+    {
+      "name": "Data/Manhattan_NoEvent.pkz",
+      "bytes": 1004
+    },
+    {
+      "name": "Data/Manhattan_Overcast.pkz",
+      "bytes": 1179648
+    },
+    {
+      "name": "Data/Manhattan_Sunset.pkz",
+      "bytes": 1540096
+    },
+    {
+      "name": "Data/Manhattan_SunsetContaminated.pkz",
+      "bytes": 950272
+    },
+    {
+      "name": "Data/Manhattan.pkz",
+      "bytes": 220954624
+    },
+    {
+      "name": "Data/MiniDungeonCommon.pkz",
+      "bytes": 3375104
+    },
+    {
+      "name": "Data/MiniDungeonOscorp01.pkz",
+      "bytes": 49348608
+    },
+    {
+      "name": "Data/MiniDungeonOscorp02.pkz",
+      "bytes": 45711360
+    },
+    {
+      "name": "Data/MiniDungeonOscorp03.pkz",
+      "bytes": 44040192
+    },
+    {
+      "name": "Data/MiniDungeonOscorp04.pkz",
+      "bytes": 50561024
+    },
+    {
+      "name": "Data/MiniDungeonOscorpIntro01.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/MiniDungeonOscorpIntro02.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/MiniDungeonOscorpIntro03.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/MiniDungeonOscorpIntro04.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/MiniHunter.pkz",
+      "bytes": 5996544
+    },
+    {
+      "name": "Data/PettyCrime01.pkz",
+      "bytes": 1671168
+    },
+    {
+      "name": "Data/PettyCrime03.pkz",
+      "bytes": 1638400
+    },
+    {
+      "name": "Data/PettyCrime04.pkz",
+      "bytes": 1638400
+    },
+    {
+      "name": "Data/PettyCrime05.pkz",
+      "bytes": 1376256
+    },
+    {
+      "name": "Data/PettyCrime07.pkz",
+      "bytes": 1376256
+    },
+    {
+      "name": "Data/PettyCrime12.pkz",
+      "bytes": 1310720
+    },
+    {
+      "name": "Data/PettyCrime15.pkz",
+      "bytes": 1343488
+    },
+    {
+      "name": "Data/PettyCrime16.pkz",
+      "bytes": 1507328
+    },
+    {
+      "name": "Data/PettyCrime18.pkz",
+      "bytes": 1376256
+    },
+    {
+      "name": "Data/PettyCrime21.pkz",
+      "bytes": 1409024
+    },
+    {
+      "name": "Data/PettyCrime24.pkz",
+      "bytes": 1409024
+    },
+    {
+      "name": "Data/PettyCrime26.pkz",
+      "bytes": 1277952
+    },
+    {
+      "name": "Data/PettyCrime32.pkz",
+      "bytes": 1638400
+    },
+    {
+      "name": "Data/PettyCrime33.pkz",
+      "bytes": 1343488
+    },
+    {
+      "name": "Data/PettyCrime36.pkz",
+      "bytes": 3670016
+    },
+    {
+      "name": "Data/PettyCrime42.pkz",
+      "bytes": 1409024
+    },
+    {
+      "name": "Data/PettyCrime44.pkz",
+      "bytes": 1703936
+    },
+    {
+      "name": "Data/PettyCrime47.pkz",
+      "bytes": 1376256
+    },
+    {
+      "name": "Data/PettyCrime50.pkz",
+      "bytes": 1310720
+    },
+    {
+      "name": "Data/PettyCrime55.pkz",
+      "bytes": 1277952
+    },
+    {
+      "name": "Data/PettyCrime57.pkz",
+      "bytes": 1441792
+    },
+    {
+      "name": "Data/PettyCrime60.pkz",
+      "bytes": 1605632
+    },
+    {
+      "name": "Data/PettyCrime61.pkz",
+      "bytes": 1572864
+    },
+    {
+      "name": "Data/PettyCrime63.pkz",
+      "bytes": 1343488
+    },
+    {
+      "name": "Data/PettyCrime66.pkz",
+      "bytes": 1507328
+    },
+    {
+      "name": "Data/PettyCrime67.pkz",
+      "bytes": 1703936
+    },
+    {
+      "name": "Data/PettyCrime69.pkz",
+      "bytes": 1343488
+    },
+    {
+      "name": "Data/PettyCrime71.pkz",
+      "bytes": 1671168
+    },
+    {
+      "name": "Data/PettyCrime72.pkz",
+      "bytes": 1409024
+    },
+    {
+      "name": "Data/PettyCrime74.pkz",
+      "bytes": 1638400
+    },
+    {
+      "name": "Data/PhotoContamination01.pkz",
+      "bytes": 360448
+    },
+    {
+      "name": "Data/PhotoContamination04.pkz",
+      "bytes": 98304
+    },
+    {
+      "name": "Data/PhotoContamination06.pkz",
+      "bytes": 2588672
+    },
+    {
+      "name": "Data/PhotoContamination07.pkz",
+      "bytes": 294912
+    },
+    {
+      "name": "Data/PhotoContamination09.pkz",
+      "bytes": 3997696
+    },
+    {
+      "name": "Data/PhotoContamination11.pkz",
+      "bytes": 2490368
+    },
+    {
+      "name": "Data/PhotoContamination12.pkz",
+      "bytes": 1376256
+    },
+    {
+      "name": "Data/PhotoContamination13.pkz",
+      "bytes": 524288
+    },
+    {
+      "name": "Data/PhotoContamination14.pkz",
+      "bytes": 131072
+    },
+    {
+      "name": "Data/PhotoContamination15.pkz",
+      "bytes": 1048576
+    },
+    {
+      "name": "Data/PhotoRobots01.pkz",
+      "bytes": 589824
+    },
+    {
+      "name": "Data/PhotoRobots02.pkz",
+      "bytes": 589824
+    },
+    {
+      "name": "Data/PhotoRobots03.pkz",
+      "bytes": 1004
+    },
+    {
+      "name": "Data/PoliceDeadlock01.pkz",
+      "bytes": 9404416
+    },
+    {
+      "name": "Data/PoliceDeadlock02.pkz",
+      "bytes": 5996544
+    },
+    {
+      "name": "Data/PoliceDeadlock03.pkz",
+      "bytes": 7438336
+    },
+    {
+      "name": "Data/PoliceDeadlock04.pkz",
+      "bytes": 5505024
+    },
+    {
+      "name": "Data/PoliceDeadlock05.pkz",
+      "bytes": 8323072
+    },
+    {
+      "name": "Data/PoliceDeadlockIntro01.pkz",
+      "bytes": 1048576
+    },
+    {
+      "name": "Data/PoliceDeadlockIntro02.pkz",
+      "bytes": 1048576
+    },
+    {
+      "name": "Data/PoliceDeadlockIntro03.pkz",
+      "bytes": 1048576
+    },
+    {
+      "name": "Data/PoliceDeadlockIntro04.pkz",
+      "bytes": 1048576
+    },
+    {
+      "name": "Data/PoliceDeadlockIntro05.pkz",
+      "bytes": 1048576
+    },
+    {
+      "name": "Data/PoliceDeadlockMain.pkz",
+      "bytes": 950272
+    },
+    {
+      "name": "Data/RhinoIntro.pkz",
+      "bytes": 12484608
+    },
+    {
+      "name": "Data/RooftopSniper_Generic01.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic02.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic03.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic04.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic05.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic06.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic07.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic08.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic09.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic10.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic11.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic12.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic13.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic14.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic15.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic16.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic17.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic18.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Generic19.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Generic20.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Narrative01.pkz",
+      "bytes": 4259840
+    },
+    {
+      "name": "Data/RooftopSniper_Narrative02.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Narrative03.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Narrative04.pkz",
+      "bytes": 3866624
+    },
+    {
+      "name": "Data/RooftopSniper_Narrative05.pkz",
+      "bytes": 3833856
+    },
+    {
+      "name": "Data/RooftopSniper_Narrative06.pkz",
+      "bytes": 3899392
+    },
+    {
+      "name": "Data/RooftopSniperMain.pkz",
+      "bytes": 557056
+    },
+    {
+      "name": "Data/RushSentinels01.pkz",
+      "bytes": 2752512
+    },
+    {
+      "name": "Data/RushSentinels02.pkz",
+      "bytes": 2785280
+    },
+    {
+      "name": "Data/Scorpion.pkz",
+      "bytes": 13500416
+    },
+    {
+      "name": "Data/ScorpionIntro.pkz",
+      "bytes": 2064384
+    },
+    {
+      "name": "Data/SewersBIntro.pkz",
+      "bytes": 720896
+    },
+    {
+      "name": "Data/SewersCIntro.pkz",
+      "bytes": 524288
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders.idx",
+      "bytes": 7936520
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders0.dat",
+      "bytes": 4194240
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders1.dat",
+      "bytes": 4193900
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders10.dat",
+      "bytes": 4189988
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders11.dat",
+      "bytes": 4186660
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders12.dat",
+      "bytes": 4192160
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders13.dat",
+      "bytes": 4187364
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders14.dat",
+      "bytes": 4190624
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders15.dat",
+      "bytes": 4187568
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders16.dat",
+      "bytes": 4187048
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders17.dat",
+      "bytes": 4194236
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders18.dat",
+      "bytes": 4188332
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders19.dat",
+      "bytes": 4187164
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders2.dat",
+      "bytes": 4191584
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders20.dat",
+      "bytes": 4190460
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders21.dat",
+      "bytes": 4192604
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders22.dat",
+      "bytes": 4188804
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders23.dat",
+      "bytes": 4187184
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders24.dat",
+      "bytes": 4193832
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders25.dat",
+      "bytes": 4190704
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders26.dat",
+      "bytes": 4194260
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders27.dat",
+      "bytes": 4192852
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders28.dat",
+      "bytes": 4189620
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders29.dat",
+      "bytes": 4191264
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders3.dat",
+      "bytes": 4193884
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders30.dat",
+      "bytes": 4192636
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders31.dat",
+      "bytes": 4191432
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders32.dat",
+      "bytes": 4188860
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders33.dat",
+      "bytes": 4191280
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders34.dat",
+      "bytes": 4189924
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders35.dat",
+      "bytes": 4193308
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders36.dat",
+      "bytes": 4182664
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders37.dat",
+      "bytes": 4193284
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders38.dat",
+      "bytes": 4190652
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders39.dat",
+      "bytes": 4185728
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders4.dat",
+      "bytes": 4192860
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders40.dat",
+      "bytes": 4189244
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders41.dat",
+      "bytes": 4190456
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders42.dat",
+      "bytes": 4188128
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders43.dat",
+      "bytes": 4190992
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders44.dat",
+      "bytes": 4191528
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders45.dat",
+      "bytes": 4190236
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders46.dat",
+      "bytes": 4190112
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders47.dat",
+      "bytes": 4191476
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders48.dat",
+      "bytes": 4188440
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders49.dat",
+      "bytes": 4188504
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders5.dat",
+      "bytes": 4186104
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders50.dat",
+      "bytes": 4190016
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders51.dat",
+      "bytes": 1960936
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders6.dat",
+      "bytes": 4193252
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders7.dat",
+      "bytes": 4194292
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders8.dat",
+      "bytes": 4194136
+    },
+    {
+      "name": "Data/Shaders/3.0/Shaders9.dat",
+      "bytes": 4192228
+    },
+    {
+      "name": "Data/Streams2.dat",
+      "bytes": 1911096104
+    },
+    {
+      "name": "Data/Vermin.pkz",
+      "bytes": 2654208
+    },
+    {
+      "name": "Data/VerminInCity.pkz",
+      "bytes": 6717440
+    },
+    {
+      "name": "Data/VOLoadingFirst.pkz",
+      "bytes": 3538944
+    },
+    {
+      "name": "Data/VOLoadingSecond.pkz",
+      "bytes": 4620288
+    },
+    {
+      "name": "Data/X1_SewersB_010_MetroStation.pkz",
+      "bytes": 20807680
+    },
+    {
+      "name": "Data/X1_SewersB_020_WebSensor1.pkz",
+      "bytes": 19365888
+    },
+    {
+      "name": "Data/X1_SewersB_030_Hangar.pkz",
+      "bytes": 12484608
+    },
+    {
+      "name": "Data/X1_SewersB_040_WebSensor2.pkz",
+      "bytes": 21299200
+    },
+    {
+      "name": "Data/X1_SewersB_050_DeepSewers.pkz",
+      "bytes": 10452992
+    },
+    {
+      "name": "Data/X1_SewersB_060_Corridor.pkz",
+      "bytes": 557056
+    },
+    {
+      "name": "Data/X1_SewersB_070_BossFight.pkz",
+      "bytes": 23560192
+    },
+    {
+      "name": "Data/X1_SewersB_Main.pkz",
+      "bytes": 63438848
+    },
+    {
+      "name": "Data/X2_SewersC_010_FacilityEntrance.pkz",
+      "bytes": 4521984
+    },
+    {
+      "name": "Data/X2_SewersC_020_ControlRoom.pkz",
+      "bytes": 13205504
+    },
+    {
+      "name": "Data/X2_SewersC_030_FacilityA.pkz",
+      "bytes": 47251456
+    },
+    {
+      "name": "Data/X2_SewersC_040_ControlRoom.pkz",
+      "bytes": 17399808
+    },
+    {
+      "name": "Data/X2_SewersC_050_FacilityB.pkz",
+      "bytes": 5252
+    },
+    {
+      "name": "Data/X2_SewersC_060_BreakerBRoom.pkz",
+      "bytes": 16056320
+    },
+    {
+      "name": "Data/X2_SewersC_070_FacilityB.pkz",
+      "bytes": 7110656
+    },
+    {
+      "name": "Data/X2_SewersC_CMN_ControlRoom.pkz",
+      "bytes": 12976128
+    },
+    {
+      "name": "Data/X2_SewersC_CMN_FacilityB.pkz",
+      "bytes": 11108352
+    },
+    {
+      "name": "Data/X2_SewersC_Main.pkz",
+      "bytes": 34799616
+    },
+    {
+      "name": "Data/XTremeReporter_Main.pkz",
+      "bytes": 1310720
+    },
+    {
+      "name": "Data/XTremeReporter_Photo01.pkz",
+      "bytes": 294912
+    },
+    {
+      "name": "Data/XTremeReporter_Photo02.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Photo03.pkz",
+      "bytes": 262144
+    },
+    {
+      "name": "Data/XTremeReporter_Photo04.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Photo05.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Photo06.pkz",
+      "bytes": 294912
+    },
+    {
+      "name": "Data/XTremeReporter_Photo07.pkz",
+      "bytes": 294912
+    },
+    {
+      "name": "Data/XTremeReporter_Photo08.pkz",
+      "bytes": 294912
+    },
+    {
+      "name": "Data/XTremeReporter_Photo09.pkz",
+      "bytes": 360448
+    },
+    {
+      "name": "Data/XTremeReporter_Photo10.pkz",
+      "bytes": 262144
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro01.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro02.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro03.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro04.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro05.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro06.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro07.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro08.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro09.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_PhotoIntro10.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_Race01.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race02.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race03.pkz",
+      "bytes": 557056
+    },
+    {
+      "name": "Data/XTremeReporter_Race04.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race05.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race06.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race07.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race08.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race09.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_Race10.pkz",
+      "bytes": 327680
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro01.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro02.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro03.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro04.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro05.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro06.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro07.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro08.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro09.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Data/XTremeReporter_RaceIntro10.pkz",
+      "bytes": 1972
+    },
+    {
+      "name": "Video/Apartment/Apartment_SE01_Introducing_PP_Room.usm",
+      "bytes": 13755872
+    },
+    {
+      "name": "Video/Apartment/Apartment_SE02_Collapsing_Screen.usm",
+      "bytes": 13234496
+    },
+    {
+      "name": "Video/Apartment/Apartment_SE07A_Connors_got_his_Part2.usm",
+      "bytes": 17983840
+    },
+    {
+      "name": "Video/Apartment/Apartment_SE10_Specimen_Blood.usm",
+      "bytes": 24300064
+    },
+    {
+      "name": "Video/Biological_Labs_SE01_Chat_et_souris_Sc.usm",
+      "bytes": 7506624
+    },
+    {
+      "name": "Video/City/SBox_Fredpop.usm",
+      "bytes": 279680
+    },
+    {
+      "name": "Video/Credits/Credits.usm",
+      "bytes": 92133600
+    },
+    {
+      "name": "Video/IntroGlitch.usm",
+      "bytes": 26384736
+    },
+    {
+      "name": "Video/IntroTower.usm",
+      "bytes": 54460544
+    },
+    {
+      "name": "Video/LogosIntros/ActivisionIntro.usm",
+      "bytes": 5447648
+    },
+    {
+      "name": "Video/LogosIntros/BeenoxIntro.usm",
+      "bytes": 7493696
+    },
+    {
+      "name": "Video/LogosIntros/ColumbiaIntro.usm",
+      "bytes": 17934784
+    },
+    {
+      "name": "Video/LogosIntros/Intro.usm",
+      "bytes": 75972032
+    },
+    {
+      "name": "Video/LogosIntros/MarvelIntro.usm",
+      "bytes": 10389760
+    },
+    {
+      "name": "Video/Robot_Lab_Smythe_T.V.usm",
+      "bytes": 8252128
+    },
+    {
+      "name": "Video/TV_News/TV_News10b.usm",
+      "bytes": 8357632
+    },
+    {
+      "name": "Video/TV_News/TV_News15b.usm",
+      "bytes": 4527072
+    },
+    {
+      "name": "Video/TV_News/TV_News17b.usm",
+      "bytes": 4533696
+    },
+    {
+      "name": "Video/TV_News/TV_News25.usm",
+      "bytes": 25055936
+    },
+    {
+      "name": "Video/TV_News/TV_News5a.usm",
+      "bytes": 16416160
+    }
+  ]
+}
