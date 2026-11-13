@@ -49,7 +49,7 @@ checksum = "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
 
 [[package]]
 name = "arachnid"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
@@ -70,7 +70,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-core"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "serde",
  "serde_json",
@@ -80,7 +80,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-detector"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "goblin",
@@ -92,7 +92,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-diagnostics"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
@@ -102,7 +102,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-launch"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
@@ -115,7 +115,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-mods"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
@@ -131,7 +131,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-process-harness"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
@@ -146,7 +146,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-repair"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
@@ -160,7 +160,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-saveguard"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
@@ -174,7 +174,7 @@ dependencies = [
 
 [[package]]
 name = "arachnid-settings"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "arachnid-core",
  "arachnid-detector",
