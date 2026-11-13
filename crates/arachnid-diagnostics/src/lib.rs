@@ -3,6 +3,21 @@ use arachnid_core::{Check, CheckStatus, ScanReport};
 pub fn evaluate(report: &mut ScanReport) {
     inspect_display(report);
     inspect_dependencies(report);
+    if let Some(game) = report
+        .binaries
+        .iter()
+        .find(|pe| pe.name.eq_ignore_ascii_case("Game.exe"))
+    {
+        report.checks.push(Check::new(
+            "gameBuild",
+            if arachnid_core::game_build::supported(&game.sha256) {
+                CheckStatus::Passed
+            } else {
+                CheckStatus::Warning
+            },
+            None,
+        ));
+    }
     report
         .checks
         .push(Check::new("runtimeUntested", CheckStatus::Unverified, None));
@@ -73,15 +88,14 @@ fn inspect_dependencies(report: &mut ScanReport) {
             }
             None => CheckStatus::Warning,
         };
-        report.checks.push(Check::new(code, status, None));
+        report
+            .checks
+            .push(Check::new(code, status, local.map(|_| name.to_string())));
     }
     let imports: std::collections::BTreeSet<_> = report
         .binaries
         .iter()
-        .filter(|pe| {
-            pe.name.eq_ignore_ascii_case("Game.exe")
-                || pe.name.eq_ignore_ascii_case("VideoDetection.dll")
-        })
+        .filter(|pe| pe.name.eq_ignore_ascii_case("Game.exe"))
         .flat_map(|pe| pe.imports.iter())
         .map(|name| name.to_ascii_lowercase())
         .filter(|name| {
@@ -111,17 +125,18 @@ fn inspect_dependencies(report: &mut ScanReport) {
                     .is_ok_and(|pe| pe.architecture == "x86")
                 })
         })
-        .count();
+        .map(String::as_str)
+        .collect::<Vec<_>>();
     report.checks.push(Check::new(
         "visualCpp",
         if imports.is_empty() {
             CheckStatus::Skipped
-        } else if missing > 0 {
+        } else if !missing.is_empty() {
             CheckStatus::Warning
         } else {
             CheckStatus::Passed
         },
-        Some(missing.to_string()),
+        (!missing.is_empty()).then(|| missing.join(", ")),
     ));
 }
 

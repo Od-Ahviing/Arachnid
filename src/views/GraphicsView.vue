@@ -261,7 +261,13 @@ onMounted(initialize)
     <p v-if="done" role="status">{{ t('settingsApplied') }}</p>
     <section v-if="report?.profiles?.length" class="section profile-panel">
       <h2>{{ t('graphicsProfile') }} · {{ t('profile' + draftProfile) }}</h2>
-      <p>{{ ui('profileHint') }}</p>
+      <p>
+        {{
+          report.profiles.some((profile) => profile.available)
+            ? ui('profileHint')
+            : t(report.buildSupported ? 'profilesUnavailable' : 'channelUnqualified')
+        }}
+      </p>
       <div class="plan-actions">
         <AppButton
           v-for="profile in report.profiles"

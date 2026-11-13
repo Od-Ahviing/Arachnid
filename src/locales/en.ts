@@ -3,6 +3,16 @@ import { en as additions } from '../composables/m2Messages'
 
 const baseEn = {
   home: 'Home',
+  localDirect3dUnverified:
+    'A local d3d9.dll blocks launch. Review graphics mods installed outside Arachnid.',
+  localLegacyDirectxUnverified:
+    'A local d3dx9_43.dll blocks launch. Review this file in your game folder.',
+  gameBuild: 'Game executable version',
+  gameBuildHint:
+    'If this version is unsupported, export the diagnostic report to share the Game.exe fingerprint.',
+  profilesUnavailable:
+    'At least one graphics setting has an unreadable format. See the settings details below.',
+  defaultModsDeferred: 'Fix Enhancers could not be applied automatically.',
   appUpdateAvailable: 'Update available',
   appUpdateInstall: 'Update now',
   appUpdateLater: 'Later',
@@ -165,11 +175,10 @@ const baseEn = {
   displayUnreadable: 'Display settings unavailable',
   displayUnreadableHint: 'The registry key could not be read. No values were changed.',
   visualCpp: 'Direct Visual C++ dependencies',
-  visualCppHint:
-    'Checks x86 PE files for directly imported MSVC libraries used by Game.exe and VideoDetection.dll. The number is the count unresolved. This does not cover transitive dependencies or optional launchers.',
+  visualCppHint: 'Lists missing Visual C++ libraries imported directly by Game.exe.',
   direct3d: 'Direct3D 9 x86',
   direct3dHint:
-    'Checks the x86 system DLL location, or flags a local wrapper for review. No DLL is loaded.',
+    'If d3d9.dll is listed, Arachnid could not verify a local wrapper. Review any graphics mods installed outside Arachnid. Otherwise, check the Windows Direct3D 9 component.',
   legacyDirectx: 'Legacy DirectX component',
   legacyDirectxHint:
     'Checks for d3dx9_43.dll in the x86 system location. A file check alone does not prove all runtime dependencies are satisfied.',

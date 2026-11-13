@@ -68,7 +68,7 @@ impl Profile {
             Self::Amazing => "amazing",
         }
     }
-    fn values(self) -> Vec<(&'static str, &'static str, u32)> {
+    pub(crate) fn values(self) -> Vec<(&'static str, &'static str, u32)> {
         // Native XML recipes; resolution, language, edge detection and CMB are preserved.
         let (preset, aniso, blur, quality, rendering, density) = match self {
             Self::VeryLow => (0, 0, 0, 1 | 0x10 | 0x40 | 0x800 | 0x10000, 7, 1),
@@ -128,6 +128,15 @@ pub fn current(settings: &[NativeSetting]) -> &'static str {
     "custom"
 }
 
+pub(crate) fn available(settings: &[NativeSetting]) -> bool {
+    Profile::Low.values().iter().all(|(section, name, _)| {
+        settings
+            .iter()
+            .find(|field| field.section == *section && field.name == *name)
+            .is_some_and(|field| field.value.is_some() || field.value_type.is_none())
+    })
+}
+
 pub fn plan(
     installation: String,
     build: &str,
@@ -160,10 +169,7 @@ fn profile_plan(
         }
         let value = match name {
             "QualitySettings" | "RenderingFlags" => {
-                let original = before
-                    .as_ref()
-                    .and_then(dword)
-                    .ok_or_else(|| AppError::new("unsupportedSetting"))?;
+                let original = before.as_ref().and_then(dword).unwrap_or_default();
                 replace_bits(
                     original,
                     if name == "QualitySettings" {
@@ -264,7 +270,9 @@ pub fn plan_with_changes(
 
 pub(crate) fn valid_action(section: &str, name: &str, before: Option<u32>, after: u32) -> bool {
     match (section, name) {
-        ("Display", "QualitySettings") => before.is_some_and(|original| {
+        ("Display", "VSync" | "MaxAniso") if before.is_none() => super::valid_value(name, after),
+        ("Display", "QualitySettings") => {
+            let original = before.unwrap_or_default();
             original & !QUALITY_MASK == after & !QUALITY_MASK
                 && [1, 2, 4, 8].contains(&(after & 0xf))
                 && [0, 0x10, 0x20].contains(&(after & 0x30))
@@ -272,8 +280,8 @@ pub(crate) fn valid_action(section: &str, name: &str, before: Option<u32>, after
                 && [0x800, 0x1000].contains(&(after & 0x1800))
                 && [0, 0x10000, 0x20000].contains(&(after & 0x30000))
                 && [0, 0x80000, 0x100000].contains(&(after & 0x180000))
-        }),
-        ("Display", "RenderingFlags") => before.is_some_and(|original| original & !7 == after & !7),
+        }
+        ("Display", "RenderingFlags") => before.unwrap_or_default() & !7 == after & !7,
         ("GameConfig", "GraphicsPreset" | "FxPreset" | "LightningPreset" | "ShadowsPreset") => {
             after <= 4
         }
@@ -285,6 +293,40 @@ pub(crate) fn valid_action(section: &str, name: &str, before: Option<u32>, after
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn a_fresh_registry_can_use_presets_without_overwriting_opaque_values() {
+        struct Empty;
+        impl Resources for Empty {
+            fn read(&self, _: &Target) -> AppResult<Option<Image>> {
+                Ok(None)
+            }
+            fn write(&mut self, _: &Target, _: &Option<Image>) -> AppResult<()> {
+                panic!("planning is read-only")
+            }
+        }
+        let mut settings = super::super::fields()
+            .into_iter()
+            .map(|(section, name)| NativeSetting {
+                name: name.into(),
+                section: section.into(),
+                value: None,
+                value_type: None,
+                editable: false,
+            })
+            .collect::<Vec<_>>();
+        assert!(available(&settings));
+        for profile in Profile::ALL {
+            let plan = plan("reference".into(), LOCAL_BUILD, profile, &Empty).unwrap();
+            assert_eq!(plan.actions.len(), profile.values().len());
+            assert!(plan.actions.iter().all(|action| action.before.is_none()));
+        }
+        settings
+            .iter_mut()
+            .find(|field| field.name == "GraphicsPreset")
+            .unwrap()
+            .value_type = Some(1);
+        assert!(!available(&settings));
+    }
     #[test]
     fn profile_only_and_overrides_of_an_existing_profile_are_supported() {
         let base = plan("reference".into(), LOCAL_BUILD, Profile::High, &Snapshot).unwrap();

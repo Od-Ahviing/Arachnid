@@ -9,8 +9,14 @@ import CheckList from '../components/diagnostics/CheckList.vue'
 import { ui } from '../composables/interfaceMessages'
 const filter = ref<'all' | 'attention' | 'unverified'>('attention')
 const store = useInstallation()
+const launchChecks = ['direct3d', 'legacyDirectx', 'visualCpp', 'gameBuild']
 const issues = computed(
-  () => store.report?.checks.filter((check) => ['error', 'warning'].includes(check.status)) ?? [],
+  () =>
+    store.report?.checks.filter(
+      (check) =>
+        ['error', 'warning'].includes(check.status) ||
+        (check.status === 'unverified' && launchChecks.includes(check.code)),
+    ) ?? [],
 )
 const visibleChecks = computed(() =>
   filter.value === 'all'
@@ -43,7 +49,7 @@ async function saveReport() {
       <p class="eyebrow">{{ t('repair') }}</p>
       <h1 tabindex="-1">{{ t('checksTitle') }}</h1>
       <p class="intro">{{ t('checksDescription') }}</p>
-      <AppButton :loading="store.busy" @click="store.scan(store.report.root)"
+      <AppButton :loading="store.busy" @click="store.scanWhenIdle(store.report.root)"
         ><RefreshCw :size="16" aria-hidden="true" />{{ t('scanAgain') }}</AppButton
       >
     </header>

@@ -25,7 +25,9 @@ Starting with **Arachnid 0.1.1**, signed releases check GitHub for newer stable 
 | **Diagnostics** | Check the installation, inspect missing dependencies and file warnings, or export a report for troubleshooting.                                                                                               |
 | **Settings**    | Change the game folder or point SaveGuard to a different save folder if your edition stores saves somewhere else.                                                                                             |
 
-In **Graphics** and **Mods**, you can make several selections before clicking **Apply changes**. Arachnid checks the installation, applies the selected changes, and verifies the result. On a fresh setup, **Fix Enhancers** is the only graphics mod selected by default. Its selection takes effect when you apply it. ReShade adds optional shader effects, and DXVK runs Direct3D 9 through Vulkan.
+Arachnid applies **Fix Enhancers** automatically once it recognizes a compatible game installation and can safely apply the mod. You can turn it off under **Mods**. ReShade and DXVK are optional. In **Graphics** and **Mods**, make your selections and click **Apply changes** to apply and verify them together.
+
+On a fresh Windows profile, Arachnid creates the missing display and graphics settings before the first launch. The initial settings are 1920 × 1080 in fullscreen with the Medium preset. Choose your preferred settings under **Graphics**.
 
 SaveGuard detects changes to save contents and groups automatic backups in five-minute windows. To restore a snapshot, close the game, choose the snapshot in **Saves**, review the changes, and confirm.
 

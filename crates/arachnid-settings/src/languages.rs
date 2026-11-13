@@ -37,6 +37,13 @@ pub fn synchronize(
     if build != super::LOCAL_BUILD || !["en", "fr", "de", "it", "es"].contains(&requested) {
         return Err(AppError::new("unsupportedSetting"));
     }
+    if path.exists() {
+        let mut journal = Journal::load(path)?;
+        validate_sync_journal(&journal, installation)?;
+        if !journal.terminal() {
+            arachnid_repair::rollback_guarded(&mut journal, resources, path, &gate)?;
+        }
+    }
     let languages = inspect(root);
     let selected = languages
         .iter()
@@ -47,13 +54,6 @@ pub fn synchronize(
                 .find(|language| language.code == "en" && language.available)
         })
         .ok_or_else(|| AppError::new("languageResourcesMissing"))?;
-    if path.exists() {
-        let mut journal = Journal::load(path)?;
-        validate_sync_journal(&journal, installation)?;
-        if !journal.terminal() {
-            arachnid_repair::rollback_guarded(&mut journal, resources, path, &gate)?;
-        }
-    }
     let current = resources.read(&Target::Registry {
         section: "Install".into(),
         name: "Language".into(),
@@ -128,17 +128,16 @@ fn ordinary_file(path: &Path) -> bool {
 
 pub fn inspect(root: &Path) -> Vec<GameLanguage> {
     [
-        ("fr", "Français", 2, "fr/ASMLauncher.resources.dll"),
-        ("en", "English", 1, "ASMLauncher.exe"),
-        ("de", "Deutsch", 4, "de/ASMLauncher.resources.dll"),
-        ("it", "Italiano", 3, "it/ASMLauncher.resources.dll"),
-        ("es", "Español", 5, "es/ASMLauncher.resources.dll"),
+        ("fr", "Français", 2, "Data/igct_fr.bnx"),
+        ("en", "English", 1, "Data/igct.bnx"),
+        ("de", "Deutsch", 4, "Data/igct_de.bnx"),
+        ("it", "Italiano", 3, "Data/igct_it.bnx"),
+        ("es", "Español", 5, "Data/igct_sp.bnx"),
     ]
     .into_iter()
     .map(|(code, native_name, value, resource)| {
-        let directory_present = code == "en"
-            || fs::symlink_metadata(root.join(code))
-                .is_ok_and(|metadata| metadata.is_dir() && !arachnid_detector::is_link(&metadata));
+        let directory_present = fs::symlink_metadata(root.join("Data"))
+            .is_ok_and(|metadata| metadata.is_dir() && !arachnid_detector::is_link(&metadata));
         GameLanguage {
             code,
             native_name,
@@ -196,14 +195,14 @@ mod tests {
     }
     fn fixture() -> tempfile::TempDir {
         let directory = tempfile::tempdir().unwrap();
-        fs::create_dir(directory.path().join("fr")).unwrap();
+        fs::create_dir(directory.path().join("Data")).unwrap();
         fs::write(
-            directory.path().join("fr/ASMLauncher.resources.dll"),
+            directory.path().join("Data/igct_fr.bnx"),
             b"synthetic French resource",
         )
         .unwrap();
         fs::write(
-            directory.path().join("ASMLauncher.exe"),
+            directory.path().join("Data/igct.bnx"),
             b"synthetic English resource",
         )
         .unwrap();
@@ -315,7 +314,7 @@ mod tests {
             Journal::load(&path).unwrap().phase,
             arachnid_repair::Phase::RolledBack
         );
-        fs::remove_file(root.path().join("ASMLauncher.exe")).unwrap();
+        fs::remove_file(root.path().join("Data/igct.bnx")).unwrap();
         assert_eq!(
             synchronize(
                 "fixture",
@@ -405,24 +404,19 @@ mod tests {
     #[test]
     fn language_availability_requires_an_ordinary_nonempty_resource_in_the_expected_directory() {
         let root = tempfile::tempdir().unwrap();
-        fs::create_dir(root.path().join("fr")).unwrap();
+        fs::create_dir(root.path().join("Data")).unwrap();
         assert!(
             inspect(root.path())
                 .iter()
                 .all(|language| !language.available)
         );
         fs::write(
-            root.path().join("ASMLauncher.exe"),
+            root.path().join("Data/igct.bnx"),
             b"synthetic resource presence",
         )
         .unwrap();
-        fs::write(
-            root.path().join("fr/ASMLauncher.resources.dll"),
-            b"synthetic satellite",
-        )
-        .unwrap();
-        fs::create_dir(root.path().join("de")).unwrap();
-        fs::write(root.path().join("de/ASMLauncher.resources.dll"), b"").unwrap();
+        fs::write(root.path().join("Data/igct_fr.bnx"), b"synthetic satellite").unwrap();
+        fs::write(root.path().join("Data/igct_de.bnx"), b"").unwrap();
         let languages = inspect(root.path());
         assert_eq!(
             languages

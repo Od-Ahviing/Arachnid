@@ -135,9 +135,11 @@ impl ScanReport {
         let mut report = self.clone();
         report.root = "<installation>".into();
         report.files.clear();
-        report
-            .binaries
-            .retain(|binary| binary.name.eq_ignore_ascii_case("Game.exe"));
+        report.binaries.retain(|binary| {
+            ["Game.exe", "d3d9.dll", "d3dx9_43.dll"]
+                .iter()
+                .any(|name| binary.name.eq_ignore_ascii_case(name))
+        });
         for check in &mut report.checks {
             if matches!(check.code.as_str(), "localBinary" | "binaryArchitecture") {
                 check.value = None;

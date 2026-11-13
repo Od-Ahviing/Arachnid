@@ -25,6 +25,16 @@ export const es = {
   settingBloom: 'Resplandor',
   settingHeat: 'Distorsión por calor',
   home: 'Inicio',
+  localDirect3dUnverified:
+    'Un archivo d3d9.dll local bloquea el inicio. Revisa los mods gráficos instalados fuera de Arachnid.',
+  localLegacyDirectxUnverified:
+    'Un archivo d3dx9_43.dll local bloquea el inicio. Revisa este archivo en la carpeta del juego.',
+  gameBuild: 'Versión del ejecutable del juego',
+  gameBuildHint:
+    'Si la versión no es compatible, exporta el informe para compartir la huella de Game.exe.',
+  profilesUnavailable:
+    'Al menos un ajuste gráfico tiene un formato ilegible. Consulta los detalles de abajo.',
+  defaultModsDeferred: 'No se pudo aplicar Fix Enhancers automáticamente.',
   appUpdateAvailable: 'Actualización disponible',
   appUpdateInstall: 'Actualizar ahora',
   appUpdateLater: 'Más tarde',
@@ -190,7 +200,7 @@ export const es = {
   displayUnreadableHint: 'No se pudo leer la clave del registro. No se modificó ningún valor.',
   visualCpp: 'Dependencias Visual C++ directas',
   visualCppHint:
-    'Comprueba las bibliotecas MSVC x86 importadas directamente por Game.exe y VideoDetection.dll. El número indica dependencias no resueltas. Se excluyen dependencias transitivas y launchers opcionales.',
+    'Enumera las bibliotecas de Visual C++ que faltan y que Game.exe importa directamente.',
   direct3d: 'Direct3D 9 x86',
   direct3dHint:
     'Comprueba la DLL del sistema x86 o señala un wrapper local. No se carga ninguna DLL.',

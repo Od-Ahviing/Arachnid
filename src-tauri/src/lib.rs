@@ -123,6 +123,12 @@ async fn scan_installation(
             let _ = worker_app.emit_to("main", "scan-progress", progress);
         })?;
         arachnid_diagnostics::evaluate(&mut report);
+        if report.recognized
+            && let Ok(lease) = commands::lease(&worker_state, &report)
+        {
+            // A locked or damaged mod journal must not hide the raw diagnostic report.
+            let _ = mods::qualify_report(&worker_state, &lease, &mut report);
+        }
         if cancel.load(Ordering::Relaxed) {
             return Err(AppError::new("cancelled"));
         }
@@ -278,6 +284,7 @@ pub fn run() {
             updates::install_app_update,
             load_preferences,
             mods::mod_status,
+            mods::apply_default_mods,
             mods::select_mod,
             mods::prepare_pack,
             mods::apply_pack,
@@ -292,6 +299,7 @@ pub fn run() {
             export_report,
             commands::launch_status,
             commands::start_game,
+            commands::initialize_game_settings,
             commands::synchronize_game_language,
             commands::native_settings,
             commands::prepare_settings,

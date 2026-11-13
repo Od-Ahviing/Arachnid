@@ -12,9 +12,9 @@ import CheckList from '../components/diagnostics/CheckList.vue'
 const store = useInstallation()
 const router = useRouter()
 async function inspect() {
-  if (store.busy || store.languageBusy) return
+  if (store.busy || store.languageBusy || store.defaultModsBusy) return
   if (await store.scan()) {
-    await store.synchronizeLanguage()
+    await store.configureGame()
     await router.push('/home')
   }
 }
@@ -54,8 +54,10 @@ function changeLanguage(event: Event) {
       <AppButton
         type="submit"
         variant="primary"
-        :loading="store.busy"
-        :disabled="!store.path.trim() || !desktopAvailable || store.languageBusy"
+        :loading="store.busy || store.defaultModsBusy"
+        :disabled="
+          !store.path.trim() || !desktopAvailable || store.languageBusy || store.defaultModsBusy
+        "
         >{{ t('inspect') }}<ArrowRight :size="17" aria-hidden="true"
       /></AppButton>
     </form>

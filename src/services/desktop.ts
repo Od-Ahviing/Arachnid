@@ -65,6 +65,10 @@ export const desktop = {
   prepareSkin: (selected: string | null) => invoke<SkinPreview>('prepare_skin', { selected }),
   applySkin: (digest: string, recover = false) => invoke<void>('apply_skin', { digest, recover }),
   modStatus: () => invoke<ModStatus>('mod_status'),
+  applyDefaultMods: async () => {
+    const report = await invoke<unknown>('apply_default_mods')
+    return report === null ? null : parseReport(report)
+  },
   preparePack: (
     operation: 'enable' | 'disable' | 'sync',
     components?: import('../types/mods').ModComponents,
@@ -88,6 +92,7 @@ export const desktop = {
   applySaveRestore: (digest: string, producersStopped: boolean, undo: boolean) =>
     invoke<void>('apply_save_restore', { digest, producersStopped, undo }),
   launchStatus: () => invoke<LaunchStatus>('launch_status'),
+  initializeGameSettings: () => invoke<boolean>('initialize_game_settings'),
   startGame: (language: import('../types/installation').SupportedLanguage) =>
     invoke<LaunchStatus>('start_game', { language }),
   synchronizeGameLanguage: (language: import('../types/installation').SupportedLanguage) =>

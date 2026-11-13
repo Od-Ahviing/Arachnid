@@ -365,7 +365,17 @@ pub fn scan(
                 } else {
                     "localBinary"
                 },
-                CheckStatus::Error,
+                if entry.name.eq_ignore_ascii_case("ASMLauncher.exe")
+                    || entry.name.eq_ignore_ascii_case("VideoDetection.dll")
+                    || entry
+                        .name
+                        .to_ascii_lowercase()
+                        .ends_with("/asmlauncher.resources.dll")
+                {
+                    CheckStatus::Warning
+                } else {
+                    CheckStatus::Error
+                },
                 Some(entry.name.clone()),
             )),
         }

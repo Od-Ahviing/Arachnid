@@ -338,29 +338,15 @@ describe('deferred mod and costume changes', () => {
       api.scan.mock.invocationCallOrder.at(-1)!,
     )
   })
-  it('preselects only Fix Enhancers on a fresh installation and waits for approval', async () => {
-    components = { fix: false, dxvk: false, reshade: false }
-    const fresh = await api.modStatus()
-    api.modStatus.mockResolvedValueOnce({
-      ...fresh,
-      selection: { enabled: ['performance-pack'] },
-      pack: { ...fresh.pack, active: false, phase: null },
-    })
+  it('shows an automatically applied Fix without creating a new draft', async () => {
+    components = { fix: true, dxvk: false, reshade: false }
     const view = modsView()
     await flushPromises()
     expect(
       view.findAll<HTMLInputElement>('input[role="switch"]').map((input) => input.element.checked),
     ).toEqual([true, false, false])
-    expect(view.get('.draft-bar').text()).toContain('Fix Enhancers · Will be enabled')
-    expect(view.get('.draft-bar').text()).not.toContain('ReShade · Will be enabled')
+    expect(view.find('.draft-bar').exists()).toBe(false)
     expect(api.preparePack).not.toHaveBeenCalled()
-    await button(view, 'Apply changes').trigger('click')
-    await flushPromises()
-    expect(api.preparePack).toHaveBeenCalledExactlyOnceWith('enable', {
-      fix: true,
-      dxvk: false,
-      reshade: false,
-    })
   })
   it('preserves an installed trio and lets defaults be selected without applying them', async () => {
     const view = modsView()

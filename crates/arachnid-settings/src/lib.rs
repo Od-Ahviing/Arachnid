@@ -8,6 +8,10 @@ pub mod advanced;
 pub mod languages;
 pub mod profiles;
 
+pub const INITIAL_WIDTH: u32 = 1920;
+pub const INITIAL_HEIGHT: u32 = 1080;
+pub const INITIAL_FULLSCREEN: u32 = 1;
+
 pub const LOCAL_BUILD: &str = "facb480a78b1d5dfd2cdbba31be89be9cf3cd01e1eadd524de35f23ea436d60d";
 
 #[derive(Debug, Clone, Serialize)]
@@ -95,7 +99,11 @@ pub fn capabilities(build: &str, settings: &[NativeSetting]) -> Vec<Capability> 
             } else {
                 "unavailable"
             },
-            reason: "needsMeasurements",
+            reason: if build == LOCAL_BUILD {
+                "needsMeasurements"
+            } else {
+                "channelUnqualified"
+            },
         });
     }
     capabilities
@@ -125,7 +133,6 @@ pub fn fields() -> Vec<(&'static str, &'static str)> {
 
 pub fn read(build: &str, root: &Path) -> AppResult<SettingsReport> {
     let game_languages = languages::inspect(root);
-    let language_key_exists = registry::section_exists("Install")?;
     let mut settings = Vec::new();
     for (section, name) in fields() {
         let image = registry::read(section, name)?;
@@ -138,30 +145,17 @@ pub fn read(build: &str, root: &Path) -> AppResult<SettingsReport> {
             editable: build == LOCAL_BUILD
                 && ((value.is_some() && is_simple(name))
                     || (name == "Language"
-                        && language_key_exists
                         && (image.is_none() || value.is_some())
                         && game_languages.iter().any(|language| language.available))),
         });
     }
     let current_profile = profiles::current(&settings);
-    let profiles_available = build == LOCAL_BUILD
-        && registry::section_exists("GameConfig")?
-        && ["QualitySettings", "RenderingFlags", "VSync", "MaxAniso"]
-            .iter()
-            .all(|name| {
-                settings
-                    .iter()
-                    .any(|field| field.name == *name && field.value.is_some())
-            })
-        && settings
-            .iter()
-            .filter(|field| field.section == "GameConfig")
-            .all(|field| field.value_type.is_none() || field.value.is_some());
+    let profiles_available = build == LOCAL_BUILD && profiles::available(&settings);
     advanced::append(&mut settings, build == LOCAL_BUILD);
     let mut capability_list = capabilities(build, &settings);
     if !profiles_available {
         for capability in &mut capability_list {
-            if capability.name.ends_with("Profile") {
+            if capability.name.ends_with("Profile") && build == LOCAL_BUILD {
                 capability.state = "unavailable";
                 capability.reason = "unsupportedSetting";
             }
@@ -260,6 +254,95 @@ pub fn validate_plan(plan: &OperationPlan, installation: &str) -> AppResult<()> 
     Ok(())
 }
 
+pub fn initial_plan(
+    installation: String,
+    build: &str,
+    resources: &impl Resources,
+) -> AppResult<Option<OperationPlan>> {
+    if build != LOCAL_BUILD {
+        return Err(AppError::new("unsupportedSetting"));
+    }
+    let preset = resources.read(&Target::Registry {
+        section: "GameConfig".into(),
+        name: "GraphicsPreset".into(),
+    })?;
+    let profile = preset
+        .as_ref()
+        .and_then(dword)
+        .and_then(|value| profiles::Profile::ALL.get(value as usize).copied())
+        .unwrap_or(profiles::Profile::Medium);
+    let mut actions = Vec::new();
+    for (section, name, value) in initial_values(profile) {
+        let target = Target::Registry {
+            section: section.into(),
+            name: name.into(),
+        };
+        if resources.read(&target)?.is_none() {
+            actions.push(Action {
+                target,
+                before: None,
+                after: Some(Image {
+                    value_type: 4,
+                    bytes: value.to_le_bytes().to_vec(),
+                }),
+            });
+        }
+    }
+    if actions.is_empty() {
+        return Ok(None);
+    }
+    let plan = OperationPlan {
+        schema_version: 1,
+        installation,
+        actions,
+    };
+    validate_initial_plan(&plan, &plan.installation)?;
+    Ok(Some(plan))
+}
+
+fn initial_values(
+    profile: profiles::Profile,
+) -> impl Iterator<Item = (&'static str, &'static str, u32)> {
+    [
+        ("Display", "Width", INITIAL_WIDTH),
+        ("Display", "Height", INITIAL_HEIGHT),
+        ("Display", "Fullscreen", INITIAL_FULLSCREEN),
+        ("Display", "AspectRatio", 3),
+        ("Display", "RefreshRate", 0),
+    ]
+    .into_iter()
+    .chain(profile.values())
+}
+
+pub fn validate_initial_plan(plan: &OperationPlan, installation: &str) -> AppResult<()> {
+    plan.validate()?;
+    if plan.installation != installation {
+        return Err(AppError::new("invalidPlan"));
+    }
+    if profiles::Profile::ALL.into_iter().any(|profile| {
+        let defaults = initial_values(profile).collect::<Vec<_>>();
+        plan.actions.iter().all(|action| {
+            let Target::Registry { section, name } = &action.target else {
+                return false;
+            };
+            action.before.is_none()
+                && action.after.as_ref().and_then(dword).is_some_and(|value| {
+                    defaults.contains(&(section.as_str(), name.as_str(), value))
+                        || matches!(
+                            (section.as_str(), name.as_str(), value),
+                            ("Display", "Width", 1280)
+                                | ("Display", "Height", 720)
+                                | ("Display", "Fullscreen", 0)
+                        )
+                })
+        })
+    }) {
+        Ok(())
+    } else {
+        Err(AppError::new("invalidPlan"))
+    }
+}
+
 pub fn plan(
     installation: String,
     build: &str,
@@ -334,6 +417,108 @@ pub fn replace_bits(original: u32, mask: u32, selected: u32) -> AppResult<u32> {
 #[cfg(test)]
 mod tests {
     #[test]
+    fn initial_registry_values_preserve_existing_preferences_and_can_be_rolled_back() {
+        use std::{collections::BTreeMap, sync::atomic::AtomicBool};
+
+        struct Registry(BTreeMap<Target, Image>);
+        impl Resources for Registry {
+            fn read(&self, target: &Target) -> AppResult<Option<Image>> {
+                Ok(self.0.get(target).cloned())
+            }
+
+            fn write(&mut self, target: &Target, image: &Option<Image>) -> AppResult<()> {
+                if let Some(image) = image {
+                    self.0.insert(target.clone(), image.clone());
+                } else {
+                    self.0.remove(target);
+                }
+                Ok(())
+            }
+        }
+
+        let existing = BTreeMap::from([
+            (
+                Target::Registry {
+                    section: "GameConfig".into(),
+                    name: "GraphicsPreset".into(),
+                },
+                Image {
+                    value_type: 4,
+                    bytes: 3_u32.to_le_bytes().to_vec(),
+                },
+            ),
+            (
+                Target::Registry {
+                    section: "Display".into(),
+                    name: "VSync".into(),
+                },
+                Image {
+                    value_type: 4,
+                    bytes: 0_u32.to_le_bytes().to_vec(),
+                },
+            ),
+        ]);
+        let mut registry = Registry(existing.clone());
+        let fresh = initial_plan("fixture".into(), LOCAL_BUILD, &Registry(BTreeMap::new()))
+            .unwrap()
+            .unwrap();
+        for (section, name, value) in [
+            ("Display", "Width", 1920),
+            ("Display", "Height", 1080),
+            ("Display", "Fullscreen", 1),
+            ("GameConfig", "GraphicsPreset", 2),
+        ] {
+            assert!(fresh.actions.iter().any(|action| {
+                action.target
+                    == (Target::Registry {
+                        section: section.into(),
+                        name: name.into(),
+                    })
+                    && action.after.as_ref().and_then(dword) == Some(value)
+            }));
+        }
+        assert!(initial_plan("fixture".into(), "unknown", &registry).is_err());
+        let plan = initial_plan("fixture".into(), LOCAL_BUILD, &registry)
+            .unwrap()
+            .unwrap();
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("initial.json");
+        let mut journal = arachnid_repair::prepare(plan, &registry, &path).unwrap();
+        let digest = journal.digest.clone();
+        arachnid_repair::apply(
+            &mut journal,
+            &digest,
+            &mut registry,
+            &path,
+            &AtomicBool::new(false),
+            || Ok(()),
+        )
+        .unwrap();
+        for (target, value) in &existing {
+            assert_eq!(registry.0.get(target), Some(value));
+        }
+        for (name, value) in [
+            ("Width", 1920),
+            ("Height", 1080),
+            ("Fullscreen", 1),
+            ("MaxAniso", 8),
+        ] {
+            let target = Target::Registry {
+                section: "Display".into(),
+                name: name.into(),
+            };
+            assert_eq!(registry.0.get(&target).and_then(dword), Some(value));
+        }
+        assert!(
+            initial_plan("fixture".into(), LOCAL_BUILD, &registry)
+                .unwrap()
+                .is_none()
+        );
+        arachnid_repair::rollback(&mut journal, &mut registry, &path).unwrap();
+        assert_eq!(registry.0, existing);
+    }
+
+    #[test]
     fn withdrawn_frame_patch_does_not_keep_native_setting_capabilities() {
         assert_ne!(
             super::capabilities(super::LOCAL_BUILD, &[]),
@@ -394,14 +579,10 @@ mod tests {
                 .code,
             "languageResourcesMissing"
         );
-        std::fs::create_dir(root.path().join("fr")).unwrap();
-        std::fs::write(
-            root.path().join("fr/ASMLauncher.resources.dll"),
-            b"synthetic resource",
-        )
-        .unwrap();
+        std::fs::create_dir(root.path().join("Data")).unwrap();
+        std::fs::write(root.path().join("Data/igct_fr.bnx"), b"synthetic resource").unwrap();
         languages::validate_selection(root.path(), &plan).unwrap();
-        std::fs::remove_file(root.path().join("fr/ASMLauncher.resources.dll")).unwrap();
+        std::fs::remove_file(root.path().join("Data/igct_fr.bnx")).unwrap();
         assert!(languages::validate_selection(root.path(), &plan).is_err());
         let mut altered = plan;
         if let Target::Registry { section, .. } = &mut altered.actions[0].target {

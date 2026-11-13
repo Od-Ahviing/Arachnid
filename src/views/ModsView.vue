@@ -98,13 +98,6 @@ async function load() {
       await refresh()
     }
     discard()
-    if (
-      status.value &&
-      !status.value.pack.phase &&
-      status.value.selection.enabled.includes('performance-pack')
-    ) {
-      draft.value = { ...status.value.defaultComponents }
-    }
   } catch (error) {
     failure.value = errorCode(error)
   } finally {

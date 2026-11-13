@@ -4,6 +4,16 @@ import type { BaseMessageKey, MessageDictionary } from './en'
 
 const baseFr: Record<BaseMessageKey, string> = {
   home: 'Accueil',
+  localDirect3dUnverified:
+    'Un fichier d3d9.dll local bloque le lancement. Vérifiez les mods graphiques installés en dehors d’Arachnid.',
+  localLegacyDirectxUnverified:
+    'Un fichier d3dx9_43.dll local bloque le lancement. Vérifiez ce fichier dans le dossier du jeu.',
+  gameBuild: 'Version de l’exécutable du jeu',
+  gameBuildHint:
+    'Si cette version est incompatible, exportez le rapport pour partager l’empreinte de Game.exe.',
+  profilesUnavailable:
+    'Au moins un réglage graphique utilise un format illisible. Consultez les détails ci-dessous.',
+  defaultModsDeferred: 'Fix Enhancers n’a pas pu être appliqué automatiquement.',
   appUpdateAvailable: 'Mise à jour disponible',
   appUpdateInstall: 'Mettre à jour',
   appUpdateLater: 'Plus tard',
@@ -176,10 +186,10 @@ const baseFr: Record<BaseMessageKey, string> = {
   displayUnreadableHint: 'La clé du registre n’a pas pu être lue. Aucune valeur n’a été modifiée.',
   direct3d: 'Direct3D 9 x86',
   direct3dHint:
-    'Vérifie l’emplacement de la DLL système x86 ou signale un wrapper local à examiner. Aucune DLL n’est chargée.',
+    'Si d3d9.dll est affiché, Arachnid n’a pas pu vérifier le fichier local. Vérifiez les mods graphiques installés en dehors d’Arachnid. Sinon, vérifiez le composant Direct3D 9 de Windows.',
   visualCpp: 'Dépendances Visual C++ directes',
   visualCppHint:
-    'Vérifie les PE x86 des bibliothèques MSVC directement importées par Game.exe et VideoDetection.dll. Le nombre indique les dépendances non résolues. Les dépendances transitives et launchers facultatifs restent hors périmètre.',
+    'Liste les bibliothèques Visual C++ manquantes directement utilisées par Game.exe.',
   legacyDirectx: 'Composant DirectX hérité',
   legacyDirectxHint:
     'Recherche d3dx9_43.dll dans le dossier système x86. La présence d’un fichier ne prouve pas que toutes les dépendances sont satisfaites.',

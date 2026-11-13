@@ -21,6 +21,7 @@ import ActionDialog from '../components/ui/ActionDialog.vue'
 import { useSession } from '../composables/session'
 import { ui } from '../composables/interfaceMessages'
 import GameLanguageControl from '../components/game/GameLanguageControl.vue'
+import { packError } from '../composables/packMessages'
 const shortcuts = [
   { path: '/graphics', key: 'graphics', hint: 'graphicsHint', icon: SlidersHorizontal },
   { path: '/mods', key: 'mods', hint: 'modsHint', icon: Layers },
@@ -120,9 +121,24 @@ function dismissCrashAdvice() {
         <p v-else>{{ ui('lifecycle') }}</p>
       </div>
       <ul v-if="status && !status.decision.ready" class="notice">
-        <li v-for="reason in status.decision.reasons" :key="reason">{{ t(reason) }}</li>
+        <li v-for="reason in status.decision.reasons" :key="reason">
+          {{ t(reason)
+          }}<template
+            v-if="
+              store.report.checks.some((check) => check.code === reason && check.status === 'error')
+            "
+          >
+            · {{ t(reason + 'Hint') }}
+          </template>
+        </li>
+        <li>
+          <RouterLink to="/repair">{{ t('viewDiagnostics') }}</RouterLink>
+        </li>
       </ul>
     </section>
+    <p v-if="store.defaultModsError" class="notice" role="status">
+      {{ t('defaultModsDeferred') }} {{ packError(store.defaultModsError) }}
+    </p>
     <GameLanguageControl />
     <div class="home-shortcuts">
       <RouterLink

@@ -7,6 +7,8 @@ const api = vi.hoisted(() => ({
   loadPreferences: vi.fn(),
   saveLanguage: vi.fn(),
   synchronizeGameLanguage: vi.fn(),
+  initializeGameSettings: vi.fn(),
+  applyDefaultMods: vi.fn(),
   pickDirectory: vi.fn(),
   onProgress: vi.fn(async () => vi.fn()),
   cancel: vi.fn(),
@@ -38,6 +40,8 @@ beforeEach(() => {
   setActivePinia(createPinia())
   vi.clearAllMocks()
   selectedLanguage.value = 'auto'
+  api.initializeGameSettings.mockResolvedValue(false)
+  api.applyDefaultMods.mockResolvedValue(null)
   api.synchronizeGameLanguage.mockImplementation(async (language: string) => ({
     requested: language,
     applied: language,
@@ -53,9 +57,57 @@ describe('installation workflow', () => {
     await store.initialize()
     expect(api.synchronizeGameLanguage).toHaveBeenCalledExactlyOnceWith(locale.value)
     expect(store.languageState).toBe('synced')
-    expect(api.synchronizeGameLanguage.mock.invocationCallOrder[0]).toBeGreaterThan(
+    expect(api.initializeGameSettings).toHaveBeenCalledOnce()
+    expect(api.initializeGameSettings.mock.invocationCallOrder[0]!).toBeGreaterThan(
       api.scan.mock.invocationCallOrder[0]!,
     )
+    expect(api.synchronizeGameLanguage.mock.invocationCallOrder[0]).toBeGreaterThan(
+      api.initializeGameSettings.mock.invocationCallOrder[0]!,
+    )
+  })
+  it('uses the verified report from automatic mods and leaves diagnostics read-only', async () => {
+    api.loadPreferences.mockResolvedValue({ language: 'fr', installationPath: report.root })
+    api.scan.mockResolvedValue(report)
+    api.applyDefaultMods.mockResolvedValue({ ...report, scannedAt: 42 })
+    const store = useInstallation()
+    await store.initialize()
+    expect(store.report?.scannedAt).toBe(42)
+    expect(api.applyDefaultMods).toHaveBeenCalledOnce()
+    expect(api.applyDefaultMods.mock.invocationCallOrder[0]!).toBeGreaterThan(
+      api.scan.mock.invocationCallOrder[0]!,
+    )
+    await store.scanWhenIdle(report.root)
+    expect(api.applyDefaultMods).toHaveBeenCalledOnce()
+    expect(api.initializeGameSettings).toHaveBeenCalledOnce()
+  })
+  it('shows a registry setup failure without continuing to language or mods', async () => {
+    api.loadPreferences.mockResolvedValue({ language: 'fr', installationPath: report.root })
+    api.scan.mockResolvedValue(report)
+    api.initializeGameSettings.mockRejectedValueOnce({ code: 'recoveryRequired' })
+    const store = useInstallation()
+    await store.initialize()
+    expect(store.error).toBe('recoveryRequired')
+    expect(api.synchronizeGameLanguage).not.toHaveBeenCalled()
+    expect(api.applyDefaultMods).not.toHaveBeenCalled()
+  })
+  it('refreshes diagnostics after creating settings when no default mod is installed', async () => {
+    api.loadPreferences.mockResolvedValue({ language: 'fr', installationPath: report.root })
+    api.scan.mockResolvedValueOnce(report).mockResolvedValueOnce({ ...report, scannedAt: 43 })
+    api.initializeGameSettings.mockResolvedValueOnce(true)
+    const store = useInstallation()
+    await store.initialize()
+    expect(api.scan).toHaveBeenCalledTimes(2)
+    expect(store.report?.scannedAt).toBe(43)
+  })
+  it('keeps the installation available when automatic mods cannot be applied', async () => {
+    api.loadPreferences.mockResolvedValue({ language: 'fr', installationPath: report.root })
+    api.scan.mockResolvedValue(report)
+    api.applyDefaultMods.mockRejectedValueOnce({ code: 'modUnmanagedFiles' })
+    const store = useInstallation()
+    await store.initialize()
+    expect(store.report?.recognized).toBe(true)
+    expect(store.defaultModsError).toBe('modUnmanagedFiles')
+    expect(store.error).toBeNull()
   })
   it('saves a shared choice immediately, defers a busy game, and reports an English fallback', async () => {
     api.saveLanguage.mockResolvedValue(undefined)
@@ -107,6 +159,7 @@ describe('installation workflow', () => {
     expect(api.scan).toHaveBeenCalledWith(report.root)
     expect(store.report?.recognized).toBe(false)
     expect(api.synchronizeGameLanguage).not.toHaveBeenCalled()
+    expect(api.applyDefaultMods).not.toHaveBeenCalled()
     expect(store.initializing).toBe(false)
   })
   it('does not start another scan while the first is pending', async () => {

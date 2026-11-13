@@ -40,9 +40,8 @@ fn status(state: &AppState, app: &tauri::AppHandle) -> AppResult<ModStatus> {
     let report = crate::commands::report(state)?;
     let lease = crate::commands::lease(state, &report)?;
     let manager = manager(state, &lease)?;
-    let display = display()?;
     let components = applied_components(&manager)?;
-    let mut pack = manager.status(&display)?;
+    let mut pack = pack_status(&manager, components)?;
     pack.requires_update = manager
         .applied_version()?
         .is_some_and(|version| matches!(version.as_str(), "local-preview-1" | "local-preview-2"));
@@ -150,6 +149,18 @@ fn applied_components(manager: &PackManager) -> AppResult<Composition> {
         Some(version) => Composition::from_version(&version),
         None => Composition::from_bits(0),
     }
+}
+
+fn pack_status(manager: &PackManager, components: Composition) -> AppResult<PackStatus> {
+    if components.fix {
+        return manager.status(&display()?);
+    }
+    // The manager only compares display values when the installed composition uses Fix.
+    manager.status(&DisplaySettings {
+        width: 0,
+        height: 0,
+        windowed: false,
+    })
 }
 
 fn prepare_shader(config: &Path, config_path: &Path) -> AppResult<()> {
@@ -316,26 +327,43 @@ fn reshade_paths(value: &str) -> Vec<String> {
 }
 
 fn display() -> AppResult<DisplaySettings> {
-    let value = |name: &str| -> AppResult<u32> {
-        let image = arachnid_repair::registry::read("Display", name)?
-            .ok_or_else(|| AppError::new("settingAbsent"))?;
+    let value = |name: &str| -> AppResult<Option<u32>> {
+        let Some(image) = arachnid_repair::registry::read("Display", name)? else {
+            return Ok(None);
+        };
         if image.value_type != 4 || image.bytes.len() != 4 {
             return Err(AppError::new("settingOpaque"));
         }
-        Ok(u32::from_le_bytes(
+        Ok(Some(u32::from_le_bytes(
             image
                 .bytes
                 .try_into()
                 .map_err(|_| AppError::new("settingOpaque"))?,
-        ))
+        )))
     };
-    let fullscreen = value("Fullscreen")?;
+    resolve_display(value("Width")?, value("Height")?, value("Fullscreen")?)
+}
+
+fn resolve_display(
+    width: Option<u32>,
+    height: Option<u32>,
+    fullscreen: Option<u32>,
+) -> AppResult<DisplaySettings> {
+    let (width, height, fullscreen) = match (width, height, fullscreen) {
+        (None, None, None) => (
+            arachnid_settings::INITIAL_WIDTH,
+            arachnid_settings::INITIAL_HEIGHT,
+            arachnid_settings::INITIAL_FULLSCREEN,
+        ),
+        (Some(width), Some(height), Some(fullscreen)) => (width, height, fullscreen),
+        _ => return Err(AppError::new("settingAbsent")),
+    };
     if fullscreen > 1 {
         return Err(AppError::new("settingOpaque"));
     }
     Ok(DisplaySettings {
-        width: value("Width")?,
-        height: value("Height")?,
+        width,
+        height,
         windowed: fullscreen == 0,
     })
 }
@@ -353,12 +381,23 @@ pub(crate) fn check_game(lease: &InstallationLease) -> AppResult<()> {
     Ok(())
 }
 
-fn refresh_report(cache: &Mutex<Option<ScanReport>>, root: &Path) -> AppResult<ScanReport> {
+fn refresh_report(
+    cache: &Mutex<Option<ScanReport>>,
+    root: &Path,
+    qualify: impl FnOnce(&mut ScanReport) -> AppResult<()>,
+) -> AppResult<ScanReport> {
     *cache.lock().map_err(|_| AppError::new("internal"))? = None;
     let mut report = arachnid_detector::scan(root, &AtomicBool::new(false), |_| {})?;
     arachnid_diagnostics::evaluate(&mut report);
+    qualify(&mut report)?;
     *cache.lock().map_err(|_| AppError::new("internal"))? = Some(report.clone());
     Ok(report)
+}
+
+fn verify_pack_change(state: &AppState, lease: &InstallationLease) -> AppResult<ScanReport> {
+    refresh_report(&state.report, lease.root(), |report| {
+        qualify_report(state, lease, report).map(|_| ())
+    })
 }
 
 pub(crate) fn pending(state: &AppState, lease: &InstallationLease) -> bool {
@@ -425,7 +464,7 @@ pub(crate) fn runtime_for_launch(
             components
         },
     )?;
-    let status = pack.status(&display()?)?;
+    let status = pack_status(&pack, components)?;
     if status.recovery_required {
         return Err(AppError::new("recoveryRequired"));
     }
@@ -522,6 +561,75 @@ pub(crate) fn runtime_for_launch(
             components.reshade,
         )?,
     ))
+}
+
+#[tauri::command]
+pub async fn apply_default_mods(
+    window: WebviewWindow,
+    app: tauri::AppHandle,
+) -> AppResult<Option<ScanReport>> {
+    authorize(&window)?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let state = app.state::<AppState>();
+        let _operation = state
+            .operations
+            .try_lock()
+            .map_err(|_| AppError::new("installationBusy"))?;
+        let report = crate::commands::report(&state)?;
+        let build = crate::commands::build(&report)?;
+        if !arachnid_core::game_build::supported(build)
+            || report
+                .checks
+                .iter()
+                .any(|check| check.status == CheckStatus::Error)
+        {
+            return Ok(None);
+        }
+        let lease = crate::commands::lease(&state, &report)?;
+        let catalog = bundled_catalog()?;
+        let selection = Selection::load(&state.data_directory, &catalog)?;
+        let mut manager = manager_for(&state, &lease, Composition::DEFAULT)?;
+        if !should_apply_defaults(&selection, manager.operation()?.is_some())
+            || crate::saves::pending(&state)
+            || crate::skins::pending(&state, &lease)
+            || arachnid_repair::pending(&crate::commands::journal_path(&state, &lease)?)
+            || arachnid_repair::pending(&crate::commands::initial_settings_path(&state, &lease)?)
+        {
+            return Ok(None);
+        }
+        crate::commands::ensure_no_session(&state)?;
+        check_game(&lease)?;
+        let display = display()?;
+        let root = asset_root(&app)?;
+        if (!cfg!(debug_assertions) && !performance::RUNTIME_QUALIFIED)
+            || !performance::available(&root)
+        {
+            return Err(AppError::new("modPayloadMissing"));
+        }
+        let source = root
+            .join("profiles")
+            .join(Composition::DEFAULT.bits().to_string());
+        let plan = manager.prepare(PackOperation::Enable, &source, &display, build)?;
+        manager.apply(&plan.digest, &display, || check_game(&lease))?;
+        state.storage.record("default_performance_pack_applied");
+        let report = verify_pack_change(&state, &lease)?;
+        if !report.recognized
+            || report
+                .checks
+                .iter()
+                .any(|check| check.status == CheckStatus::Error)
+            || pack_status(&manager, Composition::DEFAULT)?.files_changed
+        {
+            return Err(AppError::new("validationFailed"));
+        }
+        Ok(Some(report))
+    })
+    .await
+    .map_err(|_| AppError::new("internal"))?
+}
+
+fn should_apply_defaults(selection: &Selection, has_operation: bool) -> bool {
+    !has_operation && selection.enabled.iter().any(|id| id == "performance-pack")
 }
 
 #[tauri::command]
@@ -644,7 +752,7 @@ pub async fn apply_pack(
         } else {
             "performance_pack_applied"
         });
-        let report = refresh_report(&state.report, lease.root());
+        let report = verify_pack_change(&state, &lease);
         if report.is_err() {
             state.storage.record("mod_verification_failed");
         }
@@ -657,6 +765,34 @@ pub async fn apply_pack(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn default_pack_respects_saved_preferences_and_previous_mod_transactions() {
+        let catalog = bundled_catalog().unwrap();
+        let mut selection = Selection::defaults(&catalog);
+        assert!(should_apply_defaults(&selection, false));
+        assert!(!should_apply_defaults(&selection, true));
+        selection.set(&catalog, "performance-pack", false).unwrap();
+        assert!(!should_apply_defaults(&selection, false));
+    }
+
+    #[test]
+    fn fix_has_a_fullscreen_default_for_a_fresh_registry() {
+        assert_eq!(
+            resolve_display(None, None, None).unwrap(),
+            DisplaySettings {
+                width: 1920,
+                height: 1080,
+                windowed: false
+            }
+        );
+        assert!(resolve_display(Some(1280), None, None).is_err());
+        assert!(
+            !resolve_display(Some(1920), Some(1080), Some(1))
+                .unwrap()
+                .windowed
+        );
+    }
 
     #[test]
     fn reshade_search_paths_repair_our_old_separators_and_escape_literal_commas() {
@@ -791,20 +927,20 @@ mod tests {
         let cache = Mutex::new(None);
         let dll = game.path().join("ar_dxvk.dll");
         std::fs::write(&dll, synthetic_pe(1)).unwrap();
-        refresh_report(&cache, game.path()).unwrap();
+        refresh_report(&cache, game.path(), |_| Ok(())).unwrap();
         let previous = cache.lock().unwrap().as_ref().unwrap().binaries[0]
             .sha256
             .clone();
         std::fs::write(&dll, synthetic_pe(2)).unwrap();
-        refresh_report(&cache, game.path()).unwrap();
+        refresh_report(&cache, game.path(), |_| Ok(())).unwrap();
         let current = cache.lock().unwrap().as_ref().unwrap().binaries[0]
             .sha256
             .clone();
         assert_ne!(previous, current);
         std::fs::remove_file(&dll).unwrap();
-        refresh_report(&cache, game.path()).unwrap();
+        refresh_report(&cache, game.path(), |_| Ok(())).unwrap();
         assert!(cache.lock().unwrap().as_ref().unwrap().binaries.is_empty());
-        assert!(refresh_report(&cache, &game.path().join("missing")).is_err());
+        assert!(refresh_report(&cache, &game.path().join("missing"), |_| Ok(())).is_err());
         assert!(cache.lock().unwrap().is_none());
     }
 }

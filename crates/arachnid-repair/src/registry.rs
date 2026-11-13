@@ -110,19 +110,29 @@ fn read_at(path: &str, name: &str) -> AppResult<Option<Image>> {
 
 #[cfg(windows)]
 fn write(section: &str, name: &str, image: &Option<Image>) -> AppResult<()> {
-    write_at(&key_path(section, name)?, name, image)
+    write_at(&key_path(section, name)?, name, image, true)
 }
 
 #[cfg(windows)]
-fn write_at(path: &str, name: &str, image: &Option<Image>) -> AppResult<()> {
+fn write_at(path: &str, name: &str, image: &Option<Image>, allow_creation: bool) -> AppResult<()> {
     use winreg::{
         RegKey, RegValue,
         enums::{HKEY_CURRENT_USER, KEY_READ, KEY_WOW64_32KEY, KEY_WRITE, RegType},
     };
-    // Never create a missing game key: its original absence must survive a failed operation.
-    let key = RegKey::predef(HKEY_CURRENT_USER)
-        .open_subkey_with_flags(path, KEY_READ | KEY_WRITE | KEY_WOW64_32KEY)
-        .map_err(|_| AppError::new("writeFailed"))?;
+    let root = RegKey::predef(HKEY_CURRENT_USER);
+    let flags = KEY_READ | KEY_WRITE | KEY_WOW64_32KEY;
+    let key = match root.open_subkey_with_flags(path, flags) {
+        Ok(key) => key,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound && image.is_none() => {
+            return Ok(());
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound && allow_creation => {
+            root.create_subkey_with_flags(path, flags)
+                .map_err(|_| AppError::new("writeFailed"))?
+                .0
+        }
+        Err(_) => return Err(AppError::new("writeFailed")),
+    };
     if let Some(image) = image {
         let kind = match image.value_type {
             0 => RegType::REG_NONE,
@@ -189,9 +199,9 @@ mod tests {
                 bytes,
             });
             assert!(read_at(&path, "fixture").unwrap().is_none());
-            write_at(&path, "fixture", &value).unwrap();
+            write_at(&path, "fixture", &value, false).unwrap();
             assert_eq!(read_at(&path, "fixture").unwrap(), value);
-            write_at(&path, "fixture", &None).unwrap();
+            write_at(&path, "fixture", &None, false).unwrap();
             assert!(read_at(&path, "fixture").unwrap().is_none());
         }
         drop(key);
@@ -204,10 +214,20 @@ mod tests {
                 &Some(Image {
                     value_type: 4,
                     bytes: vec![0; 4]
-                })
+                }),
+                false,
             )
             .is_err()
         );
+        let image = Some(Image {
+            value_type: 4,
+            bytes: vec![2, 0, 0, 0],
+        });
+        write_at(&path, "fixture", &image, true).unwrap();
+        assert_eq!(read_at(&path, "fixture").unwrap(), image);
+        write_at(&path, "fixture", &None, true).unwrap();
+        assert!(read_at(&path, "fixture").unwrap().is_none());
+        root.delete_subkey(&path).unwrap();
     }
 }
 

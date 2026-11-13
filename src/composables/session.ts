@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { desktop, errorCode } from '../services/desktop'
 import { useInstallation } from '../stores/installation'
 import type { LaunchStatus } from '../types/operations'
@@ -14,7 +14,7 @@ export function useSession() {
   let revision = 0
 
   async function refresh() {
-    if (refreshing || busy.value || !active) return
+    if (refreshing || busy.value || store.busy || store.languageBusy || !active) return
     refreshing = true
     const requestRevision = ++revision
     try {
@@ -22,16 +22,18 @@ export function useSession() {
       if (active && requestRevision === revision) status.value = value
     } catch (failure) {
       if (requestRevision !== revision) return
-      status.value = null
       const code = errorCode(failure)
-      if (code !== 'scanBusy' && code !== 'installationBusy') store.error = code
+      if (code !== 'scanBusy' && code !== 'installationBusy') {
+        status.value = null
+        store.error = code
+      }
     } finally {
       refreshing = false
     }
   }
 
   async function start() {
-    if (busy.value || store.languageBusy || !status.value?.decision.ready) return
+    if (busy.value || store.busy || store.languageBusy || !status.value?.decision.ready) return
     busy.value = true
     revision++
     store.error = null
@@ -49,6 +51,10 @@ export function useSession() {
     void refresh()
     timer = setInterval(() => void refresh(), 2000)
   })
+  watch(
+    () => store.report,
+    () => void refresh(),
+  )
   onUnmounted(() => {
     active = false
     clearInterval(timer)

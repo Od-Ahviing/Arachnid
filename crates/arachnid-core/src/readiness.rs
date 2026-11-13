@@ -23,20 +23,34 @@ pub fn decide(
     if !channel_qualified {
         reasons.push("channelUnqualified".into());
     }
-    if report
+    for check in report
         .checks
         .iter()
-        .any(|check| check.status == CheckStatus::Error)
+        .filter(|check| check.status == CheckStatus::Error)
     {
-        reasons.push("diagnosticBlocking".into());
+        if !reasons.contains(&check.code) {
+            reasons.push(check.code.clone());
+        }
     }
-    for code in ["direct3d", "legacyDirectx"] {
-        if !report
-            .checks
-            .iter()
-            .any(|check| check.code == code && check.status == CheckStatus::Passed)
-        {
-            reasons.push(format!("{code}Unresolved"));
+    for (code, filename, local_reason) in [
+        ("direct3d", "d3d9.dll", "localDirect3dUnverified"),
+        (
+            "legacyDirectx",
+            "d3dx9_43.dll",
+            "localLegacyDirectxUnverified",
+        ),
+    ] {
+        let check = report.checks.iter().find(|check| check.code == code);
+        if !check.is_some_and(|check| check.status == CheckStatus::Passed) {
+            if report
+                .binaries
+                .iter()
+                .any(|pe| pe.name.eq_ignore_ascii_case(filename))
+            {
+                reasons.push(local_reason.into());
+            } else if !reasons.iter().any(|reason| reason == code) {
+                reasons.push(format!("{code}Unresolved"));
+            }
         }
     }
     if report
@@ -73,8 +87,32 @@ mod tests {
         assert!(decide(&report, true, false).ready);
         assert!(!decide(&report, false, false).ready);
         assert!(!decide(&report, true, true).ready);
+        report
+            .checks
+            .push(Check::new("gameLibrary", CheckStatus::Error, None));
+        assert_eq!(decide(&report, true, false).reasons, ["gameLibrary"]);
+        report.checks.pop();
         report.verification = "VERIFIED".into();
         report.checks[0].status = CheckStatus::Warning;
         assert!(!decide(&report, true, false).ready);
+    }
+
+    #[test]
+    fn an_unverified_local_wrapper_has_a_distinct_launch_reason() {
+        let report: ScanReport = serde_json::from_value(serde_json::json!({
+            "schemaVersion":1,"root":"fixture","scannedAt":0,"recognized":true,
+            "verification":"UNVERIFIED","repairStatus":"UNKNOWN","files":[],
+            "fileCount":0,"totalBytes":0,"pkzCount":1,
+            "binaries":[{"name":"D3D9.dll","architecture":"x86","sha256":"fixture",
+                "bytes":1,"imports":[],"importsInspected":false,"largeAddressAware":false}],
+            "checks":[{"code":"direct3d","status":"unverified","value":null},
+                {"code":"legacyDirectx","status":"passed","value":null}]
+        }))
+        .unwrap();
+        assert_eq!(
+            decide(&report, true, false).reasons,
+            ["localDirect3dUnverified"]
+        );
+        assert_eq!(report.redacted().binaries[0].name, "D3D9.dll");
     }
 }
