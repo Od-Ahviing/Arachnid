@@ -1,4 +1,4 @@
-import { locale } from './i18n'
+import { locale, t } from './i18n'
 const en = {
   update:
     'A replacement pack is ready. Deactivate this version, then reactivate the single pack to review the new files.',
@@ -155,9 +155,11 @@ export function packError(code: string): string {
     return packText('conflict')
   if (code === 'modSettingsOutOfSync') return packText('sync')
   if (code === 'recoveryRequired') return packText('recovery')
-  if (['gameAlreadyRunning', 'gameRunning', 'installationBusy'].includes(code))
-    return packText('stopped')
+  if (['gameAlreadyRunning', 'gameRunning'].includes(code)) return packText('stopped')
   if (['modDisplayUnsupported', 'modBuildUnsupported'].includes(code))
     return packText('unsupported')
-  return packText('failed')
+  if (['invalidModState', 'invalidModPayload', 'modFileUnreadable'].includes(code))
+    return `${packText('failed')} (${code})`
+  const message = t(code)
+  return message === t('unknownError') ? `${packText('failed')} (${code})` : message
 }

@@ -35,6 +35,8 @@ export const it = {
   profilesUnavailable:
     'Almeno un’impostazione grafica ha un formato illeggibile. Consulta i dettagli qui sotto.',
   defaultModsDeferred: 'Non è stato possibile applicare Fix Enhancers automaticamente.',
+  modReconcile:
+    'Alcuni file grafici gestiti differiscono dal pacchetto installato. Applica le modifiche per salvarli e ripartire dagli originali verificati.',
   appUpdateAvailable: 'Aggiornamento disponibile',
   appUpdateInstall: 'Aggiorna ora',
   appUpdateLater: 'Più tardi',

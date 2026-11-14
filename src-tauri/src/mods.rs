@@ -472,7 +472,7 @@ pub(crate) fn runtime_for_launch(
         return Ok(None);
     }
     performance::check_conflicts(lease.root())?;
-    if status.files_changed {
+    if status.files_changed || status.files_restored {
         return Err(AppError::new("modOwnedFileChanged"));
     }
     if status.settings_out_of_sync {
@@ -618,7 +618,10 @@ pub async fn apply_default_mods(
                 .checks
                 .iter()
                 .any(|check| check.status == CheckStatus::Error)
-            || pack_status(&manager, Composition::DEFAULT)?.files_changed
+            || {
+                let status = pack_status(&manager, Composition::DEFAULT)?;
+                status.files_changed || status.files_restored
+            }
         {
             return Err(AppError::new("validationFailed"));
         }
@@ -682,7 +685,7 @@ pub async fn prepare_pack(
         } else {
             display()?
         };
-        manager.prepare(
+        manager.prepare_selection(
             operation,
             &asset_root(&app)?
                 .join("profiles")

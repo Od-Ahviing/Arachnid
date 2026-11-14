@@ -7,6 +7,7 @@ import type { ScanReport } from '../types/installation'
 import { modsUiText as m } from '../composables/modsUiMessages'
 import { packError } from '../composables/packMessages'
 import { ui } from '../composables/interfaceMessages'
+import { t } from '../composables/i18n'
 import { useDraftNavigation } from '../composables/draftNavigation'
 import AppButton from '../components/ui/AppButton.vue'
 import ModCatalog from '../components/mods/ModCatalog.vue'
@@ -22,7 +23,7 @@ const status = ref<ModStatus | null>(null)
 const skins = ref<SkinStatus | null>(null)
 const draft = ref<ModComponents>({ fix: false, dxvk: false, reshade: false })
 const costume = ref('')
-const phase = ref<'loading' | 'applying' | 'verifying' | null>('loading')
+const phase = ref<'loading' | 'checking' | 'applying' | 'verifying' | null>('loading')
 const failure = ref<string | null>(null)
 const done = ref(false)
 const verificationFailed = ref(false)
@@ -34,6 +35,8 @@ const graphicsChanged = computed(
     !!status.value &&
     (keys.some((key) => draft.value[key] !== status.value!.components[key]) ||
       status.value.pack.settingsOutOfSync ||
+      status.value.pack.filesChanged ||
+      status.value.pack.filesRestored ||
       status.value.pack.requiresUpdate),
 )
 const costumeChanged = computed(
@@ -115,12 +118,13 @@ async function verify(report?: ScanReport | null) {
   return !verificationFailed.value
 }
 async function finishVerification(report?: ScanReport | null) {
-  if (!(await verify(report))) return
+  const verified = await verify(report)
+  if (!store.report?.recognized || (!verified && !report && store.error)) return
   await refresh()
   if (status.value?.pack.filesChanged || skins.value?.filesChanged) {
     throw { code: 'modOwnedFileChanged' }
   }
-  if (dirty.value || recovery.value) return
+  if (!verified || dirty.value || recovery.value) return
   done.value = true
   if (leaving.value) finish(true)
 }
@@ -142,25 +146,34 @@ async function apply() {
     await retryVerification()
     return
   }
-  if (recovery.value) {
-    recoveryDialog.value = true
-    return
-  }
-  if (
-    (graphicsChanged.value && status.value?.pack.filesChanged) ||
-    (costumeChanged.value && skins.value?.filesChanged)
-  ) {
-    failure.value = 'modOwnedFileChanged'
-    return
-  }
-  phase.value = 'applying'
+  phase.value = 'checking'
   done.value = false
   failure.value = null
   let applied = false
   let report: ScanReport | null | undefined
   try {
+    const root = store.report?.root
+    if (!root || !(await store.scanWhenIdle(root))) {
+      throw { code: store.error ?? 'installationInvalid' }
+    }
+    await refresh()
+    if (recovery.value) {
+      recoveryDialog.value = true
+      return
+    }
+    if (costumeChanged.value && skins.value?.filesChanged) {
+      throw { code: 'modOwnedFileChanged' }
+    }
+    const enableGraphics = keys.some((key) => draft.value[key])
+    if (
+      ((graphicsChanged.value && enableGraphics) || (costumeChanged.value && costume.value)) &&
+      store.report?.checks.some((check) => check.status === 'error')
+    ) {
+      throw { code: 'diagnosticBlocking' }
+    }
+    phase.value = 'applying'
     if (graphicsChanged.value) {
-      const operation = keys.some((key) => draft.value[key]) ? 'enable' : 'disable'
+      const operation = enableGraphics ? 'enable' : 'disable'
       const plan = await desktop.preparePack(operation, { ...draft.value })
       if (plan.files.some((file) => file.conflict)) throw { code: 'modOwnedFileChanged' }
       report = await desktop.applyPack(plan.digest, false)
@@ -177,7 +190,7 @@ async function apply() {
       await desktop.applySkin(plan.digest, false)
       applied = true
     }
-    await finishVerification(report)
+    await finishVerification(applied ? report : store.report)
     if (verificationFailed.value) return
     if (dirty.value) throw { code: 'fileChanged' }
   } catch (error) {
@@ -237,7 +250,12 @@ onMounted(load)
       @apply="apply"
       @discard="discard"
     />
-    <BusyState v-if="phase" :label="phase === 'verifying' ? ui('verifying') : m(phase)" />
+    <BusyState
+      v-if="phase"
+      :label="
+        phase === 'checking' ? t('scanning') : phase === 'verifying' ? ui('verifying') : m(phase)
+      "
+    />
     <p v-if="failureText" class="notice notice--error" role="alert">{{ failureText }}</p>
     <AppButton v-if="verificationFailed" :loading="busy" @click="retryVerification">{{
       m('retry')
@@ -293,7 +311,7 @@ onMounted(load)
         @change="(key, enabled) => choose({ ...draft, [key]: enabled })"
       />
       <p v-if="status.pack.filesChanged" class="notice notice--error" role="alert">
-        {{ m('conflict') }}
+        {{ t('modReconcile') }}
       </p>
       <p v-else-if="!status.activationAvailable && !status.pack.active" role="status">
         {{ m('unavailable') }}

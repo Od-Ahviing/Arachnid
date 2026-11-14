@@ -14,6 +14,8 @@ const baseFr: Record<BaseMessageKey, string> = {
   profilesUnavailable:
     'Au moins un réglage graphique utilise un format illisible. Consultez les détails ci-dessous.',
   defaultModsDeferred: 'Fix Enhancers n’a pas pu être appliqué automatiquement.',
+  modReconcile:
+    'Des fichiers graphiques gérés diffèrent du pack installé. Appliquez les modifications pour les sauvegarder et repartir des originaux vérifiés.',
   appUpdateAvailable: 'Mise à jour disponible',
   appUpdateInstall: 'Mettre à jour',
   appUpdateLater: 'Plus tard',

@@ -43,6 +43,7 @@ export interface ModStatus {
     recoveryRequired: boolean
     settingsOutOfSync: boolean
     filesChanged: boolean
+    filesRestored: boolean
     requiresUpdate: boolean
     phase: string | null
   }

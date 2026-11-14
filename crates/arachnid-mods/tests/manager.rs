@@ -240,6 +240,123 @@ fn original_wrapper_and_ini_are_restored_while_current_custom_ini_is_backed_up()
 }
 
 #[test]
+fn disable_accepts_ini_already_at_its_original_state_and_checks_it_again_at_apply() {
+    let original = fix_settings::configure(
+        None,
+        &DisplaySettings {
+            width: 1280,
+            height: 720,
+            windowed: true,
+        },
+    )
+    .unwrap();
+    for original_ini in [None, Some(original.as_slice())] {
+        let game = tempfile::tempdir().unwrap();
+        let state = tempfile::tempdir().unwrap();
+        let assets = tempfile::tempdir().unwrap();
+        source(assets.path());
+        let ini = game.path().join("d3d9.ini");
+        if let Some(bytes) = original_ini {
+            fs::write(game.path().join("d3d9.dll"), b"original").unwrap();
+            fs::write(&ini, bytes).unwrap();
+        }
+        let mut pack = manager(game.path(), state.path());
+        let enable = pack
+            .prepare(
+                PackOperation::Enable,
+                assets.path(),
+                &display(),
+                &"b".repeat(64),
+            )
+            .unwrap();
+        pack.apply(&enable.digest, &display(), || Ok(())).unwrap();
+        if let Some(bytes) = original_ini {
+            fs::write(&ini, bytes).unwrap();
+        } else {
+            fs::remove_file(&ini).unwrap();
+        }
+        let disable = pack
+            .prepare(
+                PackOperation::Disable,
+                assets.path(),
+                &display(),
+                &"b".repeat(64),
+            )
+            .unwrap();
+        assert!(disable.plan.actions.iter().all(|action| !matches!(&action.target, arachnid_repair::Target::File { path } if path == "d3d9.ini")));
+        fs::write(&ini, b"changed after approval").unwrap();
+        assert_eq!(
+            pack.apply(&disable.digest, &display(), || Ok(()))
+                .unwrap_err()
+                .code,
+            "stalePlan"
+        );
+        assert!(game.path().join("d3d9.dll").exists());
+        assert!(game.path().join("ar_dxvk.dll").exists());
+        if let Some(bytes) = original_ini {
+            fs::write(&ini, bytes).unwrap();
+        } else {
+            fs::remove_file(&ini).unwrap();
+        }
+        pack.apply(&disable.digest, &display(), || Ok(())).unwrap();
+        assert!(!pack.status(&display()).unwrap().active);
+        assert_eq!(
+            fs::read(game.path().join("d3d9.dll")).ok().as_deref(),
+            original_ini.map(|_| b"original".as_slice())
+        );
+        assert!(!game.path().join("ar_dxvk.dll").exists());
+        assert_eq!(fs::read(&ini).ok().as_deref(), original_ini);
+    }
+}
+
+#[test]
+fn applying_a_selection_reconciles_managed_files_already_back_at_baseline() {
+    let game = tempfile::tempdir().unwrap();
+    let state = tempfile::tempdir().unwrap();
+    let assets = tempfile::tempdir().unwrap();
+    source(assets.path());
+    let mut spec = spec();
+    spec.version = "composition-1-7".into();
+    let mut pack = PackManager::new(game.path(), state.path(), &"a".repeat(64), spec).unwrap();
+    let apply = |pack: &mut PackManager, operation| {
+        let plan = pack
+            .prepare(operation, assets.path(), &display(), &"b".repeat(64))
+            .unwrap();
+        pack.apply(&plan.digest, &display(), || Ok(())).unwrap();
+        plan
+    };
+    apply(&mut pack, PackOperation::Enable);
+    let dxvk = game.path().join("ar_dxvk.dll");
+    let ini = game.path().join("d3d9.ini");
+    fs::write(&dxvk, b"unexpected dxvk").unwrap();
+    fs::write(&ini, b"invalid configuration").unwrap();
+    let repair = pack
+        .prepare_selection(
+            PackOperation::Enable,
+            assets.path(),
+            &display(),
+            &"b".repeat(64),
+        )
+        .unwrap();
+    pack.apply(&repair.digest, &display(), || Ok(())).unwrap();
+    assert_eq!(fs::read(&dxvk).unwrap(), b"synthetic dxvk");
+    assert!(fix_settings::matches(&fs::read(&ini).unwrap(), &display()));
+    fs::remove_file(&dxvk).unwrap();
+    let status = pack.status(&display()).unwrap();
+    assert!(status.files_restored);
+    assert!(!status.files_changed);
+    apply(&mut pack, PackOperation::Enable);
+    assert_eq!(fs::read(&dxvk).unwrap(), b"synthetic dxvk");
+    for file in ["d3d9.dll", "ar_dxvk.dll", "d3d9.ini"] {
+        fs::remove_file(game.path().join(file)).unwrap();
+    }
+    let disable = apply(&mut pack, PackOperation::Disable);
+    assert!(disable.plan.actions.is_empty());
+    assert!(!pack.status(&display()).unwrap().active);
+    assert_eq!(fs::read_dir(game.path()).unwrap().count(), 0);
+}
+
+#[test]
 fn interrupted_enable_never_looks_active_and_can_recover_after_restart() {
     let game = tempfile::tempdir().unwrap();
     let state = tempfile::tempdir().unwrap();
@@ -316,7 +433,7 @@ fn settings_sync_and_unsupported_new_ratio_never_prevent_disable() {
 }
 
 #[test]
-fn external_binary_changes_and_forged_target_scope_are_preserved_or_refused() {
+fn explicit_selection_reconciles_an_owned_binary_and_rejects_forged_targets() {
     let game = tempfile::tempdir().unwrap();
     let state = tempfile::tempdir().unwrap();
     let assets = tempfile::tempdir().unwrap();
@@ -344,6 +461,27 @@ fn external_binary_changes_and_forged_target_scope_are_preserved_or_refused() {
     );
     assert_eq!(
         fs::read(game.path().join("ar_dxvk.dll")).unwrap(),
+        b"external"
+    );
+    let replacement = pack
+        .prepare_selection(
+            PackOperation::Disable,
+            assets.path(),
+            &display(),
+            &"b".repeat(64),
+        )
+        .unwrap();
+    pack.apply(&replacement.digest, &display(), || Ok(()))
+        .unwrap();
+    assert!(!game.path().join("ar_dxvk.dll").exists());
+    assert_eq!(
+        fs::read(
+            state
+                .path()
+                .join("blobs")
+                .join(format!("{}.blob", hash(b"external")))
+        )
+        .unwrap(),
         b"external"
     );
     let path = state.path().join("performance-transaction.json");

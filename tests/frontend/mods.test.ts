@@ -25,6 +25,7 @@ const status: ModStatus = {
     recoveryRequired: false,
     settingsOutOfSync: false,
     filesChanged: false,
+    filesRestored: false,
     phase: 'committed',
     requiresUpdate: false,
   },

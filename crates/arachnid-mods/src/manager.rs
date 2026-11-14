@@ -111,6 +111,7 @@ pub struct PackStatus {
     pub recovery_required: bool,
     pub settings_out_of_sync: bool,
     pub files_changed: bool,
+    pub files_restored: bool,
     pub phase: Option<Phase>,
     pub requires_update: bool,
 }
@@ -349,12 +350,17 @@ impl PackManager {
     }
 
     pub fn status(&self, display: &DisplaySettings) -> AppResult<PackStatus> {
+        self.status_for_operation(Some(display))
+    }
+
+    fn status_for_operation(&self, display: Option<&DisplaySettings>) -> AppResult<PackStatus> {
         let Some((journal, context)) = self.load()? else {
             return Ok(PackStatus {
                 active: false,
                 recovery_required: false,
                 settings_out_of_sync: false,
                 files_changed: false,
+                files_restored: false,
                 phase: None,
                 requires_update: false,
             });
@@ -366,24 +372,36 @@ impl PackManager {
             Phase::Prepared | Phase::Committed | Phase::Cancelled | Phase::RolledBack
         );
         let mut files_changed = false;
+        let mut files_restored = false;
         if active && !recovery_required {
             for action in &context.baseline.actions {
                 if action.target != target("d3d9.ini") {
-                    files_changed |= self.resources.observe(&action.target)? != action.after;
+                    let current = self.resources.observe(&action.target)?;
+                    if current != action.after {
+                        files_restored |= current == action.before;
+                        files_changed |= current != action.before;
+                    }
                 }
             }
         }
-        let settings_out_of_sync = active
-            && self.uses_fix_for_version(&context.version)?
-            && !recovery_required
-            && self
-                .ini()?
-                .is_none_or(|bytes| !fix_settings::matches(&bytes, display));
+        let settings_out_of_sync = match display {
+            Some(display)
+                if active
+                    && !recovery_required
+                    && self.uses_fix_for_version(&context.version)? =>
+            {
+                !self.ini().is_ok_and(|ini| {
+                    ini.is_some_and(|bytes| fix_settings::matches(&bytes, display))
+                })
+            }
+            _ => false,
+        };
         Ok(PackStatus {
             active,
             recovery_required,
             settings_out_of_sync,
             files_changed,
+            files_restored,
             phase: Some(journal.phase),
             requires_update: active && context.version != self.spec.version,
         })
@@ -418,6 +436,27 @@ impl PackManager {
         display: &DisplaySettings,
         game_sha256: &str,
     ) -> AppResult<Journal> {
+        self.prepare_change(operation, source, display, game_sha256, false)
+    }
+
+    pub fn prepare_selection(
+        &mut self,
+        operation: PackOperation,
+        source: &Path,
+        display: &DisplaySettings,
+        game_sha256: &str,
+    ) -> AppResult<Journal> {
+        self.prepare_change(operation, source, display, game_sha256, true)
+    }
+
+    fn prepare_change(
+        &mut self,
+        operation: PackOperation,
+        source: &Path,
+        display: &DisplaySettings,
+        game_sha256: &str,
+        reconcile: bool,
+    ) -> AppResult<Journal> {
         if operation != PackOperation::Disable && game_sha256 != self.spec.game_sha256 {
             return Err(AppError::new("modBuildUnsupported"));
         }
@@ -443,11 +482,12 @@ impl PackManager {
         let recorded_display = previous
             .as_ref()
             .map(|(_, context)| context.display.clone());
-        let status = self.status(display)?;
+        let status =
+            self.status_for_operation((operation != PackOperation::Disable).then_some(display))?;
         if status.recovery_required {
             return Err(AppError::new("recoveryRequired"));
         }
-        if status.files_changed {
+        if status.files_changed && (!reconcile || operation == PackOperation::Sync) {
             return Err(AppError::new("modOwnedFileChanged"));
         }
         let replacing =
@@ -474,13 +514,15 @@ impl PackManager {
                     let target = target(name);
                     let before = self.resources.read(&target)?;
                     let initial = if let Some(original) = original {
-                        original
+                        let recorded = original
                             .actions
                             .iter()
                             .find(|a| a.target == target)
-                            .ok_or_else(invalid)?
-                            .before
-                            .clone()
+                            .ok_or_else(invalid)?;
+                        if name != "d3d9.ini" {
+                            self.check_replacement(recorded, &before, reconcile)?;
+                        }
+                        recorded.before.clone()
                     } else {
                         before.clone()
                     };
@@ -506,26 +548,43 @@ impl PackManager {
                             },
                         )?)
                     } else if name == "d3d9.ini" && self.spec.uses_fix {
-                        let existing = if status.active
+                        let use_current = status.active
                             && previous.as_ref().is_some_and(|(_, c)| {
                                 self.uses_fix_for_version(&c.version).unwrap_or(false)
-                            }) {
-                            self.ini()?
-                        } else {
-                            None
-                        };
+                            });
                         if original.is_none() && before.is_some() && originals[0].before.is_none() {
                             return Err(AppError::new("modUnmanagedFiles"));
                         }
-                        let initial_ini = if existing.is_none() && initial.is_some() {
-                            self.ini()?
-                        } else {
-                            existing
+                        let from_original = || {
+                            let bytes = initial
+                                .as_ref()
+                                .map(|image| self.resources.read_config_backup(image))
+                                .transpose()?;
+                            fix_settings::configure(bytes.as_deref(), display)
                         };
-                        Some(self.import_bytes(&fix_settings::configure(
-                            initial_ini.as_deref(),
-                            display,
-                        )?)?)
+                        let configured = if use_current {
+                            let current = before
+                                .as_ref()
+                                .map(|image| self.resources.read_config_backup(image))
+                                .transpose()?;
+                            match current {
+                                Some(bytes) => fix_settings::configure(Some(&bytes), display),
+                                None => from_original(),
+                            }
+                        } else {
+                            from_original()
+                        };
+                        let configured = match configured {
+                            Err(error)
+                                if reconcile
+                                    && original.is_some()
+                                    && error.code == "invalidFixSettings" =>
+                            {
+                                from_original()?
+                            }
+                            other => other?,
+                        };
+                        Some(self.import_bytes(&configured)?)
                     } else {
                         initial.clone()
                     };
@@ -555,6 +614,9 @@ impl PackManager {
                 baseline = previous.ok_or_else(invalid)?.1.baseline;
                 for original in &baseline.actions {
                     let before = self.resources.read(&original.target)?;
+                    if original.target != target("d3d9.ini") {
+                        self.check_replacement(original, &before, reconcile)?;
+                    }
                     if before != original.before {
                         actions.push(Action {
                             target: original.target.clone(),
@@ -628,6 +690,25 @@ impl PackManager {
         )
     }
 
+    fn check_replacement(
+        &self,
+        recorded: &Action,
+        observed: &Option<Image>,
+        reconcile: bool,
+    ) -> AppResult<()> {
+        if observed == &recorded.before || observed == &recorded.after {
+            return Ok(());
+        }
+        if !reconcile || recorded.before == recorded.after {
+            return Err(AppError::new("modOwnedFileChanged"));
+        }
+        // Compose original → requested in one write, keeping the observed bytes for rollback.
+        if let Some(original) = &recorded.before {
+            self.resources.verify_backup(original)?;
+        }
+        Ok(())
+    }
+
     pub fn apply(
         &mut self,
         digest: &str,
@@ -645,7 +726,11 @@ impl PackManager {
                 .iter()
                 .find(|a| a.target == baseline.target)
                 .map(|a| &a.before)
-                .unwrap_or(&baseline.after);
+                .unwrap_or(if context.operation == PackOperation::Disable {
+                    &baseline.before
+                } else {
+                    &baseline.after
+                });
             if self.resources.observe(&baseline.target)?.as_ref() != expected.as_ref() {
                 return Err(AppError::new("stalePlan"));
             }

@@ -13,6 +13,8 @@ const baseEn = {
   profilesUnavailable:
     'At least one graphics setting has an unreadable format. See the settings details below.',
   defaultModsDeferred: 'Fix Enhancers could not be applied automatically.',
+  modReconcile:
+    'Some managed graphics files differ from the installed pack. Apply changes to back them up and use the verified originals and selected mods.',
   appUpdateAvailable: 'Update available',
   appUpdateInstall: 'Update now',
   appUpdateLater: 'Later',

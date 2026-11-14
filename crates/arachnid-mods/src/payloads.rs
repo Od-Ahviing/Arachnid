@@ -128,6 +128,27 @@ impl PayloadResources {
         self.store.join(format!("{}.blob", payload.sha256))
     }
 
+    pub(crate) fn verify_backup(&self, image: &Image) -> AppResult<()> {
+        let payload = Payload::from_image(image)?;
+        if inspect(&mut open(&self.blob(&payload))?, payload.bytes)? != payload {
+            return Err(invalid());
+        }
+        Ok(())
+    }
+
+    pub(crate) fn read_config_backup(&self, image: &Image) -> AppResult<Vec<u8>> {
+        let payload = Payload::from_image(image)?;
+        if payload.bytes > 64 * 1024 {
+            return Err(invalid());
+        }
+        let mut file = open(&self.blob(&payload))?;
+        let mut bytes = Vec::new();
+        if copy(&mut file, &mut bytes, payload.bytes)? != payload {
+            return Err(invalid());
+        }
+        Ok(bytes)
+    }
+
     fn capture(&self, mut source: File, expected: Option<&Payload>) -> AppResult<Payload> {
         let bytes = source.metadata().map_err(|_| invalid())?.len();
         if bytes > MAX_PAYLOAD_BYTES {
@@ -200,7 +221,8 @@ impl Resources for PayloadResources {
             let payload = Payload::from_image(image)?;
             filesystem::ensure_space(parent, payload.bytes.saturating_mul(2))?;
             let mut source = open(&self.blob(&payload))?;
-            let mut staging = tempfile::NamedTempFile::new_in(parent).map_err(|_| invalid())?;
+            let mut staging = tempfile::NamedTempFile::new_in(parent)
+                .map_err(|_| AppError::new("writeFailed"))?;
             if copy(&mut source, &mut staging, payload.bytes)? != payload {
                 return Err(invalid());
             }
@@ -208,12 +230,14 @@ impl Resources for PayloadResources {
             if inspect(&mut staging.reopen().map_err(|_| invalid())?, payload.bytes)? != payload {
                 return Err(invalid());
             }
-            staging.persist(&destination).map_err(|_| invalid())?;
+            staging
+                .persist(&destination)
+                .map_err(|_| AppError::new("writeFailed"))?;
         } else {
             match fs::remove_file(&destination) {
                 Ok(()) => (),
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => (),
-                Err(_) => return Err(invalid()),
+                Err(_) => return Err(AppError::new("writeFailed")),
             }
         }
         Ok(())

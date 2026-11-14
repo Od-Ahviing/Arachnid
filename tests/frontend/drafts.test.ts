@@ -129,6 +129,7 @@ beforeEach(() => {
       recoveryRequired: false,
       settingsOutOfSync: false,
       filesChanged: false,
+      filesRestored: false,
       requiresUpdate: false,
       phase: 'committed',
     },
@@ -296,7 +297,7 @@ describe('deferred graphics changes', () => {
 
 describe('deferred mod and costume changes', () => {
   it.each(['enable', 'disable'] as const)(
-    'publishes the native verification for %s on Mods without a second scan',
+    'scans before %s and uses the native report for verification',
     async (operation) => {
       const verifiedReport = { ...installation, scannedAt: 1234 }
       api.applyPack.mockImplementationOnce(async () => {
@@ -313,7 +314,10 @@ describe('deferred mod and costume changes', () => {
       await flushPromises()
       expect(api.applyPack).toHaveBeenCalledExactlyOnceWith('pack-digest', false)
       expect(api.preparePack.mock.calls[0]?.[0]).toBe(operation)
-      expect(api.scan).not.toHaveBeenCalled()
+      expect(api.scan).toHaveBeenCalledExactlyOnceWith('synthetic')
+      expect(api.preparePack.mock.invocationCallOrder[0]!).toBeGreaterThan(
+        api.scan.mock.invocationCallOrder[0]!,
+      )
       expect(useInstallation().report?.scannedAt).toBe(1234)
       expect(view.text()).toContain('Changes applied and checked')
       expect(router.currentRoute.value.path).toBe('/mods')
@@ -333,7 +337,7 @@ describe('deferred mod and costume changes', () => {
     await button(view, 'Apply changes').trigger('click')
     await vi.waitFor(() => expect(view.text()).toContain('Changes applied and checked'))
     expect(api.applyPack).toHaveBeenCalledTimes(1)
-    expect(api.scan).toHaveBeenCalledTimes(2)
+    expect(api.scan).toHaveBeenCalledTimes(3)
     expect(api.modStatus.mock.invocationCallOrder.at(-1)).toBeGreaterThan(
       api.scan.mock.invocationCallOrder.at(-1)!,
     )
@@ -389,7 +393,7 @@ describe('deferred mod and costume changes', () => {
     expect(api.prepareSkin).toHaveBeenCalledExactlyOnceWith('arachnoman')
     expect(api.applyPack).toHaveBeenCalledExactlyOnceWith('pack-digest', false)
     expect(api.applySkin).toHaveBeenCalledExactlyOnceWith('skin-digest', false)
-    expect(api.scan).toHaveBeenCalledExactlyOnceWith('synthetic')
+    expect(api.scan).toHaveBeenCalledTimes(2)
     expect(view.text()).toContain('Changes applied and checked')
   })
   it('retains unapplied choices after a partial failure and does not reapply the successful component', async () => {
@@ -417,6 +421,52 @@ describe('deferred mod and costume changes', () => {
     await flushPromises()
     expect(api.applyPack).not.toHaveBeenCalled()
     expect(view.find('.draft-bar').exists()).toBe(true)
+  })
+  it('skips writing when the fresh state already matches the requested selection', async () => {
+    const view = modsView()
+    await flushPromises()
+    await button(view, 'Disable all').trigger('click')
+    api.scan.mockImplementationOnce(async () => {
+      components = { fix: false, dxvk: false, reshade: false }
+      return installation
+    })
+    await button(view, 'Apply changes').trigger('click')
+    await flushPromises()
+    expect(api.scan).toHaveBeenCalledOnce()
+    expect(api.preparePack).not.toHaveBeenCalled()
+    expect(view.text()).toContain('Changes applied and checked')
+  })
+  it('preserves the selection and does not write if the initial scan fails', async () => {
+    const view = modsView()
+    await flushPromises()
+    await view.find('input[role="switch"]').setValue(false)
+    api.scan.mockRejectedValueOnce({ code: 'fileUnreadable' })
+    await button(view, 'Apply changes').trigger('click')
+    await flushPromises()
+    expect(api.preparePack).not.toHaveBeenCalled()
+    expect(api.prepareSkin).not.toHaveBeenCalled()
+    expect(view.find('.draft-bar').exists()).toBe(true)
+    expect(view.text()).not.toContain('Changes applied and checked')
+  })
+  it('allows removing mods when diagnostics report a separate blocking issue', async () => {
+    const report = {
+      ...installation,
+      checks: [{ code: 'gameLibrary', status: 'error', value: null }],
+    }
+    api.scan.mockResolvedValueOnce(report)
+    api.applyPack.mockImplementationOnce(async () => {
+      components = { ...chosenComponents }
+      return report
+    })
+    const view = modsView()
+    await flushPromises()
+    await button(view, 'Disable all').trigger('click')
+    await button(view, 'Apply changes').trigger('click')
+    await flushPromises()
+    expect(api.applyPack).toHaveBeenCalledOnce()
+    expect(components).toEqual({ fix: false, dxvk: false, reshade: false })
+    expect(view.find('.draft-bar').exists()).toBe(false)
+    expect(view.text()).not.toContain('Changes applied and checked')
   })
 })
 
@@ -476,7 +526,7 @@ describe('leaving with pending choices', () => {
       components = { ...chosenComponents }
       return null
     })
-    api.scan.mockRejectedValueOnce({ code: 'fileUnreadable' })
+    api.scan.mockResolvedValueOnce(installation).mockRejectedValueOnce({ code: 'fileUnreadable' })
     const view = modsView()
     await flushPromises()
     await view.find('input').setValue(false)
@@ -486,7 +536,7 @@ describe('leaving with pending choices', () => {
     await button(view, 'Try again').trigger('click')
     await flushPromises()
     expect(api.applyPack).toHaveBeenCalledOnce()
-    expect(api.scan).toHaveBeenCalledTimes(2)
+    expect(api.scan).toHaveBeenCalledTimes(3)
     expect(view.text()).toContain('Changes applied and checked')
   })
   it('returns to an invalid graphics field instead of trapping the user behind the leave dialog', async () => {
@@ -587,7 +637,7 @@ describe('leaving with pending choices', () => {
       await navigation
       await flushPromises()
       expect(router.currentRoute.value.path).toBe('/home')
-      expect(api.scan).toHaveBeenCalledTimes(page === '/graphics' ? 1 : 0)
+      expect(api.scan).toHaveBeenCalledOnce()
     },
   )
   it('discards choices without any mutation when leaving', async () => {
@@ -610,7 +660,7 @@ describe('leaving with pending choices', () => {
     await view.find('input').setValue(false)
     void router.push('/home')
     await flushPromises()
-    api.applyPack.mockRejectedValueOnce({ code: 'fileChanged' })
+    api.applyPack.mockRejectedValueOnce({ code: 'stalePlan' })
     await view
       .get('dialog[open]')
       .findAll('button')
@@ -618,7 +668,7 @@ describe('leaving with pending choices', () => {
       .trigger('click')
     await flushPromises()
     expect(router.currentRoute.value.path).toBe('/mods')
-    expect(view.find('dialog[open]').exists()).toBe(true)
+    expect(view.get('dialog[open]').text()).toContain('A value changed since the preview.')
   })
   it('has complete translated action labels in all five languages', () => {
     const keys = Object.keys(interfaceMessages.en)

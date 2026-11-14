@@ -35,6 +35,8 @@ export const de = {
   profilesUnavailable:
     'Mindestens eine Grafikeinstellung hat ein unlesbares Format. Details stehen weiter unten.',
   defaultModsDeferred: 'Fix Enhancers konnte nicht automatisch angewendet werden.',
+  modReconcile:
+    'Verwaltete Grafikdateien weichen vom installierten Paket ab. Beim Anwenden werden sie gesichert und die geprüften Originale als Grundlage verwendet.',
   appUpdateAvailable: 'Update verfügbar',
   appUpdateInstall: 'Jetzt aktualisieren',
   appUpdateLater: 'Später',
