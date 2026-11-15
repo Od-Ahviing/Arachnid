@@ -30,6 +30,7 @@ fn main() {
             "export_report",
             "launch_status",
             "start_game",
+            "initialize_game_settings",
             "synchronize_game_language",
             "native_settings",
             "prepare_settings",

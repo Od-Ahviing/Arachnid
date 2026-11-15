@@ -1,6 +1,8 @@
 !define ARACHNID_INSTALLER_DIR "${__FILEDIR__}"
 
 !macro NSIS_HOOK_POSTINSTALL
+  ; Display the publisher without changing the registry key used to locate previous installs.
+  WriteRegStr SHCTX "${UNINSTKEY}" "Publisher" "Od_Ahviing"
   InitPluginsDir
   File "/oname=$PLUGINSDIR\tasm-prerequisites.ps1" "${ARACHNID_INSTALLER_DIR}\tasm-prerequisites.ps1"
 
