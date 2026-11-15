@@ -98,23 +98,41 @@ fn check_cancel(cancel: &AtomicBool) -> AppResult<()> {
     }
 }
 
+#[cfg(windows)]
+fn has_local_disk_prefix(path: &Path) -> bool {
+    use std::path::Prefix;
+
+    matches!(
+        path.components().next(),
+        Some(Component::Prefix(prefix))
+            if matches!(prefix.kind(), Prefix::Disk(_) | Prefix::VerbatimDisk(_))
+    )
+}
+
 pub fn validate_root(path: &Path) -> AppResult<std::path::PathBuf> {
     if !path.is_absolute() || path.components().any(|c| matches!(c, Component::ParentDir)) {
         return Err(AppError::new("invalidPath"));
     }
     #[cfg(windows)]
+    if !has_local_disk_prefix(path)
+        || path.components().any(|component| {
+            matches!(component, Component::Normal(part) if part.to_string_lossy().contains([':', '/']))
+        })
     {
-        let text = path.to_string_lossy();
-        if text.starts_with(r"\\") || text.char_indices().any(|(i, c)| c == ':' && i != 1) {
-            return Err(AppError::new("invalidPath"));
-        }
+        return Err(AppError::new("invalidPath"));
     }
     let metadata = fs::symlink_metadata(path).map_err(|_| AppError::new("directoryUnavailable"))?;
     if !metadata.is_dir() || is_link(&metadata) {
         return Err(AppError::new("invalidPath"));
     }
-    path.canonicalize()
-        .map_err(|_| AppError::new("directoryUnavailable"))
+    let root = path
+        .canonicalize()
+        .map_err(|_| AppError::new("directoryUnavailable"))?;
+    #[cfg(windows)]
+    if !has_local_disk_prefix(&root) {
+        return Err(AppError::new("invalidPath"));
+    }
+    Ok(root)
 }
 
 pub fn inspect_pe(path: &Path, name: &str, cancel: &AtomicBool) -> AppResult<PeInfo> {
@@ -514,6 +532,44 @@ mod tests {
             fs::read(dir.path().join("Game.exe")).unwrap(),
             minimal_pe(0x14c)
         );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn scans_the_canonical_root_held_by_an_installation_lease() {
+        let game = tempdir().unwrap();
+        let locks = tempdir().unwrap();
+        let lease =
+            arachnid_core::coordination::InstallationLease::acquire(game.path(), locks.path())
+                .unwrap();
+        let cancel = AtomicBool::new(false);
+        let initial = scan(game.path(), &cancel, |_| {}).unwrap();
+        let rescanned = scan(lease.root(), &cancel, |_| {}).unwrap();
+
+        assert_eq!(rescanned.root, initial.root);
+        assert_eq!(
+            validate_root(Path::new(&rescanned.root)).unwrap(),
+            lease.root()
+        );
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn rejects_network_device_and_alternate_stream_paths() {
+        for path in [
+            r"\\server\share\game",
+            r"\\?\UNC\server\share\game",
+            r"\\.\C:\game",
+            r"\\?\GLOBALROOT\Device\HarddiskVolume1\game",
+            r"\\?\C:\game:stream",
+            r"\\?\C:\game\..\other",
+            r"\\?\C:\game/../other",
+        ] {
+            assert_eq!(
+                validate_root(Path::new(path)).unwrap_err().code,
+                "invalidPath"
+            );
+        }
     }
 
     #[test]

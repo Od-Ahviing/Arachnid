@@ -1006,21 +1006,23 @@ mod tests {
     #[test]
     fn pack_changes_refresh_cached_fingerprints_and_removed_binaries() {
         let game = tempfile::tempdir().unwrap();
+        let locks = tempfile::tempdir().unwrap();
+        let lease = InstallationLease::acquire(game.path(), locks.path()).unwrap();
         let cache = Mutex::new(None);
         let dll = game.path().join("ar_dxvk.dll");
         std::fs::write(&dll, synthetic_pe(1)).unwrap();
-        refresh_report(&cache, game.path(), |_| Ok(())).unwrap();
+        refresh_report(&cache, lease.root(), |_| Ok(())).unwrap();
         let previous = cache.lock().unwrap().as_ref().unwrap().binaries[0]
             .sha256
             .clone();
         std::fs::write(&dll, synthetic_pe(2)).unwrap();
-        refresh_report(&cache, game.path(), |_| Ok(())).unwrap();
+        refresh_report(&cache, lease.root(), |_| Ok(())).unwrap();
         let current = cache.lock().unwrap().as_ref().unwrap().binaries[0]
             .sha256
             .clone();
         assert_ne!(previous, current);
         std::fs::remove_file(&dll).unwrap();
-        refresh_report(&cache, game.path(), |_| Ok(())).unwrap();
+        refresh_report(&cache, lease.root(), |_| Ok(())).unwrap();
         assert!(cache.lock().unwrap().as_ref().unwrap().binaries.is_empty());
         assert!(refresh_report(&cache, &game.path().join("missing"), |_| Ok(())).is_err());
         assert!(cache.lock().unwrap().is_none());
