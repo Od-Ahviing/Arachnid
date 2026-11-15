@@ -12,11 +12,14 @@ import CheckList from '../components/diagnostics/CheckList.vue'
 const store = useInstallation()
 const router = useRouter()
 async function inspect() {
-  if (store.busy || store.languageBusy || store.defaultModsBusy) return
-  if (await store.scan()) {
+  if (store.busy || store.languageBusy || store.graphicsModsBusy) return
+  if (await store.scanWhenIdle(store.path)) {
     await store.configureGame()
     await router.push('/home')
   }
+}
+async function chooseFolder() {
+  if (await store.pick()) await inspect()
 }
 function changeLanguage(event: Event) {
   void store.setLanguage((event.target as HTMLSelectElement).value as Language)
@@ -47,16 +50,20 @@ function changeLanguage(event: Event) {
           autocomplete="off"
           spellcheck="false"
         />
-        <AppButton :disabled="store.busy || !desktopAvailable" @click="store.pick"
+        <AppButton
+          :disabled="
+            store.busy || store.graphicsModsBusy || store.languageBusy || !desktopAvailable
+          "
+          @click="chooseFolder"
           ><FolderOpen :size="17" aria-hidden="true" />{{ t('browse') }}</AppButton
         >
       </div>
       <AppButton
         type="submit"
         variant="primary"
-        :loading="store.busy || store.defaultModsBusy"
+        :loading="store.busy || store.graphicsModsBusy"
         :disabled="
-          !store.path.trim() || !desktopAvailable || store.languageBusy || store.defaultModsBusy
+          !store.path.trim() || !desktopAvailable || store.languageBusy || store.graphicsModsBusy
         "
         >{{ t('inspect') }}<ArrowRight :size="17" aria-hidden="true"
       /></AppButton>

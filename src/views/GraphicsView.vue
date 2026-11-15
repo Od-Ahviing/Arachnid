@@ -151,7 +151,7 @@ async function verify() {
   const root = store.report?.root
   verificationFailed.value =
     !root ||
-    !(await store.scan(root)) ||
+    !(await store.scanWhenIdle(root)) ||
     !!store.report?.checks.some((check) => check.status === 'error')
   return !verificationFailed.value
 }

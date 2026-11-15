@@ -34,7 +34,7 @@ export const de = {
     'Exportiere bei einer nicht unterstützten Version den Bericht mit der Prüfsumme von Game.exe.',
   profilesUnavailable:
     'Mindestens eine Grafikeinstellung hat ein unlesbares Format. Details stehen weiter unten.',
-  defaultModsDeferred: 'Fix Enhancers konnte nicht automatisch angewendet werden.',
+  graphicsModsDeferred: 'Arachnid konnte die Grafikmods nicht automatisch anwenden.',
   modReconcile:
     'Verwaltete Grafikdateien weichen vom installierten Paket ab. Beim Anwenden werden sie gesichert und die geprüften Originale als Grundlage verwendet.',
   appUpdateAvailable: 'Update verfügbar',
@@ -265,7 +265,8 @@ export const de = {
   recoveryRequired:
     'Ein unvollständiger Vorgang muss vor dem Spielen unter Grafik wiederhergestellt werden.',
   channelUnqualified: 'Für diese Programmversion gibt es noch keinen unterstützten Startweg.',
-  diagnosticBlocking: 'Behebe die blockierenden Diagnoseergebnisse vor dem Start.',
+  diagnosticBlocking:
+    'Die Installationsprüfung hat ein Problem gefunden, das diese Änderungen blockiert.',
   direct3dUnresolved: 'Direct3D 9 x86 muss geprüft werden.',
   legacyDirectxUnresolved: 'Die ältere DirectX-Komponente muss geprüft werden.',
   visualCppUnresolved: 'Eine direkte Visual-C++-Abhängigkeit konnte nicht aufgelöst werden.',

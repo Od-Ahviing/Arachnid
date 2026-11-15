@@ -13,8 +13,8 @@ export const useInstallation = defineStore('installation', () => {
   const languageBusy = ref(false)
   const languageState = ref<'synced' | 'fallback' | 'pending' | 'error' | null>(null)
   const languageError = ref<string | null>(null)
-  const defaultModsBusy = ref(false)
-  const defaultModsError = ref<string | null>(null)
+  const graphicsModsBusy = ref(false)
+  const graphicsModsError = ref<string | null>(null)
   const progress = ref<ScanProgress>({ stage: 'inventory', filesScanned: 0 })
 
   async function scan(directory = path.value): Promise<boolean> {
@@ -40,21 +40,26 @@ export const useInstallation = defineStore('installation', () => {
     }
   }
 
-  async function pick(): Promise<void> {
+  async function pick(): Promise<boolean> {
     error.value = null
     try {
       const directory = await desktop.pickDirectory()
-      if (directory !== null) path.value = directory
+      if (directory === null) return false
+      path.value = directory
+      return true
     } catch (failure) {
       error.value = errorCode(failure)
+      return false
     }
   }
 
   async function scanWhenIdle(directory: string): Promise<boolean> {
     for (let attempt = 0; attempt < 4; attempt++) {
-      const scanned = await scan(directory)
-      if (scanned || (error.value !== 'installationBusy' && error.value !== 'scanBusy')) {
-        return scanned
+      if (!busy.value) {
+        const scanned = await scan(directory)
+        if (scanned || (error.value !== 'installationBusy' && error.value !== 'scanBusy')) {
+          return scanned
+        }
       }
       if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, 250))
     }
@@ -83,8 +88,8 @@ export const useInstallation = defineStore('installation', () => {
   }
 
   async function configureGame(): Promise<void> {
-    defaultModsBusy.value = true
-    defaultModsError.value = null
+    graphicsModsBusy.value = true
+    graphicsModsError.value = null
     try {
       let initialized: boolean
       try {
@@ -95,17 +100,17 @@ export const useInstallation = defineStore('installation', () => {
       }
       await synchronizeLanguage()
       try {
-        const updated = await desktop.applyDefaultMods()
+        const updated = await desktop.reconcileGraphicsMods(true)
         if (updated) {
           report.value = updated
           return
         }
       } catch (failure) {
-        defaultModsError.value = errorCode(failure)
+        graphicsModsError.value = errorCode(failure)
       }
       if (initialized && report.value) await scanWhenIdle(report.value.root)
     } finally {
-      defaultModsBusy.value = false
+      graphicsModsBusy.value = false
     }
   }
 
@@ -167,8 +172,8 @@ export const useInstallation = defineStore('installation', () => {
     setLanguage,
     synchronizeLanguage,
     configureGame,
-    defaultModsBusy,
-    defaultModsError,
+    graphicsModsBusy,
+    graphicsModsError,
     languageBusy,
     languageState,
     languageError,

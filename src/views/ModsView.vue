@@ -101,6 +101,25 @@ async function load() {
       await refresh()
     }
     discard()
+    const pack = status.value?.pack
+    if (
+      pack?.active &&
+      !recovery.value &&
+      (pack.filesChanged || pack.filesRestored || pack.settingsOutOfSync)
+    ) {
+      phase.value = 'checking'
+      const root = store.report?.root
+      if (!root || !(await store.scanWhenIdle(root))) {
+        throw { code: store.error ?? 'installationInvalid' }
+      }
+      const updated = await desktop.reconcileGraphicsMods(false)
+      if (updated) {
+        store.report = updated
+        store.graphicsModsError = null
+        await refresh()
+        discard()
+      }
+    }
   } catch (error) {
     failure.value = errorCode(error)
   } finally {
@@ -167,7 +186,17 @@ async function apply() {
     const enableGraphics = keys.some((key) => draft.value[key])
     if (
       ((graphicsChanged.value && enableGraphics) || (costumeChanged.value && costume.value)) &&
-      store.report?.checks.some((check) => check.status === 'error')
+      store.report?.checks.some(
+        (check) =>
+          check.status === 'error' &&
+          !(
+            graphicsChanged.value &&
+            status.value?.pack.filesChanged &&
+            (check.code === 'direct3d' ||
+              (check.code === 'localBinary' &&
+                ['d3d9.dll', 'ar_dxvk.dll'].includes(check.value?.toLowerCase() ?? '')))
+          ),
+      )
     ) {
       throw { code: 'diagnosticBlocking' }
     }

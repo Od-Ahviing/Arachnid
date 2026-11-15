@@ -13,7 +13,7 @@ const baseFr: Record<BaseMessageKey, string> = {
     'Si cette version est incompatible, exportez le rapport pour partager l’empreinte de Game.exe.',
   profilesUnavailable:
     'Au moins un réglage graphique utilise un format illisible. Consultez les détails ci-dessous.',
-  defaultModsDeferred: 'Fix Enhancers n’a pas pu être appliqué automatiquement.',
+  graphicsModsDeferred: 'Arachnid n’a pas pu appliquer automatiquement les mods graphiques.',
   modReconcile:
     'Des fichiers graphiques gérés diffèrent du pack installé. Appliquez les modifications pour les sauvegarder et repartir des originaux vérifiés.',
   appUpdateAvailable: 'Mise à jour disponible',

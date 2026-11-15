@@ -12,7 +12,7 @@ const baseEn = {
     'If this version is unsupported, export the diagnostic report to share the Game.exe fingerprint.',
   profilesUnavailable:
     'At least one graphics setting has an unreadable format. See the settings details below.',
-  defaultModsDeferred: 'Fix Enhancers could not be applied automatically.',
+  graphicsModsDeferred: 'Arachnid could not apply the graphics mods automatically.',
   modReconcile:
     'Some managed graphics files differ from the installed pack. Apply changes to back them up and use the verified originals and selected mods.',
   appUpdateAvailable: 'Update available',

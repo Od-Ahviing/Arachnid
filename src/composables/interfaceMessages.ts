@@ -32,7 +32,7 @@ const en = {
   verifying: 'Checking the installation…',
   verified: 'Changes applied and checked.',
   verifyFailed:
-    'Changes were applied, but the installation check did not finish. Run Diagnostics before playing.',
+    'Changes were applied, but the installation check failed. Arachnid will check again when you click Play.',
   leaveHint:
     'Apply your choices before leaving, or discard the pending changes. You can also stay on this page.',
   stay: 'Stay on this page',
@@ -104,7 +104,7 @@ const fr: Record<Key, string> = {
   verifying: 'Vérification de l’installation…',
   verified: 'Modifications appliquées et vérifiées.',
   verifyFailed:
-    'Les modifications sont appliquées, mais la vérification de l’installation n’a pas abouti. Consultez le diagnostic avant de jouer.',
+    'Les modifications sont appliquées, mais la vérification a échoué. Arachnid vérifiera à nouveau l’installation lorsque vous cliquerez sur Jouer.',
   leaveHint:
     'Appliquez vos choix avant de partir ou annulez les modifications en attente. Vous pouvez aussi rester sur cette page.',
   stay: 'Rester sur cette page',
@@ -175,7 +175,7 @@ const de: Record<Key, string> = {
   verifying: 'Installation wird geprüft…',
   verified: 'Änderungen angewendet und geprüft.',
   verifyFailed:
-    'Änderungen angewendet, aber die Installationsprüfung wurde nicht abgeschlossen. Vor dem Spielen die Diagnose öffnen.',
+    'Die Änderungen wurden angewendet, aber die Prüfung ist fehlgeschlagen. Arachnid prüft die Installation erneut, wenn du auf Spielen klickst.',
   leaveHint:
     'Auswahl vor dem Verlassen anwenden oder ausstehende Änderungen verwerfen. Du kannst auch auf dieser Seite bleiben.',
   stay: 'Auf dieser Seite bleiben',
@@ -246,7 +246,7 @@ const it: Record<Key, string> = {
   verifying: 'Verifica dell’installazione…',
   verified: 'Modifiche applicate e verificate.',
   verifyFailed:
-    'Modifiche applicate, ma la verifica dell’installazione non è terminata. Consulta la diagnostica prima di giocare.',
+    'Le modifiche sono state applicate, ma la verifica non è riuscita. Arachnid verificherà di nuovo l’installazione quando fai clic su Gioca.',
   leaveHint:
     'Applica le tue scelte prima di uscire oppure annulla le modifiche in sospeso. Puoi anche rimanere su questa pagina.',
   stay: 'Rimani su questa pagina',
@@ -315,7 +315,7 @@ const es: Record<Key, string> = {
   verifying: 'Comprobando la instalación…',
   verified: 'Cambios aplicados y comprobados.',
   verifyFailed:
-    'Cambios aplicados, pero la comprobación de la instalación no terminó. Consulta el diagnóstico antes de jugar.',
+    'Los cambios se aplicaron, pero la comprobación falló. Arachnid volverá a comprobar la instalación cuando pulses Jugar.',
   leaveHint:
     'Aplica tus elecciones antes de salir o descarta los cambios pendientes. También puedes permanecer en esta página.',
   stay: 'Permanecer en esta página',

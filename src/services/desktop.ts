@@ -65,8 +65,8 @@ export const desktop = {
   prepareSkin: (selected: string | null) => invoke<SkinPreview>('prepare_skin', { selected }),
   applySkin: (digest: string, recover = false) => invoke<void>('apply_skin', { digest, recover }),
   modStatus: () => invoke<ModStatus>('mod_status'),
-  applyDefaultMods: async () => {
-    const report = await invoke<unknown>('apply_default_mods')
+  reconcileGraphicsMods: async (applyDefaults: boolean) => {
+    const report = await invoke<unknown>('reconcile_graphics_mods', { applyDefaults })
     return report === null ? null : parseReport(report)
   },
   preparePack: (
@@ -93,8 +93,14 @@ export const desktop = {
     invoke<void>('apply_save_restore', { digest, producersStopped, undo }),
   launchStatus: () => invoke<LaunchStatus>('launch_status'),
   initializeGameSettings: () => invoke<boolean>('initialize_game_settings'),
-  startGame: (language: import('../types/installation').SupportedLanguage) =>
-    invoke<LaunchStatus>('start_game', { language }),
+  startGame: (
+    language: import('../types/installation').SupportedLanguage,
+    onReport: (report: ScanReport) => void,
+  ) => {
+    const diagnostics = new Channel<ScanReport>()
+    diagnostics.onmessage = (report) => onReport(parseReport(report))
+    return invoke<LaunchStatus>('start_game', { language, diagnostics })
+  },
   synchronizeGameLanguage: (language: import('../types/installation').SupportedLanguage) =>
     invoke<{ requested: string; applied: string; changed: boolean }>('synchronize_game_language', {
       language,

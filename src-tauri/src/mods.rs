@@ -564,75 +564,129 @@ pub(crate) fn runtime_for_launch(
 }
 
 #[tauri::command]
-pub async fn apply_default_mods(
+pub async fn reconcile_graphics_mods(
     window: WebviewWindow,
     app: tauri::AppHandle,
+    apply_defaults: bool,
 ) -> AppResult<Option<ScanReport>> {
     authorize(&window)?;
     tauri::async_runtime::spawn_blocking(move || {
         let state = app.state::<AppState>();
+        let _update = state
+            .updates
+            .installing
+            .try_lock()
+            .map_err(|_| AppError::new("appUpdateBusy"))?;
         let _operation = state
             .operations
             .try_lock()
             .map_err(|_| AppError::new("installationBusy"))?;
         let report = crate::commands::report(&state)?;
-        let build = crate::commands::build(&report)?;
-        if !arachnid_core::game_build::supported(build)
-            || report
-                .checks
-                .iter()
-                .any(|check| check.status == CheckStatus::Error)
-        {
-            return Ok(None);
-        }
         let lease = crate::commands::lease(&state, &report)?;
-        let catalog = bundled_catalog()?;
-        let selection = Selection::load(&state.data_directory, &catalog)?;
-        let mut manager = manager_for(&state, &lease, Composition::DEFAULT)?;
-        if !should_apply_defaults(&selection, manager.operation()?.is_some())
-            || crate::saves::pending(&state)
-            || crate::skins::pending(&state, &lease)
-            || arachnid_repair::pending(&crate::commands::journal_path(&state, &lease)?)
-            || arachnid_repair::pending(&crate::commands::initial_settings_path(&state, &lease)?)
-        {
-            return Ok(None);
-        }
-        crate::commands::ensure_no_session(&state)?;
-        check_game(&lease)?;
-        let display = display()?;
-        let root = asset_root(&app)?;
-        if (!cfg!(debug_assertions) && !performance::RUNTIME_QUALIFIED)
-            || !performance::available(&root)
-        {
-            return Err(AppError::new("modPayloadMissing"));
-        }
-        let source = root
-            .join("profiles")
-            .join(Composition::DEFAULT.bits().to_string());
-        let plan = manager.prepare(PackOperation::Enable, &source, &display, build)?;
-        manager.apply(&plan.digest, &display, || check_game(&lease))?;
-        state.storage.record("default_performance_pack_applied");
-        let report = verify_pack_change(&state, &lease)?;
-        if !report.recognized
-            || report
-                .checks
-                .iter()
-                .any(|check| check.status == CheckStatus::Error)
-            || {
-                let status = pack_status(&manager, Composition::DEFAULT)?;
-                status.files_changed || status.files_restored
-            }
-        {
-            return Err(AppError::new("validationFailed"));
-        }
-        Ok(Some(report))
+        reconcile_graphics(&state, &app, &lease, &report, apply_defaults)
     })
     .await
     .map_err(|_| AppError::new("internal"))?
 }
 
-fn should_apply_defaults(selection: &Selection, has_operation: bool) -> bool {
-    !has_operation && selection.enabled.iter().any(|id| id == "performance-pack")
+pub(crate) fn reconcile_graphics(
+    state: &AppState,
+    app: &tauri::AppHandle,
+    lease: &InstallationLease,
+    report: &ScanReport,
+    apply_defaults: bool,
+) -> AppResult<Option<ScanReport>> {
+    let build = crate::commands::build(report)?;
+    if !report.recognized
+        || !arachnid_core::game_build::supported(build)
+        || crate::saves::pending(state)
+        || crate::skins::pending(state, lease)
+        || arachnid_repair::pending(&crate::commands::journal_path(state, lease)?)
+        || arachnid_repair::pending(&crate::commands::initial_settings_path(state, lease)?)
+    {
+        return Ok(None);
+    }
+    let current = manager(state, lease)?;
+    let operation = current.operation()?;
+    if operation.as_ref().is_some_and(|journal| {
+        !matches!(
+            journal.phase,
+            Phase::Committed | Phase::Cancelled | Phase::RolledBack
+        )
+    }) {
+        return Ok(None);
+    }
+    let saved = applied_components(&current)?;
+    let restoring = saved.bits() != 0;
+    if report.checks.iter().any(|check| {
+        check.status == CheckStatus::Error && !(restoring && is_graphics_file_check(check))
+    }) {
+        return Ok(None);
+    }
+    let requested = if restoring {
+        let status = pack_status(&current, saved)?;
+        if !needs_reconciliation(&status) {
+            return Ok(None);
+        }
+        saved
+    } else {
+        if !apply_defaults || operation.is_some() {
+            return Ok(None);
+        }
+        let catalog = bundled_catalog()?;
+        let selection = Selection::load(&state.data_directory, &catalog)?;
+        if !selection.enabled.iter().any(|id| id == "performance-pack") {
+            return Ok(None);
+        }
+        Composition::DEFAULT
+    };
+    crate::commands::ensure_no_session(state)?;
+    check_game(lease)?;
+    let display = display()?;
+    let root = asset_root(app)?;
+    if (!cfg!(debug_assertions) && !performance::RUNTIME_QUALIFIED)
+        || !performance::available(&root)
+    {
+        return Err(AppError::new("modPayloadMissing"));
+    }
+    let source = root.join("profiles").join(requested.bits().to_string());
+    let mut manager = manager_for(state, lease, requested)?;
+    let plan = if restoring {
+        manager.prepare_selection(PackOperation::Enable, &source, &display, build)?
+    } else {
+        manager.prepare(PackOperation::Enable, &source, &display, build)?
+    };
+    manager.apply(&plan.digest, &display, || check_game(lease))?;
+    state.storage.record(if restoring {
+        "saved_performance_pack_reconciled"
+    } else {
+        "default_performance_pack_applied"
+    });
+    let report = verify_pack_change(state, lease)?;
+    if !report.recognized
+        || report
+            .checks
+            .iter()
+            .any(|check| check.status == CheckStatus::Error)
+        || needs_reconciliation(&pack_status(&manager, requested)?)
+    {
+        return Err(AppError::new("validationFailed"));
+    }
+    Ok(Some(report))
+}
+
+fn is_graphics_file_check(check: &arachnid_core::Check) -> bool {
+    check.code == "direct3d"
+        || (check.code == "localBinary"
+            && check.value.as_deref().is_some_and(|name| {
+                ["d3d9.dll", "ar_dxvk.dll"]
+                    .iter()
+                    .any(|target| name.eq_ignore_ascii_case(target))
+            }))
+}
+
+fn needs_reconciliation(status: &PackStatus) -> bool {
+    status.active && (status.files_changed || status.files_restored || status.settings_out_of_sync)
 }
 
 #[tauri::command]
@@ -770,13 +824,38 @@ mod tests {
     use super::*;
 
     #[test]
-    fn default_pack_respects_saved_preferences_and_previous_mod_transactions() {
-        let catalog = bundled_catalog().unwrap();
-        let mut selection = Selection::defaults(&catalog);
-        assert!(should_apply_defaults(&selection, false));
-        assert!(!should_apply_defaults(&selection, true));
-        selection.set(&catalog, "performance-pack", false).unwrap();
-        assert!(!should_apply_defaults(&selection, false));
+    fn only_errors_on_graphics_pack_binaries_can_be_rechecked_after_reconciliation() {
+        let binary = |name: &str| {
+            arachnid_core::Check::new("localBinary", CheckStatus::Error, Some(name.into()))
+        };
+        assert!(is_graphics_file_check(&binary("D3D9.dll")));
+        assert!(is_graphics_file_check(&binary("ar_dxvk.dll")));
+        assert!(!is_graphics_file_check(&binary("steam_api.dll")));
+        assert!(!is_graphics_file_check(&binary("Data/d3d9.dll")));
+    }
+
+    #[test]
+    fn automatic_reconciliation_reuses_the_active_selection_only_when_it_has_drifted() {
+        let mut status = PackStatus {
+            active: true,
+            recovery_required: false,
+            settings_out_of_sync: false,
+            files_changed: false,
+            files_restored: false,
+            phase: Some(Phase::Committed),
+            requires_update: false,
+        };
+        assert!(!needs_reconciliation(&status));
+        status.files_changed = true;
+        assert!(needs_reconciliation(&status));
+        status.files_changed = false;
+        status.files_restored = true;
+        assert!(needs_reconciliation(&status));
+        status.files_restored = false;
+        status.settings_out_of_sync = true;
+        assert!(needs_reconciliation(&status));
+        status.active = false;
+        assert!(!needs_reconciliation(&status));
     }
 
     #[test]

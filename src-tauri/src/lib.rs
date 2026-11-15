@@ -284,7 +284,7 @@ pub fn run() {
             updates::install_app_update,
             load_preferences,
             mods::mod_status,
-            mods::apply_default_mods,
+            mods::reconcile_graphics_mods,
             mods::select_mod,
             mods::prepare_pack,
             mods::apply_pack,

@@ -22,6 +22,7 @@ const api = vi.hoisted(() => ({
   applySettings: vi.fn(),
   restoreSettings: vi.fn(),
   modStatus: vi.fn(),
+  reconcileGraphicsMods: vi.fn(),
   preparePack: vi.fn(),
   applyPack: vi.fn(),
   skinStatus: vi.fn(),
@@ -75,7 +76,10 @@ function button(view: VueWrapper, name: string) {
   return result
 }
 function settingsView() {
-  const view = mount(GraphicsView, { attachTo: document.body })
+  const view = mount(GraphicsView, {
+    attachTo: document.body,
+    global: { stubs: { RouterLink: true } },
+  })
   wrappers.push(view)
   return view
 }
@@ -290,12 +294,35 @@ describe('deferred graphics changes', () => {
     api.scan.mockRejectedValueOnce({ code: 'fileUnreadable' })
     await button(view, 'Apply changes').trigger('click')
     await flushPromises()
-    expect(view.text()).toContain('installation check did not finish')
+    expect(view.text()).toContain(interfaceMessages.en.verifyFailed)
     expect(view.text()).not.toContain('Values written and read back')
   })
 })
 
 describe('deferred mod and costume changes', () => {
+  it('checks and repairs managed graphics drift on entry without applying a new draft', async () => {
+    const currentStatus = api.modStatus.getMockImplementation()!
+    api.modStatus.mockImplementationOnce(async () => {
+      const current = await currentStatus()
+      return { ...current, pack: { ...current.pack, filesChanged: true } }
+    })
+    const repaired = { ...installation, scannedAt: 42 }
+    api.reconcileGraphicsMods.mockResolvedValue(repaired)
+
+    const view = modsView()
+    await flushPromises()
+
+    expect(api.scan).toHaveBeenCalledExactlyOnceWith(installation.root)
+    expect(api.reconcileGraphicsMods).toHaveBeenCalledExactlyOnceWith(false)
+    expect(api.reconcileGraphicsMods.mock.invocationCallOrder[0]!).toBeGreaterThan(
+      api.scan.mock.invocationCallOrder[0]!,
+    )
+    expect(api.preparePack).not.toHaveBeenCalled()
+    expect(api.applyPack).not.toHaveBeenCalled()
+    expect(useInstallation().report?.scannedAt).toBe(42)
+    expect(view.find('.draft-bar').exists()).toBe(false)
+  })
+
   it.each(['enable', 'disable'] as const)(
     'scans before %s and uses the native report for verification',
     async (operation) => {

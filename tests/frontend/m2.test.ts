@@ -81,10 +81,40 @@ describe('launch consent', () => {
     expect(api.startGame).not.toHaveBeenCalled()
     await view.get('button').trigger('click')
     await view.get('button').trigger('click')
-    expect(api.startGame).toHaveBeenCalledExactlyOnceWith('en')
+    expect(api.startGame).toHaveBeenCalledExactlyOnceWith('en', expect.any(Function))
     finish({ decision: { ready: false, reasons: [] }, session: { state: 'running' } })
     await flushPromises()
     expect(view.text()).toContain('Closing Arachnid leaves the game open')
+    view.unmount()
+  })
+
+  it('rechecks a blocked installation on Play and displays the new diagnostic report on failure', async () => {
+    const store = useInstallation()
+    store.report = {
+      recognized: true,
+      root: 'synthetic',
+      fileCount: 0,
+      pkzCount: 0,
+      totalBytes: 0,
+      scannedAt: 0,
+      checks: [],
+    } as unknown as NonNullable<typeof store.report>
+    const blocked = {
+      decision: { ready: false, reasons: ['localDirect3dUnverified'] },
+      session: { state: 'idle' },
+    }
+    api.launchStatus.mockResolvedValue(blocked)
+    api.startGame.mockImplementation(async (_language, onReport) => {
+      onReport({ ...store.report, scannedAt: 42 })
+      throw { code: 'localDirect3dUnverified' }
+    })
+    const view = mount(HomeView, { global: { stubs: { RouterLink: true } } })
+    await flushPromises()
+    await view.get('button').trigger('click')
+    await flushPromises()
+    expect(api.startGame).toHaveBeenCalledOnce()
+    expect(store.report?.scannedAt).toBe(42)
+    expect(store.error).toBe('localDirect3dUnverified')
     view.unmount()
   })
 })

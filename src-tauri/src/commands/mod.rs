@@ -306,6 +306,7 @@ pub async fn start_game(
     window: WebviewWindow,
     app: tauri::AppHandle,
     language: Language,
+    diagnostics: tauri::ipc::Channel<ScanReport>,
 ) -> AppResult<LaunchStatus> {
     authorize(&window)?;
     tauri::async_runtime::spawn_blocking(move || {
@@ -321,8 +322,26 @@ pub async fn start_game(
             .try_lock()
             .map_err(|_| AppError::new("installationBusy"))?;
         ensure_no_session(&state)?;
-        let previous = report(&state)?;
-        let lease = lease(&state, &previous)?;
+        let root = match report(&state) {
+            Ok(report) => report.root,
+            Err(error) if error.code == "noReport" => state
+                .preferences
+                .lock()
+                .map_err(|_| AppError::new("internal"))?
+                .installation_path
+                .clone()
+                .ok_or(error)?,
+            Err(error) => return Err(error),
+        };
+        let root = arachnid_detector::validate_root(Path::new(&root))?;
+        let lease = InstallationLease::acquire(&root, &state.data_directory.join("locks"))?;
+        arachnid_launch::ensure_game_stopped(lease.root())?;
+        let mut current = arachnid_detector::scan(lease.root(), &AtomicBool::new(false), |_| {})?;
+        arachnid_diagnostics::evaluate(&mut current);
+        // Publish the raw findings even if the mod journal needs manual recovery.
+        let _ = crate::mods::qualify_report(&state, &lease, &mut current);
+        *state.report.lock().map_err(|_| AppError::new("internal"))? = Some(current.clone());
+        let _ = diagnostics.send(current.clone());
         if crate::saves::pending(&state)
             || arachnid_repair::pending(&journal_path(&state, &lease)?)
             || arachnid_repair::pending(&initial_settings_path(&state, &lease)?)
@@ -331,13 +350,14 @@ pub async fn start_game(
         {
             return Err(AppError::new("recoveryRequired"));
         }
-        let mut current =
-            arachnid_detector::scan(Path::new(&previous.root), &AtomicBool::new(false), |_| {})?;
-        arachnid_diagnostics::evaluate(&mut current);
-        *state.report.lock().map_err(|_| AppError::new("internal"))? = Some(current.clone());
         arachnid_launch::qualified_game_channel(build(&current)?)
             .ok_or_else(|| AppError::new("channelUnqualified"))?;
-        crate::mods::qualify_report(&state, &lease, &mut current)?;
+        if let Some(updated) =
+            crate::mods::reconcile_graphics(&state, &app, &lease, &current, false)?
+        {
+            current = updated;
+            let _ = diagnostics.send(current.clone());
+        }
         if let Some(reason) = readiness::decide(&current, true, false)
             .reasons
             .into_iter()

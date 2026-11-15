@@ -317,6 +317,8 @@ fn applying_a_selection_reconciles_managed_files_already_back_at_baseline() {
     source(assets.path());
     let mut spec = spec();
     spec.version = "composition-1-7".into();
+    let wrapper = game.path().join("d3d9.dll");
+    fs::write(&wrapper, b"original").unwrap();
     let mut pack = PackManager::new(game.path(), state.path(), &"a".repeat(64), spec).unwrap();
     let apply = |pack: &mut PackManager, operation| {
         let plan = pack
@@ -328,6 +330,7 @@ fn applying_a_selection_reconciles_managed_files_already_back_at_baseline() {
     apply(&mut pack, PackOperation::Enable);
     let dxvk = game.path().join("ar_dxvk.dll");
     let ini = game.path().join("d3d9.ini");
+    fs::write(&wrapper, b"unexpected wrapper").unwrap();
     fs::write(&dxvk, b"unexpected dxvk").unwrap();
     fs::write(&ini, b"invalid configuration").unwrap();
     let repair = pack
@@ -339,6 +342,11 @@ fn applying_a_selection_reconciles_managed_files_already_back_at_baseline() {
         )
         .unwrap();
     pack.apply(&repair.digest, &display(), || Ok(())).unwrap();
+    assert_eq!(fs::read(&wrapper).unwrap(), b"synthetic fix");
+    assert_eq!(
+        pack.applied_version().unwrap().as_deref(),
+        Some("composition-1-7")
+    );
     assert_eq!(fs::read(&dxvk).unwrap(), b"synthetic dxvk");
     assert!(fix_settings::matches(&fs::read(&ini).unwrap(), &display()));
     fs::remove_file(&dxvk).unwrap();
@@ -347,13 +355,53 @@ fn applying_a_selection_reconciles_managed_files_already_back_at_baseline() {
     assert!(!status.files_changed);
     apply(&mut pack, PackOperation::Enable);
     assert_eq!(fs::read(&dxvk).unwrap(), b"synthetic dxvk");
-    for file in ["d3d9.dll", "ar_dxvk.dll", "d3d9.ini"] {
+    fs::write(&wrapper, b"original").unwrap();
+    for file in ["ar_dxvk.dll", "d3d9.ini"] {
         fs::remove_file(game.path().join(file)).unwrap();
     }
     let disable = apply(&mut pack, PackOperation::Disable);
     assert!(disable.plan.actions.is_empty());
     assert!(!pack.status(&display()).unwrap().active);
-    assert_eq!(fs::read_dir(game.path()).unwrap().count(), 0);
+    assert_eq!(fs::read(&wrapper).unwrap(), b"original");
+    assert_eq!(fs::read_dir(game.path()).unwrap().count(), 1);
+}
+
+#[test]
+fn reapplying_a_composition_without_fix_preserves_an_unmanaged_ini() {
+    let game = tempfile::tempdir().unwrap();
+    let state = tempfile::tempdir().unwrap();
+    let assets = tempfile::tempdir().unwrap();
+    source(assets.path());
+    let mut spec = spec();
+    spec.uses_fix = false;
+    spec.version = "composition-1-2".into();
+    let mut pack = PackManager::new(game.path(), state.path(), &"a".repeat(64), spec).unwrap();
+    let initial = pack
+        .prepare(
+            PackOperation::Enable,
+            assets.path(),
+            &display(),
+            &"b".repeat(64),
+        )
+        .unwrap();
+    pack.apply(&initial.digest, &display(), || Ok(())).unwrap();
+    let ini = game.path().join("d3d9.ini");
+    fs::write(&ini, b"unmanaged configuration").unwrap();
+    fs::write(game.path().join("d3d9.dll"), b"damaged wrapper").unwrap();
+    let repair = pack
+        .prepare_selection(
+            PackOperation::Enable,
+            assets.path(),
+            &display(),
+            &"b".repeat(64),
+        )
+        .unwrap();
+    pack.apply(&repair.digest, &display(), || Ok(())).unwrap();
+    assert_eq!(fs::read(&ini).unwrap(), b"unmanaged configuration");
+    assert_eq!(
+        fs::read(game.path().join("d3d9.dll")).unwrap(),
+        b"synthetic fix"
+    );
 }
 
 #[test]

@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { desktop, errorCode } from '../services/desktop'
 import { useInstallation } from '../stores/installation'
 import type { LaunchStatus } from '../types/operations'
@@ -8,6 +8,15 @@ export function useSession() {
   const store = useInstallation()
   const status = ref<LaunchStatus | null>(null)
   const busy = ref(false)
+  const canStart = computed(
+    () =>
+      store.report?.recognized &&
+      !store.busy &&
+      !store.languageBusy &&
+      !store.graphicsModsBusy &&
+      !status.value?.decision.reasons.includes('gameAlreadyRunning') &&
+      !['running', 'unknown'].includes(status.value?.session.state ?? ''),
+  )
   let timer: ReturnType<typeof setInterval> | undefined
   let refreshing = false
   let active = true
@@ -25,7 +34,7 @@ export function useSession() {
       const code = errorCode(failure)
       if (code !== 'scanBusy' && code !== 'installationBusy') {
         status.value = null
-        store.error = code
+        store.error ??= code
       }
     } finally {
       refreshing = false
@@ -33,18 +42,21 @@ export function useSession() {
   }
 
   async function start() {
-    if (busy.value || store.busy || store.languageBusy || !status.value?.decision.ready) return
+    if (busy.value || !canStart.value) return
     busy.value = true
     revision++
     store.error = null
     try {
-      status.value = await desktop.startGame(locale.value)
+      status.value = await desktop.startGame(locale.value, (report) => {
+        if (store.report?.root === report.root) store.report = report
+      })
     } catch (failure) {
       store.error = errorCode(failure)
       status.value = null
     } finally {
       busy.value = false
     }
+    if (!status.value) void refresh()
   }
 
   onMounted(() => {
@@ -59,5 +71,5 @@ export function useSession() {
     active = false
     clearInterval(timer)
   })
-  return { status, busy, start, refresh }
+  return { status, busy, canStart, start }
 }

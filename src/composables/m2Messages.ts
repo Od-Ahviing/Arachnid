@@ -66,7 +66,7 @@ export const en = {
   installationInvalid: 'Select a recognised game installation.',
   recoveryRequired: 'An unfinished operation needs restoration in Graphics before you can play.',
   channelUnqualified: 'This executable build has no supported launch channel yet.',
-  diagnosticBlocking: 'Resolve the blocking findings in Diagnostics before launching.',
+  diagnosticBlocking: 'The installation check found a problem that blocks these changes.',
   direct3dUnresolved: 'Direct3D 9 x86 needs verification.',
   legacyDirectxUnresolved: 'The legacy DirectX component needs verification.',
   visualCppUnresolved: 'A direct Visual C++ dependency could not be resolved.',
@@ -198,7 +198,8 @@ export const fr: Record<keyof typeof en, string> = {
     'Une opération inachevée nécessite une restauration dans Graphismes avant de jouer.',
   channelUnqualified:
     'Cette version de l’exécutable ne dispose pas encore d’un canal de lancement pris en charge.',
-  diagnosticBlocking: 'Résolvez les problèmes bloquants dans Diagnostic avant de lancer le jeu.',
+  diagnosticBlocking:
+    'La vérification de l’installation a détecté un problème qui bloque ces modifications.',
   direct3dUnresolved: 'Direct3D 9 x86 nécessite une vérification.',
   legacyDirectxUnresolved: 'Le composant DirectX hérité nécessite une vérification.',
   visualCppUnresolved: 'Une dépendance Visual C++ directe n’a pas pu être résolue.',

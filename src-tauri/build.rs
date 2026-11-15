@@ -15,6 +15,7 @@ fn main() {
             "install_app_update",
             "load_preferences",
             "mod_status",
+            "reconcile_graphics_mods",
             "select_mod",
             "prepare_pack",
             "apply_pack",

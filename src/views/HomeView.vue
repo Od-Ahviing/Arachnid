@@ -28,7 +28,7 @@ const shortcuts = [
   { path: '/saves', key: 'saves', hint: 'savesHint', icon: Archive },
 ] as const
 const store = useInstallation()
-const { status, busy, start } = useSession()
+const { status, busy, canStart, start } = useSession()
 const crashPid = computed(() => status.value?.session.pid ?? null)
 const showCrashAdvice = computed(
   () =>
@@ -106,11 +106,7 @@ function dismissCrashAdvice() {
         </span>
       </header>
       <div class="play-section">
-        <AppButton
-          variant="primary"
-          :disabled="!status?.decision.ready || store.busy || store.languageBusy"
-          :loading="busy"
-          @click="start"
+        <AppButton variant="primary" :disabled="!canStart" :loading="busy" @click="start"
           ><Play :size="17" aria-hidden="true" />{{ t('play') }}</AppButton
         >
         <p v-if="busy" role="status">{{ t('launching') }}</p>
@@ -136,8 +132,8 @@ function dismissCrashAdvice() {
         </li>
       </ul>
     </section>
-    <p v-if="store.defaultModsError" class="notice" role="status">
-      {{ t('defaultModsDeferred') }} {{ packError(store.defaultModsError) }}
+    <p v-if="store.graphicsModsError" class="notice" role="status">
+      {{ t('graphicsModsDeferred') }} {{ packError(store.graphicsModsError) }}
     </p>
     <GameLanguageControl />
     <div class="home-shortcuts">

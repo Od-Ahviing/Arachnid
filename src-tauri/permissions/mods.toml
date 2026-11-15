@@ -1,4 +1,4 @@
 [[permission]]
 identifier = "mod-operations"
 description = "Read bundled mod metadata, save grouped preferences and prepare or approve exact reversible pack transactions"
-commands.allow = ["mod_status", "select_mod", "prepare_pack", "apply_pack", "skin_status", "prepare_skin", "apply_skin"]
+commands.allow = ["mod_status", "reconcile_graphics_mods", "select_mod", "prepare_pack", "apply_pack", "skin_status", "prepare_skin", "apply_skin"]

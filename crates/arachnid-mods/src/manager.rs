@@ -522,7 +522,14 @@ impl PackManager {
                         if name != "d3d9.ini" {
                             self.check_replacement(recorded, &before, reconcile)?;
                         }
-                        recorded.before.clone()
+                        if name == "d3d9.ini"
+                            && !self.spec.uses_fix
+                            && recorded.before == recorded.after
+                        {
+                            before.clone()
+                        } else {
+                            recorded.before.clone()
+                        }
                     } else {
                         before.clone()
                     };

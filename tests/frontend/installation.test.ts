@@ -8,7 +8,7 @@ const api = vi.hoisted(() => ({
   saveLanguage: vi.fn(),
   synchronizeGameLanguage: vi.fn(),
   initializeGameSettings: vi.fn(),
-  applyDefaultMods: vi.fn(),
+  reconcileGraphicsMods: vi.fn(),
   pickDirectory: vi.fn(),
   onProgress: vi.fn(async () => vi.fn()),
   cancel: vi.fn(),
@@ -41,7 +41,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   selectedLanguage.value = 'auto'
   api.initializeGameSettings.mockResolvedValue(false)
-  api.applyDefaultMods.mockResolvedValue(null)
+  api.reconcileGraphicsMods.mockResolvedValue(null)
   api.synchronizeGameLanguage.mockImplementation(async (language: string) => ({
     requested: language,
     applied: language,
@@ -68,16 +68,16 @@ describe('installation workflow', () => {
   it('uses the verified report from automatic mods and leaves diagnostics read-only', async () => {
     api.loadPreferences.mockResolvedValue({ language: 'fr', installationPath: report.root })
     api.scan.mockResolvedValue(report)
-    api.applyDefaultMods.mockResolvedValue({ ...report, scannedAt: 42 })
+    api.reconcileGraphicsMods.mockResolvedValue({ ...report, scannedAt: 42 })
     const store = useInstallation()
     await store.initialize()
     expect(store.report?.scannedAt).toBe(42)
-    expect(api.applyDefaultMods).toHaveBeenCalledOnce()
-    expect(api.applyDefaultMods.mock.invocationCallOrder[0]!).toBeGreaterThan(
+    expect(api.reconcileGraphicsMods).toHaveBeenCalledExactlyOnceWith(true)
+    expect(api.reconcileGraphicsMods.mock.invocationCallOrder[0]!).toBeGreaterThan(
       api.scan.mock.invocationCallOrder[0]!,
     )
     await store.scanWhenIdle(report.root)
-    expect(api.applyDefaultMods).toHaveBeenCalledOnce()
+    expect(api.reconcileGraphicsMods).toHaveBeenCalledOnce()
     expect(api.initializeGameSettings).toHaveBeenCalledOnce()
   })
   it('shows a registry setup failure without continuing to language or mods', async () => {
@@ -88,7 +88,7 @@ describe('installation workflow', () => {
     await store.initialize()
     expect(store.error).toBe('recoveryRequired')
     expect(api.synchronizeGameLanguage).not.toHaveBeenCalled()
-    expect(api.applyDefaultMods).not.toHaveBeenCalled()
+    expect(api.reconcileGraphicsMods).not.toHaveBeenCalled()
   })
   it('refreshes diagnostics after creating settings when no default mod is installed', async () => {
     api.loadPreferences.mockResolvedValue({ language: 'fr', installationPath: report.root })
@@ -102,11 +102,11 @@ describe('installation workflow', () => {
   it('keeps the installation available when automatic mods cannot be applied', async () => {
     api.loadPreferences.mockResolvedValue({ language: 'fr', installationPath: report.root })
     api.scan.mockResolvedValue(report)
-    api.applyDefaultMods.mockRejectedValueOnce({ code: 'modUnmanagedFiles' })
+    api.reconcileGraphicsMods.mockRejectedValueOnce({ code: 'modUnmanagedFiles' })
     const store = useInstallation()
     await store.initialize()
     expect(store.report?.recognized).toBe(true)
-    expect(store.defaultModsError).toBe('modUnmanagedFiles')
+    expect(store.graphicsModsError).toBe('modUnmanagedFiles')
     expect(store.error).toBeNull()
   })
   it('saves a shared choice immediately, defers a busy game, and reports an English fallback', async () => {
@@ -159,7 +159,7 @@ describe('installation workflow', () => {
     expect(api.scan).toHaveBeenCalledWith(report.root)
     expect(store.report?.recognized).toBe(false)
     expect(api.synchronizeGameLanguage).not.toHaveBeenCalled()
-    expect(api.applyDefaultMods).not.toHaveBeenCalled()
+    expect(api.reconcileGraphicsMods).not.toHaveBeenCalled()
     expect(store.initializing).toBe(false)
   })
   it('does not start another scan while the first is pending', async () => {

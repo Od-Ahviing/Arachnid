@@ -27,7 +27,7 @@ Starting with **Arachnid 0.1.1**, signed releases check GitHub for newer stable 
 
 Arachnid applies **Fix Enhancers** automatically once it recognizes a compatible game installation and can safely apply the mod. You can turn it off under **Mods**. ReShade and DXVK are optional. In **Graphics** and **Mods**, make your selections and click **Apply changes** to apply and verify them together.
 
-In **Mods**, **Apply changes** checks the game folder first. For an unexpected change to a file managed by the graphics pack, Arachnid backs up the current file and uses its recorded original state to build the requested selection. Files outside the pack still require review if they conflict.
+Arachnid checks the game folder automatically at startup, when you click **Play**, and when you apply a mod change. If a managed graphics file has changed, Arachnid backs up the current bytes and uses the recorded original state to reapply your saved mod combination. **Apply changes** uses your new selection instead. Open **Diagnostics** to see or export the latest report.
 
 On a fresh Windows profile, Arachnid creates the missing display and graphics settings before the first launch. The initial settings are 1920 × 1080 in fullscreen with the Medium preset. Choose your preferred settings under **Graphics**.
 
@@ -42,7 +42,7 @@ The language selector on **Home** controls both the launcher and the game. **Aut
 ## Troubleshooting
 
 - **The game crashes or closes in the same spot.** In **Mods**, disable **ReShade** first if it is enabled, click **Apply changes**, and retry the same scene. If it still crashes, try disabling the other graphics mods one at a time. You can also test with all three disabled to establish a baseline.
-- **Play is unavailable or the game fails to start.** Open **Diagnostics** and check the game folder, executable build, and runtime warnings. Arachnid checks launch compatibility separately from folder recognition, so a recognized folder can still have an unsupported executable or missing dependencies.
+- **The game fails to start.** Check the reason shown on **Home**. Use **Diagnostics** for details about the game folder, executable build, or missing dependencies. After resolving the issue, click **Play** to check again.
 - **The game stutters or renders incorrectly.** Try a lower preset in **Graphics**, apply it, and compare the same scene. If DXVK is active, test with it disabled. The results depend on your GPU and driver.
 - **A modded costume looks unchanged.** Some texture packs target another suit, such as Scarlet Spider. Equip the corresponding suit in the game's wardrobe when available. Select **Original textures** and apply the change to revert.
 - **SaveGuard finds no saves.** Check which save folder your installation uses and update the source in **Settings**. If you need to recover progress, use the snapshots listed in **Saves**.

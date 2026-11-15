@@ -34,7 +34,7 @@ export const es = {
     'Si la versión no es compatible, exporta el informe para compartir la huella de Game.exe.',
   profilesUnavailable:
     'Al menos un ajuste gráfico tiene un formato ilegible. Consulta los detalles de abajo.',
-  defaultModsDeferred: 'No se pudo aplicar Fix Enhancers automáticamente.',
+  graphicsModsDeferred: 'Arachnid no pudo aplicar automáticamente los mods gráficos.',
   modReconcile:
     'Algunos archivos gráficos gestionados difieren del paquete instalado. Aplica los cambios para guardarlos y partir de los originales verificados.',
   appUpdateAvailable: 'Actualización disponible',
@@ -258,7 +258,8 @@ export const es = {
   installationInvalid: 'Selecciona una instalación reconocida.',
   recoveryRequired: 'Una operación incompleta requiere restauración en Gráficos antes de jugar.',
   channelUnqualified: 'Esta versión del ejecutable aún no tiene un método de inicio compatible.',
-  diagnosticBlocking: 'Resuelve los problemas bloqueantes del diagnóstico antes de iniciar.',
+  diagnosticBlocking:
+    'La comprobación de la instalación detectó un problema que impide aplicar estos cambios.',
   direct3dUnresolved: 'Direct3D 9 x86 necesita una comprobación.',
   legacyDirectxUnresolved: 'El componente DirectX heredado necesita una comprobación.',
   visualCppUnresolved: 'No se pudo resolver una dependencia Visual C++ directa.',
