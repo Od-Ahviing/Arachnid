@@ -7,15 +7,16 @@ use sha2::{Digest, Sha256};
 use std::{
     collections::BTreeSet,
     fs::{self, File},
-    io::{Read, Write},
+    io::{BufWriter, Read, Write},
     path::Path,
     sync::atomic::{AtomicBool, Ordering},
     time::{SystemTime, UNIX_EPOCH},
 };
 
 pub const MAX_IMAGE_BYTES: usize = 1024 * 1024;
-const MAX_PLAN_BYTES: usize = 8 * MAX_IMAGE_BYTES;
-const MAX_JOURNAL_BYTES: u64 = 64 * MAX_IMAGE_BYTES as u64;
+// Save restores can replace 32 one-MiB files, including both previous and desired bytes.
+const MAX_PLAN_BYTES: usize = 64 * MAX_IMAGE_BYTES;
+const MAX_JOURNAL_BYTES: u64 = 320 * MAX_IMAGE_BYTES as u64;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
@@ -151,9 +152,16 @@ impl Journal {
             .ok_or_else(|| AppError::new("journalUnavailable"))?;
         let mut file = tempfile::NamedTempFile::new_in(parent)
             .map_err(|_| AppError::new("journalUnavailable"))?;
-        serde_json::to_writer(&mut file, self).map_err(|_| AppError::new("journalUnavailable"))?;
-        file.flush()
-            .and_then(|_| file.as_file().sync_all())
+        {
+            let mut writer = BufWriter::new(file.as_file_mut());
+            serde_json::to_writer(&mut writer, self)
+                .map_err(|_| AppError::new("journalUnavailable"))?;
+            writer
+                .flush()
+                .map_err(|_| AppError::new("journalUnavailable"))?;
+        }
+        file.as_file()
+            .sync_all()
             .map_err(|_| AppError::new("journalUnavailable"))?;
         file.persist(path)
             .map_err(|_| AppError::new("journalUnavailable"))?;

@@ -77,6 +77,16 @@ async function view() {
 }
 
 describe('SaveGuard automatic copies and guided actions', () => {
+  it('displays and saves a one-GiB storage quota', async () => {
+    const status = structuredClone(initial)
+    status.profile!.quotaBytes = 1024 * 1024 * 1024
+    api.saveStatus.mockResolvedValue(status)
+    const wrapper = await view()
+    expect((wrapper.get('input[max="1024"]').element as HTMLInputElement).value).toBe('1024')
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+    expect(api.configureSaveguard).toHaveBeenCalledWith(true, 20, 1024)
+  })
   it('uses automatic detection and a fixed backup folder without a picker on this page', async () => {
     const wrapper = await view()
     expect(wrapper.text()).toContain('Automatic protection is on')

@@ -12,7 +12,7 @@ use std::{
 };
 
 pub const MAX_FILES: usize = 32;
-pub const MAX_BYTES: usize = 4 * 1024 * 1024;
+pub const MAX_BYTES: usize = MAX_FILES * arachnid_repair::MAX_IMAGE_BYTES;
 pub type Generation = BTreeMap<String, Image>;
 
 pub fn hash(bytes: &[u8]) -> String {

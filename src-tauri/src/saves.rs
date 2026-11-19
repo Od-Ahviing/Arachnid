@@ -90,8 +90,11 @@ pub fn initialize(app: &tauri::AppHandle) {
     let result = (|| {
         std::fs::create_dir_all(backup_root(&state)).map_err(|_| AppError::new("writeFailed"))?;
         if config_path(&state).exists() {
-            let loaded: SourceProfile =
+            let mut loaded: SourceProfile =
                 arachnid_saveguard::load_json(&config_path(&state), 16 * 1024)?;
+            if loaded.upgrade_default_quota() {
+                arachnid_saveguard::save_json(&config_path(&state), &loaded)?;
+            }
 
             *state
                 .saves

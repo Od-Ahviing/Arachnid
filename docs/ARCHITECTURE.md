@@ -43,7 +43,11 @@ After Setup and on startup, Arachnid initializes missing native display and grap
 
 [saves.rs](../src-tauri/src/saves.rs) wires SaveGuard to desktop commands and the background watcher. [discovery.rs](../crates/arachnid-saveguard/src/discovery.rs) looks for known save locations using the installation and files it finds. Settings provides a manual source override.
 
-The [SaveGuard crate](../crates/arachnid-saveguard/src/lib.rs) checks stable file contents before copying. Automatic backups group changes into fixed five-minute windows. Later changes update that window's backup without extending the deadline. Manual and pinned snapshots have their own lifecycle. Restore checks the snapshot, preserves the current state for rollback, and requires the game to be stopped before applying an approved plan. Test that a restored save actually loads when changing this workflow. A matching hash verifies the copied bytes.
+The [SaveGuard crate](../crates/arachnid-saveguard/src/lib.rs) checks stable file contents before copying. Automatic backups group changes into fixed five-minute windows. Later changes update that window's backup without extending the deadline. Manual and pinned snapshots have their own lifecycle.
+
+The default storage quota is 1 GiB (1024 MiB); startup upgrades profiles using the previous 256 MiB default while preserving other configured quotas. Save groups support up to 32 files of 1 MiB each, including in-game photos. At the copy-count limit, the oldest unpinned snapshots are removed. Under storage pressure, previously deleted copies are reclaimed first (their deletion can then no longer be undone). SaveGuard first verifies that enough eligible old copies can be removed, stages and verifies the new contents, then removes those copies before publication. Pinned copies and the latest complete snapshot are preserved; if these protections prevent freeing enough space, the operation reports the quota limit without deleting history. Restore journals support both generations of a full save group.
+
+Restore checks the snapshot, preserves the current state for rollback, and requires the game to be stopped before applying an approved plan. Test that a restored save actually loads when changing this workflow. A matching hash verifies the copied bytes.
 
 ## Launcher updates
 

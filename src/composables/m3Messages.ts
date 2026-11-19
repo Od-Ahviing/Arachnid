@@ -27,7 +27,7 @@ export const en = {
   saveApply: 'Approve this restoration',
   saveUndo: 'Undo / cancel restoration',
   saveLimit:
-    'Up to 32 files, 1 MiB per file and 4 MiB per generation. Quiet for 750 ms, then checked again during copying. This does not establish semantic consistency.',
+    'Up to 32 files, 1 MiB per file and 32 MiB per generation. Quiet for 750 ms, then checked again during copying. This does not establish semantic consistency.',
   saveEmptyHistory: 'No complete copy yet.',
   saveProtectionOff: 'Monitoring disabled',
   saveProtectionOn: 'Monitoring enabled',
@@ -84,7 +84,7 @@ export const fr = {
   saveApply: 'Approuver cette restauration',
   saveUndo: 'Annuler / revenir avant la restauration',
   saveLimit:
-    '32 fichiers au maximum, 1 Mio par fichier et 4 Mio par génération. Stabilité de 750 ms, puis nouvelle vérification pendant la copie. Cela ne garantit pas la cohérence du contenu.',
+    '32 fichiers au maximum, 1 Mio par fichier et 32 Mio par génération. Stabilité de 750 ms, puis nouvelle vérification pendant la copie. Cela ne garantit pas la cohérence du contenu.',
   saveEmptyHistory: 'Aucune copie complète pour le moment.',
   saveProtectionOff: 'Surveillance désactivée',
   saveProtectionOn: 'Surveillance activée',
@@ -141,7 +141,7 @@ export const de = {
   saveApply: 'Diese Wiederherstellung genehmigen',
   saveUndo: 'Wiederherstellung abbrechen / rückgängig machen',
   saveLimit:
-    'Höchstens 32 Dateien, 1 MiB je Datei und 4 MiB je Generation. 750 ms Ruhe und erneute Prüfung während der Kopie garantieren keine inhaltliche Konsistenz.',
+    'Höchstens 32 Dateien, 1 MiB je Datei und 32 MiB je Generation. 750 ms Ruhe und erneute Prüfung während der Kopie garantieren keine inhaltliche Konsistenz.',
   saveEmptyHistory: 'Noch keine vollständige Kopie.',
   saveProtectionOff: 'Überwachung deaktiviert',
   saveProtectionOn: 'Überwachung aktiviert',
@@ -197,7 +197,7 @@ export const it = {
   saveApply: 'Approva questo ripristino',
   saveUndo: 'Annulla / torna a prima del ripristino',
   saveLimit:
-    'Massimo 32 file, 1 MiB per file e 4 MiB per generazione. Stabilità di 750 ms e nuova verifica durante la copia non garantiscono la coerenza del contenuto.',
+    'Massimo 32 file, 1 MiB per file e 32 MiB per generazione. Stabilità di 750 ms e nuova verifica durante la copia non garantiscono la coerenza del contenuto.',
   saveEmptyHistory: 'Nessuna copia completa.',
   saveProtectionOff: 'Monitoraggio disattivato',
   saveProtectionOn: 'Monitoraggio attivo',
@@ -252,7 +252,7 @@ export const es = {
   saveApply: 'Aprobar esta restauración',
   saveUndo: 'Cancelar / deshacer restauración',
   saveLimit:
-    'Máximo 32 archivos, 1 MiB por archivo y 4 MiB por generación. La estabilidad de 750 ms y la revisión durante la copia no garantizan la coherencia del contenido.',
+    'Máximo 32 archivos, 1 MiB por archivo y 32 MiB por generación. La estabilidad de 750 ms y la revisión durante la copia no garantizan la coherencia del contenido.',
   saveEmptyHistory: 'Todavía no hay copias completas.',
   saveProtectionOff: 'Vigilancia desactivada',
   saveProtectionOn: 'Vigilancia activada',

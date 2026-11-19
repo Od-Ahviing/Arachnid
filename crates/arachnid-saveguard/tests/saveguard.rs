@@ -198,7 +198,7 @@ fn retention_preserves_pins_newest_and_orders_by_sequence_when_clock_goes_back()
 }
 
 #[test]
-fn quota_refusal_never_deletes_the_last_complete_generation() {
+fn quota_prunes_oldest_unpinned_copy_and_preserves_the_latest() {
     let mut fixture = Fixture::new();
     fixture.profile.quota_bytes = 12 * 1024 * 1024;
     for i in 0..4 {
@@ -207,12 +207,16 @@ fn quota_refusal_never_deletes_the_last_complete_generation() {
     let store = fixture.store();
     let first = store.snapshot("manual", Duration::ZERO).unwrap();
     let second = store.snapshot("manual", Duration::ZERO).unwrap();
+    let third = store.snapshot("manual", Duration::ZERO).unwrap();
+    let ids: Vec<_> = store.history().unwrap().into_iter().map(|s| s.id).collect();
+    assert!(!ids.contains(&first.id));
+    assert!(ids.contains(&second.id) && ids.contains(&third.id));
+    store.pin(&second.id, true).unwrap();
     assert_eq!(
         store.snapshot("manual", Duration::ZERO).unwrap_err().code,
         "saveQuotaReached"
     );
-    let ids: Vec<_> = store.history().unwrap().into_iter().map(|s| s.id).collect();
-    assert!(ids.contains(&first.id) && ids.contains(&second.id));
+    assert_eq!(store.history().unwrap().len(), 2);
 }
 
 #[test]
@@ -569,4 +573,113 @@ fn empty_sources_wait_normally_and_a_corrupt_copy_cannot_justify_deleting_the_la
     .unwrap();
     assert_eq!(store.delete(&second.id).unwrap_err().code, "saveLastCopy");
     assert_eq!(store.index().unwrap().len(), 2);
+}
+
+#[test]
+fn default_quota_upgrade_preserves_custom_limits() {
+    let mut fixture = Fixture::new();
+    assert_eq!(fixture.profile.quota_bytes, 1024 * 1024 * 1024);
+    fixture.profile.quota_bytes = 256 * 1024 * 1024;
+    assert!(fixture.profile.upgrade_default_quota());
+    assert_eq!(fixture.profile.quota_bytes, 1024 * 1024 * 1024);
+    assert!(!fixture.profile.upgrade_default_quota());
+    fixture.profile.quota_bytes = 128 * 1024 * 1024;
+    assert!(!fixture.profile.upgrade_default_quota());
+    assert_eq!(fixture.profile.quota_bytes, 128 * 1024 * 1024);
+}
+
+#[test]
+fn photo_heavy_save_can_be_copied_restored_and_undone() {
+    let fixture = Fixture::new();
+    for i in 0..9 {
+        fixture.write(&format!("photo-{i}.fpop"), &vec![i; 512 * 1024]);
+    }
+    let store = fixture.store();
+    let original = source::capture(&fixture.source).unwrap();
+    let first = store.snapshot("manual", Duration::ZERO).unwrap();
+    for i in 0..9 {
+        fixture.write(&format!("photo-{i}.fpop"), &vec![i + 1; 512 * 1024]);
+    }
+    let changed = source::capture(&fixture.source).unwrap();
+    let journal = store.prepare_restore(&first.id, || Ok(())).unwrap();
+    store.apply_restore(&journal.digest, || Ok(())).unwrap();
+    assert_eq!(source::capture(&fixture.source).unwrap(), original);
+    store.undo_restore(&journal.digest, || Ok(())).unwrap();
+    assert_eq!(source::capture(&fixture.source).unwrap(), changed);
+}
+
+#[test]
+fn automatic_copies_continue_past_storage_and_count_limits() {
+    let mut fixture = Fixture::new();
+    fixture.profile.keep = 2;
+    fixture.profile.quota_bytes = 8 * 1024 * 1024;
+    let store = fixture.store();
+    for i in 0..6 {
+        fixture.write("slot.dat", &vec![i; 1024 * 1024]);
+        store
+            .reconcile_at("watch", Duration::ZERO, 1000 + u64::from(i) * 301)
+            .unwrap()
+            .unwrap();
+        assert!(store.history().unwrap().len() <= 2);
+    }
+    assert_eq!(
+        store.history().unwrap()[0].files[0].sha256,
+        source::hash(&vec![5; 1024 * 1024])
+    );
+}
+
+#[test]
+fn quota_reclaims_deleted_copies_before_visible_history() {
+    let mut fixture = Fixture::new();
+    fixture.profile.quota_bytes = 8 * 1024 * 1024;
+    for i in 0..3 {
+        fixture.write(&format!("{i}.dat"), &vec![i; 1024 * 1024]);
+    }
+    let store = fixture.store();
+    let first = store.snapshot("manual", Duration::ZERO).unwrap();
+    let second = store.snapshot("manual", Duration::ZERO).unwrap();
+    store.delete(&first.id).unwrap();
+    let third = store.snapshot("manual", Duration::ZERO).unwrap();
+    assert!(
+        !store
+            .directory()
+            .join(format!("deleted-{}", first.id))
+            .exists()
+    );
+    let history = store.history().unwrap();
+    assert!(history.iter().any(|copy| copy.id == second.id));
+    assert!(history.iter().any(|copy| copy.id == third.id));
+}
+
+#[test]
+fn unstable_copy_at_quota_does_not_prune_existing_history() {
+    let mut fixture = Fixture::new();
+    fixture.profile.quota_bytes = 8 * 1024 * 1024;
+    for i in 0..3 {
+        fixture.write(&format!("{i}.dat"), &vec![i; 1024 * 1024]);
+    }
+    let store = fixture.store();
+    store.snapshot("manual", Duration::ZERO).unwrap();
+    store.snapshot("manual", Duration::ZERO).unwrap();
+    let before: Vec<_> = store
+        .history()
+        .unwrap()
+        .into_iter()
+        .map(|copy| copy.id)
+        .collect();
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        store.snapshot_with_checkpoint("manual", Duration::ZERO, |stage| {
+            if stage == arachnid_saveguard::SnapshotStage::ManifestSynced {
+                panic!("simulated interruption before publication")
+            }
+        })
+    }));
+    assert!(result.is_err());
+    let after: Vec<_> = store
+        .history()
+        .unwrap()
+        .into_iter()
+        .map(|copy| copy.id)
+        .collect();
+    assert_eq!(after, before);
 }

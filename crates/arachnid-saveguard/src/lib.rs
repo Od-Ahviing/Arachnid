@@ -19,7 +19,7 @@ pub const STABILITY_WINDOW: Duration = Duration::from_millis(750);
 pub const AUTOMATIC_COPY_WINDOW: Duration = Duration::from_secs(5 * 60);
 const MAX_MANIFEST_BYTES: u64 = 64 * 1024;
 const MAX_HISTORY: usize = 1000;
-const DEFAULT_QUOTA: u64 = 256 * 1024 * 1024;
+pub const DEFAULT_QUOTA: u64 = 1024 * 1024 * 1024;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SnapshotStage {
@@ -138,6 +138,14 @@ pub fn load_json<T: serde::de::DeserializeOwned>(path: &Path, limit: u64) -> App
 }
 
 impl SourceProfile {
+    pub fn upgrade_default_quota(&mut self) -> bool {
+        if self.quota_bytes == 256 * 1024 * 1024 {
+            self.quota_bytes = DEFAULT_QUOTA;
+            return true;
+        }
+        false
+    }
+
     pub fn discover(documents: &Path, backup_root: &Path) -> AppResult<Option<Self>> {
         discovery::Discovery::native(documents).find(backup_root)
     }
@@ -269,7 +277,10 @@ impl Store {
     }
 
     fn manifest(&self, id: &str) -> AppResult<Snapshot> {
-        let path = self.snapshot_path(id)?;
+        self.manifest_at(&self.snapshot_path(id)?, id)
+    }
+
+    fn manifest_at(&self, path: &Path, id: &str) -> AppResult<Snapshot> {
         let snapshot: Snapshot = load_json(&path.join("manifest.json"), MAX_MANIFEST_BYTES)?;
         if snapshot.schema_version != 1
             || snapshot.id != id
@@ -301,8 +312,12 @@ impl Store {
     }
 
     fn load_snapshot(&self, id: &str) -> AppResult<(Snapshot, Generation)> {
-        let path = self.snapshot_path(id)?;
-        let snapshot = self.manifest(id)?;
+        self.load_snapshot_at(&self.snapshot_path(id)?, id)
+    }
+
+    fn load_snapshot_at(&self, path: &Path, id: &str) -> AppResult<(Snapshot, Generation)> {
+        source::safe_directory(path)?;
+        let snapshot = self.manifest_at(path, id)?;
         let mut generation = Generation::new();
         for entry in &snapshot.files {
             let image = arachnid_repair::filesystem::read(
@@ -456,11 +471,7 @@ impl Store {
             .values()
             .map(|image| image.bytes.len() as u64)
             .sum();
-        let used = used_bytes(&self.root, &mut 0, 0)?;
-        // Retention never sacrifices an existing generation to make a new copy fit.
-        if used.saturating_add(size).saturating_add(MAX_MANIFEST_BYTES) > self.profile.quota_bytes {
-            return Err(AppError::new("saveQuotaReached"));
-        }
+        let removals = self.quota_removals(size + MAX_MANIFEST_BYTES, &history)?;
         arachnid_repair::filesystem::ensure_space(&self.root, size + MAX_MANIFEST_BYTES)?;
         let staging = tempfile::Builder::new()
             .prefix("staging-")
@@ -529,10 +540,16 @@ impl Store {
             // The atomic manifest switch keeps the previous complete payload readable until publication.
             save_json(&staging.path().join("manifest.json"), &snapshot)?;
             checkpoint(SnapshotStage::ManifestSynced);
+            for (obsolete, path) in &removals {
+                self.remove_snapshot_at(obsolete, path)?;
+            }
             save_json(&path.join("manifest.json"), &snapshot)?;
         } else {
             save_json(&staging.path().join("manifest.json"), &snapshot)?;
             checkpoint(SnapshotStage::ManifestSynced);
+            for (obsolete, path) in &removals {
+                self.remove_snapshot_at(obsolete, path)?;
+            }
             let final_path = self.root.join(&snapshot.id);
             fs::rename(staging.path(), &final_path).map_err(|_| AppError::new("writeFailed"))?;
         }
@@ -545,8 +562,21 @@ impl Store {
     }
 
     fn clean_payloads(&self, snapshot: &Snapshot, include_current: bool) -> AppResult<()> {
-        let path = self.snapshot_path(&snapshot.id)?;
-        for entry in fs::read_dir(&path)
+        self.clean_payloads_at(
+            &self.snapshot_path(&snapshot.id)?,
+            snapshot,
+            include_current,
+        )
+    }
+
+    fn clean_payloads_at(
+        &self,
+        path: &Path,
+        snapshot: &Snapshot,
+        include_current: bool,
+    ) -> AppResult<()> {
+        source::safe_directory(path)?;
+        for entry in fs::read_dir(path)
             .map_err(|_| AppError::new("saveCorrupt"))?
             .take(MAX_HISTORY + 1)
         {
@@ -576,21 +606,81 @@ impl Store {
         ));
         history.retain(|s| s.id != newest && !s.pinned);
         for snapshot in history.into_iter().skip(keep) {
-            let (_, expected) = self.load_snapshot(&snapshot.id)?;
-            let path = self.snapshot_path(&snapshot.id)?;
-            // Deletion is restricted to a validated, direct child snapshot directory, never a source path.
-            if path.parent() != Some(self.root.as_path()) {
-                return Err(AppError::new("invalidPath"));
-            }
-            let files = path.join(&snapshot.payload_directory);
-            if source::capture(&files)? != expected {
-                return Err(AppError::new("saveCorrupt"));
-            }
-            self.clean_payloads(&snapshot, true)?;
-            arachnid_repair::filesystem::write(&path, "manifest.json", &None)?;
-            fs::remove_dir(path).map_err(|_| AppError::new("writeFailed"))?;
+            self.remove_snapshot(&snapshot)?;
         }
         Ok(())
+    }
+
+    fn quota_removals(
+        &self,
+        incoming: u64,
+        history: &[Snapshot],
+    ) -> AppResult<Vec<(Snapshot, PathBuf)>> {
+        let mut required = used_bytes(&self.root, &mut 0, 0)?.saturating_add(incoming);
+        let mut removals = Vec::new();
+        if required <= self.profile.quota_bytes {
+            return Ok(removals);
+        }
+        if self.operation()?.is_some_and(|journal| !journal.terminal()) {
+            return Err(AppError::new("saveRestorePending"));
+        }
+        if let Some(latest) = history.first() {
+            self.load_snapshot(&latest.id)?;
+        }
+        let mut deleted = Vec::new();
+        for entry in fs::read_dir(&self.root).map_err(|_| AppError::new("saveCorrupt"))? {
+            let entry = entry.map_err(|_| AppError::new("saveCorrupt"))?;
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if let Some(id) = name.strip_prefix("deleted-")
+                && valid_id(id)
+                && id.starts_with("snapshot-")
+            {
+                let (snapshot, _) = self.load_snapshot_at(&entry.path(), id)?;
+                if !snapshot.pinned {
+                    deleted.push((snapshot, entry.path()));
+                }
+            }
+        }
+        deleted.sort_by_key(|(snapshot, _)| snapshot.sequence);
+        // Reclaim the trash first, then oldest unpinned copies, preserving the latest complete copy.
+        let candidates = deleted.into_iter().chain(
+            history
+                .iter()
+                .skip(1)
+                .rev()
+                .filter(|copy| !copy.pinned)
+                .map(|copy| (copy.clone(), self.root.join(&copy.id))),
+        );
+        for (snapshot, path) in candidates {
+            self.load_snapshot_at(&path, &snapshot.id)?;
+            required = required.saturating_sub(used_bytes(&path, &mut 0, 0)?);
+            removals.push((snapshot, path));
+            if required <= self.profile.quota_bytes {
+                return Ok(removals);
+            }
+        }
+        Err(AppError::new("saveQuotaReached"))
+    }
+
+    fn remove_snapshot(&self, snapshot: &Snapshot) -> AppResult<()> {
+        self.remove_snapshot_at(snapshot, &self.snapshot_path(&snapshot.id)?)
+    }
+
+    fn remove_snapshot_at(&self, snapshot: &Snapshot, path: &Path) -> AppResult<()> {
+        let (_, expected) = self.load_snapshot_at(path, &snapshot.id)?;
+        let name = path.file_name().and_then(|name| name.to_str());
+        if path.parent() != Some(self.root.as_path())
+            || !(name == Some(snapshot.id.as_str())
+                || name == Some(format!("deleted-{}", snapshot.id).as_str()))
+        {
+            return Err(AppError::new("invalidPath"));
+        }
+        if source::capture(&path.join(&snapshot.payload_directory))? != expected {
+            return Err(AppError::new("saveCorrupt"));
+        }
+        self.clean_payloads_at(path, snapshot, true)?;
+        arachnid_repair::filesystem::write(path, "manifest.json", &None)?;
+        fs::remove_dir(path).map_err(|_| AppError::new("writeFailed"))
     }
 
     pub fn pin(&self, id: &str, pinned: bool) -> AppResult<()> {
@@ -653,7 +743,12 @@ impl Store {
             .len() as u64;
         if used_bytes(&self.root, &mut 0, 0)?
             .saturating_add(journal_estimate.saturating_mul(2))
-            .saturating_add(source::MAX_BYTES as u64)
+            .saturating_add(
+                current
+                    .values()
+                    .map(|image| image.bytes.len() as u64)
+                    .sum::<u64>(),
+            )
             > self.profile.quota_bytes
         {
             return Err(AppError::new("saveQuotaReached"));
@@ -757,7 +852,7 @@ fn used_bytes(path: &Path, visited: &mut usize, depth: usize) -> AppResult<u64> 
     let mut bytes = 0_u64;
     for entry in fs::read_dir(path).map_err(|_| AppError::new("saveCorrupt"))? {
         *visited += 1;
-        if *visited > 4096 {
+        if *visited > 65536 {
             return Err(AppError::new("operationLimit"));
         }
         let entry = entry.map_err(|_| AppError::new("saveCorrupt"))?;
