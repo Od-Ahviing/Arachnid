@@ -1,6 +1,11 @@
 import { locale } from './i18n'
 
 const en = {
+  playtime: 'Play time',
+  playtimeHint:
+    'Time tracked since this feature was added, for sessions launched through Arachnid. Includes menus and pauses.',
+  playtimeLessMinute: 'Less than a minute',
+  playtimeUnavailable: 'Play time is unavailable. The game can still launch.',
   sharedLanguage: 'Interface and game language',
   sharedLanguageHint:
     'One choice for Arachnid and the game. Automatic follows your device’s supported language, with English as fallback.',
@@ -71,6 +76,11 @@ const en = {
 }
 type Key = keyof typeof en
 const fr: Record<Key, string> = {
+  playtime: 'Temps de jeu',
+  playtimeHint:
+    'Temps suivi depuis l’ajout de cette fonctionnalité, pour les sessions lancées via Arachnid. Menus et pauses inclus.',
+  playtimeLessMinute: 'Moins d’une minute',
+  playtimeUnavailable: 'Le temps de jeu est indisponible. Le jeu peut toujours être lancé.',
   sharedLanguage: 'Langue de l’interface et du jeu',
   sharedLanguageHint:
     'Un seul choix pour Arachnid et le jeu. Automatique suit la langue prise en charge du PC, avec l’anglais en repli.',
@@ -143,6 +153,12 @@ const fr: Record<Key, string> = {
   leave: 'Quitter cette page et abandonner les modifications non appliquées ?',
 }
 const de: Record<Key, string> = {
+  playtime: 'Spielzeit',
+  playtimeHint:
+    'Erfasste Zeit seit Einführung dieser Funktion für über Arachnid gestartete Sitzungen. Einschließlich Menüs und Pausen.',
+  playtimeLessMinute: 'Weniger als eine Minute',
+  playtimeUnavailable:
+    'Die Spielzeit ist nicht verfügbar. Das Spiel kann weiterhin gestartet werden.',
   sharedLanguage: 'Sprache von Oberfläche und Spiel',
   sharedLanguageHint:
     'Eine Auswahl für Arachnid und das Spiel. Automatisch folgt einer unterstützten Gerätesprache, sonst Englisch.',
@@ -214,6 +230,11 @@ const de: Record<Key, string> = {
   leave: 'Diese Seite verlassen und nicht angewendete Änderungen verwerfen?',
 }
 const it: Record<Key, string> = {
+  playtime: 'Tempo di gioco',
+  playtimeHint:
+    'Tempo registrato dall’aggiunta di questa funzione per le sessioni avviate tramite Arachnid. Include menu e pause.',
+  playtimeLessMinute: 'Meno di un minuto',
+  playtimeUnavailable: 'Il tempo di gioco non è disponibile. Puoi comunque avviare il gioco.',
   sharedLanguage: 'Lingua dell’interfaccia e del gioco',
   sharedLanguageHint:
     'Una scelta per Arachnid e il gioco. Automatico segue una lingua supportata del dispositivo, altrimenti l’inglese.',
@@ -284,6 +305,11 @@ const it: Record<Key, string> = {
   leave: 'Uscire da questa pagina e scartare le modifiche non applicate?',
 }
 const es: Record<Key, string> = {
+  playtime: 'Tiempo de juego',
+  playtimeHint:
+    'Tiempo registrado desde que se añadió esta función para sesiones iniciadas desde Arachnid. Incluye menús y pausas.',
+  playtimeLessMinute: 'Menos de un minuto',
+  playtimeUnavailable: 'El tiempo de juego no está disponible. Puedes seguir iniciando el juego.',
   sharedLanguage: 'Idioma de la interfaz y del juego',
   sharedLanguageHint:
     'Una elección para Arachnid y el juego. Automático sigue un idioma compatible del dispositivo, con inglés de respaldo.',

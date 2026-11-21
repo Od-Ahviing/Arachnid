@@ -24,6 +24,12 @@ The normal path for a system operation is a Vue view calling `desktop`, a Tauri 
 
 Recognition, launch eligibility, and mod compatibility are separate checks. Diagnostics show a local Direct3D wrapper that could not be verified and include its fingerprint in the exported report when readable. Use [game_build.rs](../crates/arachnid-core/src/game_build.rs), [readiness.rs](../crates/arachnid-core/src/readiness.rs), and the launch tests when working on build support.
 
+## Play time
+
+[playtime.rs](../src-tauri/src/playtime.rs) records the cumulative process runtime of sessions successfully launched through Arachnid. Home receives `playtimeSeconds` through the existing launch status response. The Rust supervisor updates it while the WebView is closed, using a monotonic clock. Menus and pauses count; historical play time and launches outside Arachnid cannot be reconstructed. The counter is shared across game installation folders for the current Windows user.
+
+The counter is stored separately from preferences in `playtime.json` under Local AppData, with atomic replacement and disk synchronization every 30 seconds, on observed game exit, and on normal launcher exit. Abrupt termination can lose time since the last checkpoint. A launcher restart loads only committed time and never counts downtime. Invalid or newer records are preserved and shown as unavailable; tracking or storage failures never block Play. All observations and writes are serialized by the backend mutex and the existing single-instance lock.
+
 ## Settings and language
 
 After Setup and on startup, Arachnid initializes missing native display and graphics values for a recognized, supported game. The fallback for a new Windows profile is 1920 × 1080 in fullscreen with the Medium preset. Existing registry values are preserved. Initialization has its own transaction journal, and interrupted writes can be reviewed and restored in Graphics. Language synchronization and default mods run afterward.

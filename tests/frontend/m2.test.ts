@@ -22,6 +22,37 @@ beforeEach(() => {
 })
 
 describe('launch consent', () => {
+  it('shows tracked time on Home and keeps Play available when tracking is unavailable', async () => {
+    const store = useInstallation()
+    store.report = {
+      recognized: true,
+      root: 'synthetic',
+      fileCount: 0,
+      pkzCount: 0,
+      totalBytes: 0,
+      scannedAt: 0,
+    } as typeof store.report
+    api.launchStatus.mockResolvedValue({
+      decision: { ready: true, reasons: [] },
+      session: { state: 'idle' },
+      playtimeSeconds: 7260,
+    })
+    const options = { global: { stubs: { RouterLink: true } } }
+    const view = mount(HomeView, options)
+    await flushPromises()
+    expect(view.get('.playtime-summary').text()).toContain('2 hr 1 min')
+    view.unmount()
+    api.launchStatus.mockResolvedValue({
+      decision: { ready: true, reasons: [] },
+      session: { state: 'idle' },
+      playtimeSeconds: null,
+    })
+    const unavailable = mount(HomeView, options)
+    await flushPromises()
+    expect(unavailable.get('.playtime-summary').text()).toContain('Play time is unavailable')
+    expect(unavailable.get('.play-section button').attributes('disabled')).toBeUndefined()
+    unavailable.unmount()
+  })
   it('shows ReShade advice for a returned session and remembers its dismissal across navigation', async () => {
     const store = useInstallation()
     store.report = {

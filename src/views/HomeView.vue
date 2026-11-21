@@ -13,6 +13,7 @@ import {
   Archive,
   CircleCheck,
   CircleAlert,
+  Clock,
 } from '@lucide/vue'
 import { useInstallation } from '../stores/installation'
 import { locale, t } from '../composables/i18n'
@@ -22,6 +23,7 @@ import { useSession } from '../composables/session'
 import { ui } from '../composables/interfaceMessages'
 import GameLanguageControl from '../components/game/GameLanguageControl.vue'
 import { packError } from '../composables/packMessages'
+import { formatPlaytime } from '../composables/playtime'
 const shortcuts = [
   { path: '/graphics', key: 'graphics', hint: 'graphicsHint', icon: SlidersHorizontal },
   { path: '/mods', key: 'mods', hint: 'modsHint', icon: Layers },
@@ -135,6 +137,17 @@ function dismissCrashAdvice() {
     <p v-if="store.graphicsModsError" class="notice" role="status">
       {{ t('graphicsModsDeferred') }} {{ packError(store.graphicsModsError) }}
     </p>
+    <section class="section playtime-summary" :aria-label="ui('playtime')">
+      <Clock :size="22" aria-hidden="true" />
+      <div>
+        <h2>{{ ui('playtime') }}</h2>
+        <strong v-if="status?.playtimeSeconds != null">
+          {{ formatPlaytime(status.playtimeSeconds) }}
+        </strong>
+        <p v-else>{{ ui(status ? 'playtimeUnavailable' : 'loading') }}</p>
+        <p class="muted">{{ ui('playtimeHint') }}</p>
+      </div>
+    </section>
     <GameLanguageControl />
     <div class="home-shortcuts">
       <RouterLink

@@ -1,6 +1,7 @@
 mod commands;
 mod lifecycle;
 mod mods;
+mod playtime;
 mod saves;
 mod skins;
 mod storage;
@@ -20,6 +21,7 @@ use tauri_plugin_dialog::DialogExt;
 
 struct AppState {
     lifecycle: lifecycle::Lifecycle,
+    playtime: Mutex<playtime::Playtime>,
     saves: saves::SaveState,
     data_directory: std::path::PathBuf,
     operations: Mutex<()>,
@@ -264,6 +266,7 @@ pub fn run() {
             // Startup remains usable for reporting a damaged config; saving still refuses to overwrite it.
             app.manage(AppState {
                 lifecycle: lifecycle::Lifecycle::default(),
+                playtime: Mutex::new(playtime::Playtime::load(&directory)),
                 saves: saves::SaveState::default(),
                 data_directory: directory,
                 operations: Mutex::new(()),
@@ -320,6 +323,11 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("Arachnid could not start")
         .run(|app, event| {
+            if matches!(event, tauri::RunEvent::Exit)
+                && let Ok(mut playtime) = app.state::<AppState>().playtime.lock()
+            {
+                playtime.observe(false);
+            }
             if let tauri::RunEvent::ExitRequested {
                 code: None, api, ..
             } = event

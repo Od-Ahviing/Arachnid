@@ -22,6 +22,9 @@ pub(crate) fn ensure_no_session(state: &AppState) -> AppResult<()> {
         if active.status()?.state != "exited" {
             return Err(AppError::new("gameAlreadyRunning"));
         }
+        if let Ok(mut playtime) = state.playtime.lock() {
+            playtime.observe(false);
+        }
         *session = None;
     }
     Ok(())
@@ -163,6 +166,7 @@ pub(crate) fn build(report: &ScanReport) -> AppResult<&str> {
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LaunchStatus {
+    playtime_seconds: Option<u64>,
     decision: LaunchDecision,
     pub(super) session: SessionStatus,
     recovery_pending: bool,
@@ -242,6 +246,11 @@ pub(super) fn status(state: &AppState) -> AppResult<LaunchStatus> {
                 exit_code: None,
             })
     };
+    let playtime_seconds = state
+        .playtime
+        .lock()
+        .ok()
+        .and_then(|mut playtime| playtime.observe(session.state == "running"));
     if session.state == "exited" {
         if sessions.is_some() {
             crate::saves::session_snapshot(state, "afterGame");
@@ -284,6 +293,7 @@ pub(super) fn status(state: &AppState) -> AppResult<LaunchStatus> {
         decision.reasons.push(error.code);
     }
     Ok(LaunchStatus {
+        playtime_seconds,
         decision,
         graphics_crash_advice: graphics_crash_advice(&session, components),
         session,
@@ -390,6 +400,9 @@ pub async fn start_game(
         *game = executable;
         crate::saves::session_snapshot(&state, "beforeGame");
         let session = Session::start_with_runtime(lease, &channel, runtime)?;
+        if let Ok(mut playtime) = state.playtime.lock() {
+            playtime.started();
+        }
         state.lifecycle.started();
         *state
             .session

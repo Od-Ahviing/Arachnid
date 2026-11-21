@@ -1,4 +1,5 @@
 export interface LaunchStatus {
+  playtimeSeconds: number | null
   decision: { ready: boolean; reasons: string[] }
   session: {
     state: 'idle' | 'running' | 'exited' | 'unknown'

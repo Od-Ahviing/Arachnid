@@ -353,6 +353,22 @@
     gap: 1rem;
     margin-top: 1.5rem;
   }
+  .playtime-summary {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+  }
+  .playtime-summary h2 {
+    margin-bottom: 0.5rem;
+  }
+  .playtime-summary strong {
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .playtime-summary p {
+    margin-top: 0.5rem;
+    max-width: 65ch;
+  }
   .shortcut-card {
     display: block;
     position: relative;
