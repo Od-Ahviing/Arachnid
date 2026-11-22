@@ -23,7 +23,7 @@ describe('play time', () => {
       const messages = interfaceMessages[language]
       expect(formatPlaytime(0)).toBe(messages.playtimeLessMinute)
       expect(formatPlaytime(3660)).toContain('1')
-      for (const key of ['playtime', 'playtimeHint', 'playtimeUnavailable'] as const) {
+      for (const key of ['playtime', 'playtimeUnavailable'] as const) {
         expect(messages[key].length).toBeGreaterThan(0)
       }
     }

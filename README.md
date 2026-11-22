@@ -35,6 +35,8 @@ On a fresh Windows profile, Arachnid creates the missing display and graphics se
 
 SaveGuard detects changes to save contents and groups automatic backups in five-minute windows. It uses a 1 GiB storage quota by default and automatically removes the oldest unpinned copies as needed. Pinned copies and the latest complete backup are protected. To restore a snapshot, close the game, choose the snapshot in **Saves**, review the changes, and confirm.
 
+Enabling ReShade prepares Arachnid Color, LumaSharpen and SMAA enabled by default; MXAO stays off. Open ReShade with Home/Begin in game to adjust the effects. Later choices are kept. The first-run tutorial is skipped so the startup banner can disappear normally.
+
 ## Supported languages
 
 **English · French (Français) · German (Deutsch) · Italian (Italiano) · Spanish (Español)**

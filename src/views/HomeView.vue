@@ -118,6 +118,16 @@ function dismissCrashAdvice() {
         </p>
         <p v-else>{{ ui('lifecycle') }}</p>
       </div>
+      <section class="playtime-summary" :aria-label="ui('playtime')">
+        <span class="playtime-icon"><Clock :size="18" aria-hidden="true" /></span>
+        <div class="playtime-content">
+          <h2>{{ ui('playtime') }}</h2>
+          <strong v-if="status?.playtimeSeconds != null">
+            {{ formatPlaytime(status.playtimeSeconds) }}
+          </strong>
+          <p v-else>{{ ui(status ? 'playtimeUnavailable' : 'loading') }}</p>
+        </div>
+      </section>
       <ul v-if="status && !status.decision.ready" class="notice">
         <li v-for="reason in status.decision.reasons" :key="reason">
           {{ t(reason)
@@ -137,17 +147,6 @@ function dismissCrashAdvice() {
     <p v-if="store.graphicsModsError" class="notice" role="status">
       {{ t('graphicsModsDeferred') }} {{ packError(store.graphicsModsError) }}
     </p>
-    <section class="section playtime-summary" :aria-label="ui('playtime')">
-      <Clock :size="22" aria-hidden="true" />
-      <div>
-        <h2>{{ ui('playtime') }}</h2>
-        <strong v-if="status?.playtimeSeconds != null">
-          {{ formatPlaytime(status.playtimeSeconds) }}
-        </strong>
-        <p v-else>{{ ui(status ? 'playtimeUnavailable' : 'loading') }}</p>
-        <p class="muted">{{ ui('playtimeHint') }}</p>
-      </div>
-    </section>
     <GameLanguageControl />
     <div class="home-shortcuts">
       <RouterLink

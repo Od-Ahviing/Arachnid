@@ -550,6 +550,7 @@ pub(crate) fn runtime_for_launch(
                 .persist(&config_path)
                 .map_err(|_| AppError::new("journalUnavailable"))?;
         }
+        crate::reshade::prepare_defaults(&config)?;
     }
     qualify_report(state, lease, report)?;
     Ok(Some(

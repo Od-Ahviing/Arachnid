@@ -13,7 +13,7 @@ const en = {
   dxvkHint: 'Run Direct3D 9 through Vulkan. Requires a compatible graphics driver.',
   reshade: 'ReShade',
   reshadeHint:
-    'Optional visual effects. Open with Home in game. Arachnid Color is included and disabled by default.',
+    'Arachnid Color, LumaSharpen and SMAA start enabled. Open with Home in game to adjust the effects.',
   active: 'Active',
   inactive: 'Inactive',
   pending: 'Change pending',
@@ -57,7 +57,7 @@ const fr: Messages = {
   dxvkHint: 'Utilise Vulkan pour le rendu Direct3D 9. Nécessite un pilote graphique compatible.',
   reshade: 'ReShade',
   reshadeHint:
-    'Effets visuels facultatifs. Interface avec Début en jeu. Arachnid Color est fourni et désactivé par défaut.',
+    'Arachnid Color, LumaSharpen et SMAA sont préactivés. Ajustez les effets avec Début/Home en jeu.',
   active: 'Actif',
   inactive: 'Inactif',
   pending: 'Changement prévu',
@@ -101,7 +101,7 @@ const de: Messages = {
   dxvkHint: 'Direct3D 9 über Vulkan. Benötigt einen kompatiblen Grafiktreiber.',
   reshade: 'ReShade',
   reshadeHint:
-    'Optionale Bildeffekte. Im Spiel mit Pos1 öffnen. Arachnid Color ist enthalten und standardmäßig aus.',
+    'Arachnid Color, LumaSharpen und SMAA sind voraktiviert. Effekte im Spiel mit Pos1 anpassen.',
   active: 'Aktiv',
   inactive: 'Inaktiv',
   pending: 'Änderung vorgemerkt',
@@ -144,7 +144,7 @@ const it: Messages = {
   dxvkHint: 'Direct3D 9 tramite Vulkan. Richiede un driver grafico compatibile.',
   reshade: 'ReShade',
   reshadeHint:
-    'Effetti visivi facoltativi. Apri con Home nel gioco. Arachnid Color è incluso e disattivato per impostazione predefinita.',
+    'Arachnid Color, LumaSharpen e SMAA sono preattivati. Regola gli effetti con Home nel gioco.',
   active: 'Attivo',
   inactive: 'Inattivo',
   pending: 'Modifica prevista',
@@ -186,7 +186,7 @@ const es: Messages = {
   dxvkHint: 'Direct3D 9 mediante Vulkan. Requiere un controlador gráfico compatible.',
   reshade: 'ReShade',
   reshadeHint:
-    'Efectos visuales opcionales. Abre con Inicio en el juego. Arachnid Color está incluido y desactivado por defecto.',
+    'Arachnid Color, LumaSharpen y SMAA están preactivados. Ajusta los efectos con Inicio en el juego.',
   active: 'Activo',
   inactive: 'Inactivo',
   pending: 'Cambio pendiente',

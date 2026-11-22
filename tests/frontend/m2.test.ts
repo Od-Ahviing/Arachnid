@@ -40,7 +40,9 @@ describe('launch consent', () => {
     const options = { global: { stubs: { RouterLink: true } } }
     const view = mount(HomeView, options)
     await flushPromises()
-    expect(view.get('.playtime-summary').text()).toContain('2 hr 1 min')
+    expect(view.get('.home-hero .playtime-summary').text()).toContain('2 hr 1 min')
+    expect(view.findAll('.playtime-summary')).toHaveLength(1)
+    expect(view.get('.playtime-summary').text()).not.toContain('since')
     view.unmount()
     api.launchStatus.mockResolvedValue({
       decision: { ready: true, reasons: [] },

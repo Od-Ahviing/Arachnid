@@ -297,15 +297,16 @@
     isolation: isolate;
     padding: clamp(1.5rem, 4vw, 3rem);
     min-height: 390px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-content: center;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-panel);
     background: var(--color-sidebar);
     overflow: hidden;
   }
   .home-heading {
+    grid-column: 1;
     max-width: 28rem;
   }
   .home-heading h1 {
@@ -328,6 +329,7 @@
     color: var(--color-success);
   }
   .play-section {
+    grid-column: 1;
     display: flex;
     flex-direction: column;
     align-items: start;
@@ -344,6 +346,7 @@
     max-width: 40ch;
   }
   .home-hero .notice {
+    grid-column: 1 / -1;
     margin: 1.25rem 0 0;
     width: 100%;
   }
@@ -354,20 +357,54 @@
     margin-top: 1.5rem;
   }
   .playtime-summary {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: end;
+    justify-self: end;
     display: flex;
-    align-items: start;
-    gap: 1rem;
+    align-items: center;
+    gap: 0.85rem;
+    max-width: 19rem;
+    margin-left: 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgb(255 255 255 / 13%);
+    border-radius: var(--radius-panel);
+    background: rgb(13 14 16 / 82%);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 28px rgb(0 0 0 / 24%);
+  }
+  .playtime-icon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-control);
+    color: var(--color-primary-hover);
+    background: rgb(198 59 73 / 13%);
+  }
+  .playtime-content {
+    min-width: 0;
   }
   .playtime-summary h2 {
-    margin-bottom: 0.5rem;
+    margin: 0 0 0.3rem;
+    color: var(--color-text-secondary);
+    font-family: var(--font-sans);
+    font-size: var(--text-caption);
+    font-weight: 500;
   }
   .playtime-summary strong {
-    font-size: 1.5rem;
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    line-height: 1.4;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
   }
   .playtime-summary p {
-    margin-top: 0.5rem;
-    max-width: 65ch;
+    margin: 0;
+    font-size: var(--text-caption);
   }
   .shortcut-card {
     display: block;
@@ -820,6 +857,18 @@
   }
   .settings-row > div {
     flex: 1 1 14rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .playtime-summary {
+    grid-column: 1;
+    grid-row: auto;
+    margin: 1.5rem 0 0;
+    max-width: 100%;
   }
 }
 @media (max-width: 480px) {

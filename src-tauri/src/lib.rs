@@ -2,6 +2,7 @@ mod commands;
 mod lifecycle;
 mod mods;
 mod playtime;
+mod reshade;
 mod saves;
 mod skins;
 mod storage;
