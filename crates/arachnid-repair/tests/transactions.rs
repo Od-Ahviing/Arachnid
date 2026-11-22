@@ -40,6 +40,60 @@ fn image(value: u8) -> Option<Image> {
 }
 
 #[test]
+fn large_save_transaction_compensates_failure_after_the_old_32_action_boundary() {
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("journal.json");
+    let mut plan = OperationPlan {
+        schema_version: 1,
+        installation: "synthetic".into(),
+        actions: (0..256)
+            .map(|i| Action {
+                target: Target::File {
+                    path: format!("photo-{i}.fpop"),
+                },
+                before: Some(Image {
+                    value_type: 0,
+                    bytes: vec![1],
+                }),
+                after: Some(Image {
+                    value_type: 0,
+                    bytes: vec![2],
+                }),
+            })
+            .collect(),
+    };
+    let mut resources = baseline(&plan);
+    let expected = resources.values.clone();
+    let mut journal = prepare(plan.clone(), &resources, &path).unwrap();
+    let digest = journal.digest.clone();
+    resources.fail_after_at = Some(40);
+    assert!(
+        apply(
+            &mut journal,
+            &digest,
+            &mut resources,
+            &path,
+            &AtomicBool::new(false),
+            || Ok(())
+        )
+        .is_err()
+    );
+    assert_eq!(resources.values, expected);
+    assert!(!pending(&path));
+    plan.actions.push(Action {
+        target: Target::File {
+            path: "excess.fpop".into(),
+        },
+        before: None,
+        after: Some(Image {
+            value_type: 0,
+            bytes: vec![1],
+        }),
+    });
+    assert_eq!(plan.validate().unwrap_err().code, "invalidPlan");
+}
+
+#[test]
 fn transaction_context_is_bounded_and_bound_to_the_approval_digest() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("journal.json");

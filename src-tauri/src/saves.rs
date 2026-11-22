@@ -49,6 +49,11 @@ fn profile(state: &AppState) -> AppResult<Option<SourceProfile>> {
         .clone())
 }
 
+pub fn playtime_seconds(state: &AppState) -> Option<u64> {
+    let source = profile(state).ok()??.source;
+    arachnid_saveguard::statistics::read_playtime(&source)
+}
+
 fn store(state: &AppState) -> AppResult<Store> {
     Store::open(
         &backup_root(state),

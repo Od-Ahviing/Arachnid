@@ -609,6 +609,86 @@ fn photo_heavy_save_can_be_copied_restored_and_undone() {
 }
 
 #[test]
+fn photo_album_over_32_files_keeps_automatic_copies_restore_and_undo_working() {
+    let fixture = Fixture::new();
+    fixture.write("asm_save.fpop", b"original progress");
+    for i in 0..49 {
+        fixture.write(&format!("ASM_File_Slot_0_Image_{i}.fpop"), &[i; 8192]);
+    }
+    let original = source::capture(&fixture.source).unwrap();
+    let store = fixture.store();
+    let first = store
+        .reconcile_at("watch", Duration::ZERO, 1000)
+        .unwrap()
+        .unwrap();
+    assert_eq!(first.files.len(), 50);
+    for i in 0..49 {
+        fixture.write(&format!("ASM_File_Slot_0_Image_{i}.fpop"), &[i + 1; 8192]);
+    }
+    fixture.write("asm_save.fpop", b"new progress");
+    let changed = source::capture(&fixture.source).unwrap();
+    let second = store
+        .reconcile_at("watch", Duration::ZERO, 1301)
+        .unwrap()
+        .unwrap();
+    assert_ne!(first.id, second.id);
+    let journal = store.prepare_restore(&first.id, || Ok(())).unwrap();
+    assert_eq!(journal.plan.actions.len(), 50);
+    store.apply_restore(&journal.digest, || Ok(())).unwrap();
+    assert_eq!(source::capture(&fixture.source).unwrap(), original);
+    store.undo_restore(&journal.digest, || Ok(())).unwrap();
+    assert_eq!(source::capture(&fixture.source).unwrap(), changed);
+}
+
+#[test]
+fn expanded_album_still_rejects_excess_files_and_total_bytes_without_pruning() {
+    for excess_bytes in [false, true] {
+        let fixture = Fixture::new();
+        fixture.write("asm_save.fpop", b"progress");
+        let store = fixture.store();
+        let first = store.snapshot("manual", Duration::ZERO).unwrap();
+        let count = if excess_bytes { 65 } else { source::MAX_FILES };
+        for i in 0..count {
+            let file = fs::File::create(fixture.source.join(format!("photo-{i}.fpop"))).unwrap();
+            file.set_len(if excess_bytes { 1024 * 1024 } else { 1 })
+                .unwrap();
+        }
+        assert_eq!(
+            store.reconcile("watch", Duration::ZERO).unwrap_err().code,
+            "operationLimit"
+        );
+        assert_eq!(store.history().unwrap()[0].id, first.id);
+        assert_eq!(
+            fs::read(fixture.source.join("asm_save.fpop")).unwrap(),
+            b"progress"
+        );
+    }
+}
+
+#[test]
+fn full_album_restore_supports_disjoint_generations_and_undo() {
+    let fixture = Fixture::new();
+    for i in 0..source::MAX_FILES {
+        fixture.write(&format!("old-{i}.fpop"), b"old");
+    }
+    let original = source::capture(&fixture.source).unwrap();
+    let store = fixture.store();
+    let first = store.snapshot("manual", Duration::ZERO).unwrap();
+    assert!(serde_json::to_vec(&first).unwrap().len() < 64 * 1024);
+    for i in 0..source::MAX_FILES {
+        fs::remove_file(fixture.source.join(format!("old-{i}.fpop"))).unwrap();
+        fixture.write(&format!("new-{i}.fpop"), b"new");
+    }
+    let changed = source::capture(&fixture.source).unwrap();
+    let journal = store.prepare_restore(&first.id, || Ok(())).unwrap();
+    assert_eq!(journal.plan.actions.len(), 2 * source::MAX_FILES);
+    store.apply_restore(&journal.digest, || Ok(())).unwrap();
+    assert_eq!(source::capture(&fixture.source).unwrap(), original);
+    store.undo_restore(&journal.digest, || Ok(())).unwrap();
+    assert_eq!(source::capture(&fixture.source).unwrap(), changed);
+}
+
+#[test]
 fn automatic_copies_continue_past_storage_and_count_limits() {
     let mut fixture = Fixture::new();
     fixture.profile.keep = 2;

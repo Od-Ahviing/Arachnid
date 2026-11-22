@@ -251,6 +251,7 @@ pub(super) fn status(state: &AppState) -> AppResult<LaunchStatus> {
         .lock()
         .ok()
         .and_then(|mut playtime| playtime.observe(session.state == "running"));
+    let playtime_seconds = crate::saves::playtime_seconds(state).or(playtime_seconds);
     if session.state == "exited" {
         if sessions.is_some() {
             crate::saves::session_snapshot(state, "afterGame");

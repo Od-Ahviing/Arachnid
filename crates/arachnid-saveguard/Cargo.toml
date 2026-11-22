@@ -12,6 +12,7 @@ arachnid-repair.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha2 = "=0.11.1"
+crc32fast = "=1.5.4"
 tempfile.workspace = true
 
 [target.'cfg(windows)'.dependencies]

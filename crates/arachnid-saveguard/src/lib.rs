@@ -1,5 +1,6 @@
 pub mod discovery;
 pub mod source;
+pub mod statistics;
 pub mod watcher;
 
 use arachnid_core::{AppError, AppResult};

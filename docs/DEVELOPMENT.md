@@ -28,6 +28,8 @@ cargo run -p arachnid-detector --example inspect -- 'C:\Games\TASM1'
 
 Run the same checks as the [Windows CI workflow](../.github/workflows/ci.yml) before submitting a cross-cutting change.
 
+For save-source diagnosis, `cargo run -p arachnid-saveguard --example inspect_saves --locked -- "C:\path\to\save-folder"` reports file count, total bytes and recognized native play time, then verifies a backup in a temporary directory. It reads the source without modifying it and never restores into it. Run it after the game has finished saving; a changing source causes verification to fail. Restore tests must still use disposable fixtures.
+
 ```powershell
 pnpm check
 pnpm format:check

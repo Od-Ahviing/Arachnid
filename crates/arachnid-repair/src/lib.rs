@@ -14,9 +14,9 @@ use std::{
 };
 
 pub const MAX_IMAGE_BYTES: usize = 1024 * 1024;
-// Save restores can replace 32 one-MiB files, including both previous and desired bytes.
-const MAX_PLAN_BYTES: usize = 64 * MAX_IMAGE_BYTES;
-const MAX_JOURNAL_BYTES: u64 = 320 * MAX_IMAGE_BYTES as u64;
+// A restore includes two save generations, each bounded to 64 MiB and 128 files.
+const MAX_PLAN_BYTES: usize = 128 * MAX_IMAGE_BYTES;
+const MAX_JOURNAL_BYTES: u64 = 640 * MAX_IMAGE_BYTES as u64;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(tag = "kind", rename_all = "camelCase", deny_unknown_fields)]
@@ -61,7 +61,7 @@ impl OperationPlan {
         if self.schema_version != 1
             || self.installation.is_empty()
             || self.actions.is_empty()
-            || self.actions.len() > 32
+            || self.actions.len() > 256
         {
             return Err(AppError::new("invalidPlan"));
         }

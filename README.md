@@ -4,7 +4,7 @@ Arachnid is an open-source community launcher for **The Amazing Spider-Man (2012
 
 Arachnid targets Windows 10 and 11 (x64). Bring your own PC installation of the game. The launcher comes separately.
 
-Home shows your accumulated play time for sessions launched through Arachnid since tracking was introduced. Menus and pauses are included. The counter is saved locally and survives launcher restarts; earlier hours and sessions started outside Arachnid are not imported.
+Home shows the play time stored in a recognized game save, including earlier progress. This value updates when the game saves and follows the loaded progress after a restore. If the save format cannot be read, Arachnid falls back to its locally recorded time for sessions launched through the launcher.
 
 ## Getting started
 
